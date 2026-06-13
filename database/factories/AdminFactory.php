@@ -1,0 +1,22 @@
+<?php
+
+namespace Database\Factories;
+
+use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\Admin;
+
+class AdminFactory extends Factory
+{
+    protected $model = Admin::class;
+
+    public function definition(): array
+    {
+        
+            return [
+                'username' => $this->faker->unique()->userName(),
+                'password' => bcrypt('password'),
+                'role' => $this->faker->randomElement(['superadmin', 'admin']),
+            ];
+        
+    }
+}

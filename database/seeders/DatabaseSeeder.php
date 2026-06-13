@@ -13,12 +13,16 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Admin',
-            'email' => 'admin@gmail.com',
-            'password' => 'password123'
+        $this->call([
+            \Database\Seeders\TahunAjaranSeeder::class,
+            \Database\Seeders\KelasSeeder::class,
+            \Database\Seeders\MataPelajaranSeeder::class,
+            \Database\Seeders\GuruSeeder::class,
+            \Database\Seeders\SiswaSeeder::class,
+            \Database\Seeders\GuruAmpuSeeder::class,
+            \Database\Seeders\PertemuanSeeder::class,
+            \Database\Seeders\AbsensiSeeder::class,
+            \Database\Seeders\MateriSeeder::class,
         ]);
     }
 }

@@ -17,43 +17,45 @@
 
     @livewireStyles
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+
         :root {
             --sidebar-width: 280px;
             --topbar-height: 70px;
-            --primary-color: #6366f1;
-            --primary-dark: #4f46e5;
-            --primary-light: #818cf8;
-            --secondary-color: #0ea5e9;
-            --success-color: #10b981;
-            --warning-color: #f59e0b;
-            --danger-color: #ef4444;
-            --card-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            --primary-color: #0d9488;
+            --primary-dark: #0f766e;
+            --primary-light: #2dd4bf;
+            --secondary-color: #8b5cf6;
+            --success-color: #22c55e;
+            --warning-color: #eab308;
+            --danger-color: #f43f5e;
+            --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 
             /* Light theme (default) */
-            --bg-primary: #f1f5f9;
+            --bg-primary: #f8fafc;
             --bg-secondary: #ffffff;
-            --bg-tertiary: #f8fafc;
-            --text-primary: #1e293b;
-            --text-secondary: #64748b;
+            --bg-tertiary: #f1f5f9;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
             --text-muted: #94a3b8;
             --border-color: #e2e8f0;
-            --border-light: #f1f5f9;
+            --border-light: #f8fafc;
             --input-bg: #ffffff;
-            --hover-bg: #f8fafc;
+            --hover-bg: #f1f5f9;
         }
 
         [data-theme="dark"] {
-            --bg-primary: #0f172a;
-            --bg-secondary: #1e293b;
-            --bg-tertiary: #334155;
-            --text-primary: #f1f5f9;
-            --text-secondary: #cbd5e1;
-            --text-muted: #94a3b8;
-            --border-color: #334155;
-            --border-light: #475569;
-            --input-bg: #1e293b;
-            --hover-bg: #334155;
-            --card-shadow: 0 1px 3px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.4);
+            --bg-primary: #09090b;
+            --bg-secondary: #18181b;
+            --bg-tertiary: #27272a;
+            --text-primary: #fafafa;
+            --text-secondary: #a1a1aa;
+            --text-muted: #71717a;
+            --border-color: #27272a;
+            --border-light: #3f3f46;
+            --input-bg: #18181b;
+            --hover-bg: #27272a;
+            --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
 
         * {
@@ -63,7 +65,7 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: var(--bg-primary);
             color: var(--text-primary);
             transition: background-color 0.3s ease, color 0.3s ease;
@@ -118,7 +120,7 @@
             text-decoration: none;
             transition: all 0.2s;
             margin: 0.25rem 0.75rem;
-            border-radius: 8px;
+            border-radius: 12px;
             font-weight: 500;
         }
 
@@ -178,7 +180,7 @@
 
         .modern-card {
             background: var(--bg-secondary);
-            border-radius: 16px;
+            border-radius: 20px;
             padding: 1.75rem;
             box-shadow: var(--card-shadow);
             transition: all 0.3s ease;
@@ -196,7 +198,7 @@
 
         .stat-card {
             background: var(--bg-secondary);
-            border-radius: 16px;
+            border-radius: 20px;
             padding: 1.75rem;
             box-shadow: var(--card-shadow);
             transition: all 0.3s;
@@ -269,7 +271,7 @@
 
         .btn-modern {
             padding: 0.625rem 1.5rem;
-            border-radius: 8px;
+            border-radius: 12px;
             font-weight: 500;
             transition: all 0.2s;
         }
@@ -442,7 +444,7 @@
 
         .modal-content-custom {
             background: var(--bg-secondary);
-            border-radius: 16px;
+            border-radius: 20px;
             padding: 2rem;
             width: 100%;
             max-width: 500px;
@@ -487,7 +489,7 @@
             background: var(--input-bg);
             border: 1px solid var(--border-color);
             color: var(--text-primary);
-            border-radius: 8px;
+            border-radius: 12px;
             padding: 0.75rem 1rem;
         }
 
