@@ -12,4 +12,14 @@ class Absensi extends Model
     protected $table = 'absensi';
     protected $primaryKey = 'id_absensi';
     protected $fillable = ['id_pertemuan', 'id_siswa', 'status_kehadiran'];
+
+    public function pertemuan()
+    {
+        return $this->belongsTo(Pertemuan::class, 'id_pertemuan', 'id_pertemuan');
+    }
+
+    public function siswa()
+    {
+        return $this->belongsTo(Siswa::class, 'id_siswa', 'id_siswa');
+    }
 }

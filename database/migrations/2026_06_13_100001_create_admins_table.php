@@ -10,9 +10,9 @@ return new class extends Migration
     {
         Schema::create('admin', function (Blueprint $table) {
             $table->id("id_admin");
-            $table->string("username")->unique();
-            $table->string("password");
-            $table->enum("role", ["superadmin", "admin"])->default("admin");
+            $table->string('nama');
+            $table->string('email')->unique();
+            $table->string('password');
             $table->timestamps();
         });
     }

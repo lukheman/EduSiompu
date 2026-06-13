@@ -1,9 +1,9 @@
 <div>
     {{-- Page Header --}}
-    <x-layout.page-header title="Manajemen Admin" subtitle="Kelola semua admin dalam sistem">
+    <x-layout.page-header title="Manajemen Guru" subtitle="Kelola semua data guru dalam sistem">
         <x-slot:actions>
             <x-ui.button variant="primary" icon="fas fa-plus" wire:click="openCreateModal">
-                Tambah Admin
+                Tambah Guru
             </x-ui.button>
         </x-slot:actions>
     </x-layout.page-header>
@@ -21,61 +21,62 @@
         </x-ui.alert>
     @endif
 
-    {{-- Users Table Card --}}
+    {{-- Guru Table Card --}}
     <div class="modern-card">
         {{-- Search and Filters --}}
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h5 class="mb-0" style="color: var(--text-primary); font-weight: 600;">Semua Admin</h5>
+            <h5 class="mb-0" style="color: var(--text-primary); font-weight: 600;">Semua Guru</h5>
             <div class="input-group" style="max-width: 300px;">
                 <span class="input-group-text" style="background: var(--input-bg); border-color: var(--border-color);">
                     <i class="fas fa-search" style="color: var(--text-muted);"></i>
                 </span>
-                <input type="text" class="form-control" placeholder="Cari admin..."
+                <input type="text" class="form-control" placeholder="Cari guru..."
                     wire:model.live.debounce.300ms="search" style="border-left: none;">
             </div>
         </div>
 
-        {{-- Users Table --}}
+        {{-- Guru Table --}}
         <div class="table-responsive">
             <table class="table table-modern">
                 <thead>
                     <tr>
-                        <th>Admin</th>
-                        <th>Email</th>
-                        <th>Dibuat Pada</th>
-                        <th>Status</th>
+                        <th>NIP</th>
+                        <th>Nama Guru</th>
+                        <th>Didaftarkan Pada</th>
                         <th style="width: 120px;">Tindakan</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse ($users as $user)
-                        <tr wire:key="user-{{ $user->id }}">
+                    @forelse ($gurus as $guru)
+                        <tr wire:key="guru-{{ $guru->id_guru }}">
+                            <td>
+                                <div class="fw-semibold" style="color: var(--text-primary);">{{ $guru->nip }}</div>
+                            </td>
                             <td>
                                 <div class="d-flex align-items-center gap-3">
-                                    <div class="user-avatar">{{ $user->initials() }}</div>
+                                    @php
+                                        $words = explode(' ', $guru->nama_guru);
+                                        $initials = '';
+                                        foreach ($words as $word) {
+                                            $initials .= strtoupper(substr($word, 0, 1));
+                                        }
+                                        $initials = substr($initials, 0, 2);
+                                    @endphp
+                                    <div class="user-avatar">{{ $initials }}</div>
                                     <div>
-                                        <div class="fw-semibold" style="color: var(--text-primary);">{{ $user->name }}</div>
-                                        <small class="text-muted">ID: {{ $user->id }}</small>
+                                        <div class="fw-semibold" style="color: var(--text-primary);">{{ $guru->nama_guru }}</div>
                                     </div>
                                 </div>
                             </td>
-                            <td style="color: var(--text-secondary);">{{ $user->email }}</td>
-                            <td class="text-muted">{{ $user->created_at->format('M d, Y') }}</td>
-                            <td>
-                                @if($user->email_verified_at)
-                                    <x-ui.badge variant="success" icon="fas fa-check-circle">Terverifikasi</x-ui.badge>
-                                @else
-                                    <x-ui.badge variant="warning" icon="fas fa-clock">Tertunda</x-ui.badge>
-                                @endif
-                            </td>
+                            <td class="text-muted">{{ $guru->created_at->format('M d, Y') }}</td>
                             <td>
                                 <div class="d-flex gap-1">
-                                    <button class="action-btn action-btn-edit" wire:click="openEditModal({{ $user->id_admin }})"
-                                        title="Edit admin">
+                                    <button class="action-btn action-btn-edit" wire:click="openEditModal({{ $guru->id_guru }})"
+                                        title="Edit Guru">
                                         <i class="fas fa-edit"></i>
                                     </button>
-                                    <button class="action-btn action-btn-delete" wire:click="confirmDelete({{ $user->id_admin }})"
-                                        title="Hapus admin">
+                                    <button class="action-btn action-btn-delete" wire:click="confirmDelete({{ $guru->id_guru }})"
+                                        title="Hapus Guru">
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
                                 </div>
@@ -83,10 +84,10 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="text-center py-4">
+                            <td colspan="4" class="text-center py-4">
                                 <div class="text-muted">
-                                    <i class="fas fa-users mb-2" style="font-size: 2rem;"></i>
-                                    <p class="mb-0">Tidak ada data admin ditemukan</p>
+                                    <i class="fas fa-chalkboard-teacher mb-2" style="font-size: 2rem;"></i>
+                                    <p class="mb-0">Tidak ada data guru ditemukan</p>
                                 </div>
                             </td>
                         </tr>
@@ -96,9 +97,9 @@
         </div>
 
         {{-- Pagination --}}
-        @if ($users->hasPages())
+        @if ($gurus->hasPages())
             <div class="d-flex justify-content-end mt-4">
-                {{ $users->links() }}
+                {{ $gurus->links() }}
             </div>
         @endif
     </div>
@@ -109,7 +110,7 @@
             <div class="modal-content-custom" wire:click.stop>
                 <div class="modal-header-custom">
                     <h5 class="modal-title-custom">
-                        {{ $editingUserId ? 'Edit Admin' : 'Tambah Admin Baru' }}
+                        {{ $editingGuruId ? 'Edit Guru' : 'Tambah Guru Baru' }}
                     </h5>
                     <button type="button" class="modal-close-btn" wire:click="closeModal">
                         <i class="fas fa-times"></i>
@@ -118,20 +119,19 @@
 
                 <form wire:submit="save">
                     <div class="mb-3">
-                        <label for="name" class="form-label">Nama <span style="color: var(--danger-color);">*</span></label>
-                        <input type="text" class="form-control @error('name') is-invalid @enderror" id="name"
-                            wire:model="name" placeholder="Masukkan nama lengkap">
-                        @error('name')
+                        <label for="nip" class="form-label">NIP <span style="color: var(--danger-color);">*</span></label>
+                        <input type="text" class="form-control @error('nip') is-invalid @enderror" id="nip"
+                            wire:model="nip" placeholder="Masukkan NIP">
+                        @error('nip')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
 
                     <div class="mb-3">
-                        <label for="email" class="form-label">Email <span
-                                style="color: var(--danger-color);">*</span></label>
-                        <input type="email" class="form-control @error('email') is-invalid @enderror" id="email"
-                            wire:model="email" placeholder="Enter email address">
-                        @error('email')
+                        <label for="nama_guru" class="form-label">Nama Lengkap <span style="color: var(--danger-color);">*</span></label>
+                        <input type="text" class="form-control @error('nama_guru') is-invalid @enderror" id="nama_guru"
+                            wire:model="nama_guru" placeholder="Masukkan nama lengkap guru">
+                        @error('nama_guru')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
@@ -139,7 +139,7 @@
                     <div class="mb-3">
                         <label for="password" class="form-label">
                             Kata Sandi
-                            @if (!$editingUserId)
+                            @if (!$editingGuruId)
                                 <span style="color: var(--danger-color);">*</span>
                             @else
                                 <small class="text-muted">(biarkan kosong jika tidak ingin diubah)</small>
@@ -147,7 +147,7 @@
                         </label>
                         <input type="password" class="form-control @error('password') is-invalid @enderror" id="password"
                             wire:model="password"
-                            placeholder="{{ $editingUserId ? 'Masukkan kata sandi baru' : 'Masukkan kata sandi' }}">
+                            placeholder="{{ $editingGuruId ? 'Masukkan kata sandi baru' : 'Masukkan kata sandi' }}">
                         @error('password')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -164,7 +164,7 @@
                             Batal
                         </x-ui.button>
                         <x-ui.button type="submit" variant="primary">
-                            {{ $editingUserId ? 'Simpan Perubahan' : 'Tambah Admin' }}
+                            {{ $editingGuruId ? 'Simpan Perubahan' : 'Tambah' }}
                         </x-ui.button>
                     </div>
                 </form>
@@ -176,14 +176,14 @@
     <x-ui.confirm-modal
         :show="$showDeleteModal"
         title="Konfirmasi Hapus"
-        message="Apakah Anda yakin ingin menghapus profil admin ini? Tindakan ini tidak dapat dibatalkan."
-        on-confirm="deleteUser"
+        message="Apakah Anda yakin ingin menghapus profil guru ini? Tindakan ini tidak dapat dibatalkan."
+        on-confirm="deleteGuru"
         on-cancel="cancelDelete"
         variant="danger"
         icon="fas fa-exclamation-triangle"
     >
         <x-slot:confirmButton>
-            <i class="fas fa-trash-alt me-2"></i>Hapus Admin
+            <i class="fas fa-trash-alt me-2"></i>Hapus Guru
         </x-slot:confirmButton>
     </x-ui.confirm-modal>
 </div>

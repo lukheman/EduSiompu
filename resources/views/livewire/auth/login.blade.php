@@ -6,18 +6,41 @@
                 <i class="fas fa-layer-group"></i>
             </div>
             <h1>Welcome Back</h1>
-            <p>Sign in to continue to AdminPro</p>
+            <p>Sign in to continue to EduSiompu</p>
         </div>
+
+        <!-- Role Tabs -->
+        <ul class="nav nav-pills nav-justified mb-4" style="gap: 5px;">
+            <li class="nav-item">
+                <button class="nav-link {{ $role === 'siswa' ? 'active' : '' }}" wire:click="setRole('siswa')" type="button" style="border-radius: 8px;">
+                    <i class="fas fa-user-graduate mb-1 d-block"></i> Siswa
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link {{ $role === 'guru' ? 'active' : '' }}" wire:click="setRole('guru')" type="button" style="border-radius: 8px;">
+                    <i class="fas fa-chalkboard-teacher mb-1 d-block"></i> Guru
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link {{ $role === 'admin' ? 'active' : '' }}" wire:click="setRole('admin')" type="button" style="border-radius: 8px;">
+                    <i class="fas fa-user-shield mb-1 d-block"></i> Admin
+                </button>
+            </li>
+        </ul>
 
         <!-- Login Form -->
         <form wire:submit="submit">
-            <!-- Email Field -->
+            <!-- Identifier Field -->
             <div class="form-floating position-relative">
-                <i class="fas fa-envelope input-icon"></i>
-                <input type="email" wire:model="email" class="form-control @error('email') is-invalid @enderror"
-                    id="email" placeholder="Email Address" autofocus>
-                <label for="email">Email Address</label>
-                @error('email')
+                @php
+                    $placeholder = $role === 'admin' ? 'Email Admin' : ($role === 'guru' ? 'NIP' : 'NISN');
+                    $icon = $role === 'admin' ? 'fas fa-envelope' : ($role === 'guru' ? 'fas fa-chalkboard-teacher' : 'fas fa-user-graduate');
+                @endphp
+                <i class="{{ $icon }} input-icon"></i>
+                <input type="text" wire:model="identifier" class="form-control @error('identifier') is-invalid @enderror"
+                    id="identifier" placeholder="{{ $placeholder }}" autofocus>
+                <label for="identifier">{{ $placeholder }}</label>
+                @error('identifier')
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
             </div>

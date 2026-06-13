@@ -17,9 +17,9 @@ erDiagram
 
     admin {
         int id_admin PK
-        string username
+        string email
         string password
-        enum role
+        string nama
     }
 
     tahun_ajaran {

@@ -10,27 +10,53 @@ use Livewire\Attributes\Rule;
 use Livewire\Component;
 
 #[Layout('layouts.guest')]
-#[Title('Login - AdminPro')]
+#[Title('Login - EduSiompu')]
 class Login extends Component
 {
-    #[Rule(['required', 'email'])]
-    public string $email = '';
+    public string $role = 'siswa';
 
-    #[Rule([])]
+    #[Rule(['required'])]
+    public string $identifier = '';
+
+    #[Rule(['required'])]
     public string $password = '';
 
     public bool $remember = false;
 
+    public function setRole(string $role)
+    {
+        $this->role = $role;
+        $this->resetErrorBag();
+        $this->identifier = '';
+        $this->password = '';
+    }
+
     public function submit()
     {
-        $credentials = $this->validate();
+        $this->validate();
 
-        if (Auth::attempt($credentials, $this->remember)) {
-            session()->regenerate();
-            return redirect()->to(route('dashboard'));
+        $identifier = $this->identifier;
+        $password = $this->password;
+        $remember = $this->remember;
+
+        if ($this->role === 'admin') {
+            if (Auth::guard('admin')->attempt(['email' => $identifier, 'password' => $password], $remember)) {
+                session()->regenerate();
+                return redirect()->to(route('dashboard'));
+            }
+        } elseif ($this->role === 'guru') {
+            if (Auth::guard('guru')->attempt(['nip' => $identifier, 'password' => $password], $remember)) {
+                session()->regenerate();
+                return redirect()->to(route('dashboard'));
+            }
+        } elseif ($this->role === 'siswa') {
+            if (Auth::guard('siswa')->attempt(['nisn' => $identifier, 'password' => $password], $remember)) {
+                session()->regenerate();
+                return redirect()->to(route('dashboard'));
+            }
         }
 
-        $this->addError('email', __('auth.failed'));
+        $this->addError('identifier', 'Identitas atau password salah.');
     }
 
     public function render()

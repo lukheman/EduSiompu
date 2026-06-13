@@ -12,4 +12,9 @@ class Materi extends Model
     protected $table = 'materi';
     protected $primaryKey = 'id_materi';
     protected $fillable = ['id_guru_ampu', 'judul_materi', 'file_path', 'jenis_file'];
+
+    public function guruAmpu()
+    {
+        return $this->belongsTo(GuruAmpu::class, 'id_guru_ampu', 'id_guru_ampu');
+    }
 }

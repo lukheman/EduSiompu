@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Admin;
 
-use App\Models\User;
+use App\Models\Guru;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 use Livewire\Attributes\Layout;
@@ -11,8 +11,8 @@ use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-#[Title('User Management')]
-class UserManagement extends Component
+#[Title('Manajemen Guru')]
+class GuruManagement extends Component
 {
     use WithPagination;
 
@@ -21,31 +21,30 @@ class UserManagement extends Component
     public string $search = '';
 
     // Form fields
-    public string $name = '';
-    public string $email = '';
+    public string $nip = '';
+    public string $nama_guru = '';
     public string $password = '';
     public string $password_confirmation = '';
 
     // State
-    public ?int $editingUserId = null;
+    public ?int $editingGuruId = null;
     public bool $showModal = false;
     public bool $showDeleteModal = false;
-    public ?int $deletingUserId = null;
+    public ?int $deletingGuruId = null;
 
     protected function rules(): array
     {
         $rules = [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255'],
+            'nama_guru' => ['required', 'string', 'max:255'],
         ];
 
-        if ($this->editingUserId) {
-            $rules['email'][] = 'unique:users,email,' . $this->editingUserId;
+        if ($this->editingGuruId) {
+            $rules['nip'] = ['required', 'string', 'max:50', 'unique:guru,nip,' . $this->editingGuruId . ',id_guru'];
             if ($this->password) {
                 $rules['password'] = ['confirmed', Password::defaults()];
             }
         } else {
-            $rules['email'][] = 'unique:users,email';
+            $rules['nip'] = ['required', 'string', 'max:50', 'unique:guru,nip'];
             $rules['password'] = ['required', 'confirmed', Password::defaults()];
         }
 
@@ -60,16 +59,16 @@ class UserManagement extends Component
     public function openCreateModal(): void
     {
         $this->resetForm();
-        $this->editingUserId = null;
+        $this->editingGuruId = null;
         $this->showModal = true;
     }
 
-    public function openEditModal(int $userId): void
+    public function openEditModal(int $guruId): void
     {
-        $user = User::query()->findOrFail($userId);
-        $this->editingUserId = $userId;
-        $this->name = $user->name;
-        $this->email = $user->email;
+        $guru = Guru::findOrFail($guruId);
+        $this->editingGuruId = $guruId;
+        $this->nip = $guru->nip;
+        $this->nama_guru = $guru->nama_guru;
         $this->password = '';
         $this->password_confirmation = '';
         $this->showModal = true;
@@ -79,24 +78,24 @@ class UserManagement extends Component
     {
         $validated = $this->validate();
 
-        if ($this->editingUserId) {
-            $user = User::findOrFail($this->editingUserId);
-            $user->name = $validated['name'];
-            $user->email = $validated['email'];
+        if ($this->editingGuruId) {
+            $guru = Guru::findOrFail($this->editingGuruId);
+            $guru->nip = $validated['nip'];
+            $guru->nama_guru = $validated['nama_guru'];
 
             if (!empty($this->password)) {
-                $user->password = Hash::make($this->password);
+                $guru->password = Hash::make($this->password);
             }
 
-            $user->save();
-            session()->flash('success', 'User updated successfully.');
+            $guru->save();
+            session()->flash('success', 'Data guru berhasil diperbarui.');
         } else {
-            User::create([
-                'name' => $validated['name'],
-                'email' => $validated['email'],
+            Guru::create([
+                'nip' => $validated['nip'],
+                'nama_guru' => $validated['nama_guru'],
                 'password' => Hash::make($validated['password']),
             ]);
-            session()->flash('success', 'User created successfully.');
+            session()->flash('success', 'Guru berhasil ditambahkan.');
         }
 
         $this->closeModal();
@@ -109,50 +108,50 @@ class UserManagement extends Component
         $this->resetValidation();
     }
 
-    public function confirmDelete(int $userId): void
+    public function confirmDelete(int $guruId): void
     {
-        $this->deletingUserId = $userId;
+        $this->deletingGuruId = $guruId;
         $this->showDeleteModal = true;
     }
 
-    public function deleteUser(): void
+    public function deleteGuru(): void
     {
-        if ($this->deletingUserId) {
-            User::destroy($this->deletingUserId);
-            session()->flash('success', 'User deleted successfully.');
+        if ($this->deletingGuruId) {
+            Guru::destroy($this->deletingGuruId);
+            session()->flash('success', 'Data guru berhasil dihapus.');
         }
 
         $this->showDeleteModal = false;
-        $this->deletingUserId = null;
+        $this->deletingGuruId = null;
     }
 
     public function cancelDelete(): void
     {
         $this->showDeleteModal = false;
-        $this->deletingUserId = null;
+        $this->deletingGuruId = null;
     }
 
     protected function resetForm(): void
     {
-        $this->name = '';
-        $this->email = '';
+        $this->nip = '';
+        $this->nama_guru = '';
         $this->password = '';
         $this->password_confirmation = '';
-        $this->editingUserId = null;
+        $this->editingGuruId = null;
     }
 
     public function render()
     {
-        $users = User::query()
+        $gurus = Guru::query()
             ->when($this->search, function ($query) {
-                $query->where('name', 'like', '%' . $this->search . '%')
-                    ->orWhere('email', 'like', '%' . $this->search . '%');
+                $query->where('nama_guru', 'like', '%' . $this->search . '%')
+                      ->orWhere('nip', 'like', '%' . $this->search . '%');
             })
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
-        return view('livewire.admin.user-management', [
-            'users' => $users,
+        return view('livewire.admin.guru-management', [
+            'gurus' => $gurus,
         ]);
     }
 }

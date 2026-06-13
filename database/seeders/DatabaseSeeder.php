@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
+use App\Models\Admin;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -13,6 +13,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+
+        Admin::query()->create([
+            'nama' => 'Admin',
+            'email' => 'admin@gmail.com',
+            'password' => bcrypt('password123'),
+        ]);
+
         $this->call([
             \Database\Seeders\TahunAjaranSeeder::class,
             \Database\Seeders\KelasSeeder::class,

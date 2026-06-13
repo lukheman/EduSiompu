@@ -12,4 +12,14 @@ class Pertemuan extends Model
     protected $table = 'pertemuan';
     protected $primaryKey = 'id_pertemuan';
     protected $fillable = ['id_guru_ampu', 'pertemuan_ke', 'tanggal', 'pokok_bahasan'];
+
+    public function guruAmpu()
+    {
+        return $this->belongsTo(GuruAmpu::class, 'id_guru_ampu', 'id_guru_ampu');
+    }
+
+    public function absensis()
+    {
+        return $this->hasMany(Absensi::class, 'id_pertemuan', 'id_pertemuan');
+    }
 }
