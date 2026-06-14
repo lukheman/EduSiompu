@@ -1,7 +1,7 @@
 @props([
-    'title' => 'Modern Admin Dashboard',
-    'brandName' => 'AdminPro',
-    'brandIcon' => 'fas fa-layer-group'
+    'title' => 'EduSiompu',
+    'brandName' => 'EduSiompu',
+    'brandIcon' => 'fas fa-graduation-cap'
 ])
 
 <!DOCTYPE html>
@@ -33,6 +33,16 @@
 
             --bs-primary: #0d9488;
             --bs-primary-rgb: 13, 148, 136;
+            --bs-secondary: #8b5cf6;
+            --bs-secondary-rgb: 139, 92, 246;
+            --bs-success: #22c55e;
+            --bs-success-rgb: 34, 197, 94;
+            --bs-warning: #eab308;
+            --bs-warning-rgb: 234, 179, 8;
+            --bs-danger: #f43f5e;
+            --bs-danger-rgb: 244, 63, 94;
+            --bs-info: #0ea5e9;
+            --bs-info-rgb: 14, 165, 233;
 
             /* Light theme (default) */
             --bg-primary: #f8fafc;
@@ -578,38 +588,54 @@
 <body>
     <!-- Sidebar -->
     <x-layout.sidebar :brand-name="$brandName" :brand-icon="$brandIcon">
-        <x-layout.sidebar-section title="Main">
-            <x-layout.sidebar-link href="{{ route('dashboard') }}" icon="fas fa-home" :active="request()->routeIs('dashboard')">Dashboard</x-layout.sidebar-link>
+        <x-layout.sidebar-section title="Menu Utama">
+            @if(Auth::guard('siswa')->check())
+                <x-layout.sidebar-link href="{{ route('siswa.dashboard') }}" icon="fas fa-home" :active="request()->routeIs('siswa.dashboard')">Dashboard</x-layout.sidebar-link>
+            @elseif(Auth::guard('guru')->check())
+                <x-layout.sidebar-link href="{{ route('guru.dashboard') }}" icon="fas fa-home" :active="request()->routeIs('guru.dashboard')">Dashboard</x-layout.sidebar-link>
+            @else
+                <x-layout.sidebar-link href="{{ route('admin.dashboard') }}" icon="fas fa-home" :active="request()->routeIs('admin.dashboard')">Dashboard</x-layout.sidebar-link>
+            @endif
+        </x-layout.sidebar-section>
 
-            @if(Auth::guard('admin')->check())
-                <x-layout.sidebar-link href="{{ route('admin.users') }}" icon="fas fa-users" :active="request()->routeIs('admin.users')">Users</x-layout.sidebar-link>
+        @if(Auth::guard('admin')->check())
+            <x-layout.sidebar-section title="Data Induk">
                 <x-layout.sidebar-link href="{{ route('admin.tahun-ajaran') }}" icon="fas fa-calendar-alt" :active="request()->routeIs('admin.tahun-ajaran')">Tahun Ajaran</x-layout.sidebar-link>
                 <x-layout.sidebar-link href="{{ route('admin.kelas') }}" icon="fas fa-chalkboard" :active="request()->routeIs('admin.kelas')">Kelas</x-layout.sidebar-link>
                 <x-layout.sidebar-link href="{{ route('admin.mata-pelajaran') }}" icon="fas fa-book" :active="request()->routeIs('admin.mata-pelajaran')">Mata Pelajaran</x-layout.sidebar-link>
-                <x-layout.sidebar-link href="{{ route('admin.guru') }}" icon="fas fa-chalkboard-teacher" :active="request()->routeIs('admin.guru')">Guru</x-layout.sidebar-link>
-                <x-layout.sidebar-link href="{{ route('admin.guru-ampu') }}" icon="fas fa-user-tag" :active="request()->routeIs('admin.guru-ampu')">Guru Ampu</x-layout.sidebar-link>
-            @endif
+            </x-layout.sidebar-section>
 
-            @if(Auth::guard('admin')->check() || Auth::guard('guru')->check())
-                <x-layout.sidebar-link href="{{ route('admin.materi') }}" icon="fas fa-file-alt" :active="request()->routeIs('admin.materi')">Materi</x-layout.sidebar-link>
-                <x-layout.sidebar-link href="{{ route('admin.pertemuan') }}" icon="fas fa-calendar-check" :active="request()->routeIs('admin.pertemuan')">Pertemuan & Absensi</x-layout.sidebar-link>
-            @endif
+            <x-layout.sidebar-section title="Data Personalia">
+                <x-layout.sidebar-link href="{{ route('admin.guru') }}" icon="fas fa-chalkboard-teacher" :active="request()->routeIs('admin.guru')">Data Guru</x-layout.sidebar-link>
+                <x-layout.sidebar-link href="{{ route('admin.siswa') }}" icon="fas fa-user-graduate" :active="request()->routeIs('admin.siswa')">Data Siswa</x-layout.sidebar-link>
+            </x-layout.sidebar-section>
 
-            @if(Auth::guard('admin')->check())
-                <x-layout.sidebar-link href="{{ route('admin.siswa') }}" icon="fas fa-user-graduate" :active="request()->routeIs('admin.siswa')">Siswa</x-layout.sidebar-link>
-            @endif
+            <x-layout.sidebar-section title="Akademik">
+                <x-layout.sidebar-link href="{{ route('admin.guru-ampu') }}" icon="fas fa-user-tag" :active="request()->routeIs('admin.guru-ampu')">Penugasan Guru</x-layout.sidebar-link>
+            </x-layout.sidebar-section>
+        @endif
 
-            @if(Auth::guard('siswa')->check())
+        @if(Auth::guard('guru')->check())
+            <x-layout.sidebar-section title="Akademik">
+                <x-layout.sidebar-link href="{{ route('guru.materi') }}" icon="fas fa-file-alt" :active="request()->routeIs('guru.materi')">Materi Pembelajaran</x-layout.sidebar-link>
+                <x-layout.sidebar-link href="{{ route('guru.pertemuan') }}" icon="fas fa-calendar-check" :active="request()->routeIs('guru.pertemuan')">Jadwal & Absensi</x-layout.sidebar-link>
+            </x-layout.sidebar-section>
+        @endif
+
+        @if(Auth::guard('siswa')->check())
+            <x-layout.sidebar-section title="Akademik">
                 <x-layout.sidebar-link href="{{ route('siswa.materi') }}" icon="fas fa-book-open" :active="request()->routeIs('siswa.materi')">Materi Belajar</x-layout.sidebar-link>
                 <x-layout.sidebar-link href="{{ route('siswa.absensi') }}" icon="fas fa-clipboard-user" :active="request()->routeIs('siswa.absensi')">Absensi Saya</x-layout.sidebar-link>
-            @endif
-        </x-layout.sidebar-section>
+            </x-layout.sidebar-section>
+        @endif
 
         <x-layout.sidebar-section title="Account">
             @if(Auth::guard('siswa')->check())
                 <x-layout.sidebar-link href="{{ route('siswa.profile') }}" icon="fas fa-user-circle" :active="request()->routeIs('siswa.profile')">Profil Saya</x-layout.sidebar-link>
+            @elseif(Auth::guard('guru')->check())
+                <x-layout.sidebar-link href="{{ route('guru.profile') }}" icon="fas fa-user-circle" :active="request()->routeIs('guru.profile')">Profil Guru</x-layout.sidebar-link>
             @else
-                <x-layout.sidebar-link href="{{ route('admin.profile') }}" icon="fas fa-user-circle" :active="request()->routeIs('admin.profile')">Profile</x-layout.sidebar-link>
+                <x-layout.sidebar-link href="{{ route('admin.profile') }}" icon="fas fa-user-circle" :active="request()->routeIs('admin.profile')">Profil Admin</x-layout.sidebar-link>
             @endif
         </x-layout.sidebar-section>
 
@@ -621,15 +647,31 @@
     <div class="main-content">
         @php
             $roleName = 'Guest';
-            if (Auth::guard('admin')->check()) $roleName = 'Administrator';
-            elseif (Auth::guard('guru')->check()) $roleName = 'Guru';
-            elseif (Auth::guard('siswa')->check()) $roleName = 'Siswa';
+            $user = null;
+            $profileRoute = '#';
+            if (Auth::guard('admin')->check()) {
+                $roleName = 'Administrator';
+                $user = Auth::guard('admin')->user();
+                $profileRoute = route('admin.profile');
+            }
+            elseif (Auth::guard('guru')->check()) {
+                $roleName = 'Guru';
+                $user = Auth::guard('guru')->user();
+                $profileRoute = route('guru.profile');
+            }
+            elseif (Auth::guard('siswa')->check()) {
+                $roleName = 'Siswa';
+                $user = Auth::guard('siswa')->user();
+                $profileRoute = route('siswa.profile');
+            }
         @endphp
 
         <!-- Top Bar -->
         <x-layout.topbar
-            :user-name="Auth::user()?->nama ?? Auth::user()?->nama_guru ?? Auth::user()?->nama_siswa ?? Auth::user()?->name ?? 'Guest'"
+            :user-name="$user?->nama ?? $user?->nama_guru ?? $user?->nama_siswa ?? 'Guest'"
             :user-role="$roleName"
+            :user-avatar="$user?->avatar"
+            :profile-route="$profileRoute"
             :notification-count="0"
             :show-logout="true"
         />

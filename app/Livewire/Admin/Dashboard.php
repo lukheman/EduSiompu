@@ -2,7 +2,16 @@
 
 namespace App\Livewire\Admin;
 
-use Livewire\Attributes\Layout;
+use App\Models\Guru;
+use App\Models\Siswa;
+use App\Models\Kelas;
+use App\Models\MataPelajaran;
+use App\Models\TahunAjaran;
+use App\Models\GuruAmpu;
+use App\Models\Materi;
+use App\Models\Pertemuan;
+use App\Models\Absensi;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
@@ -11,50 +20,23 @@ class Dashboard extends Component
 {
     public function render()
     {
-        // Sample data for orders table
-        $orders = collect([
-            (object) [
-                'order_id' => '#ORD-2024',
-                'customer_name' => 'Alice Johnson',
-                'product_name' => 'Wireless Headphones',
-                'amount' => '$129.99',
-                'status' => 'Delivered',
-                'status_variant' => 'success',
-                'status_icon' => 'fas fa-check-circle',
-                'created_at' => now()->subDay()
-            ],
-            (object) [
-                'order_id' => '#ORD-2023',
-                'customer_name' => 'Bob Smith',
-                'product_name' => 'Smart Watch',
-                'amount' => '$299.99',
-                'status' => 'Pending',
-                'status_variant' => 'warning',
-                'status_icon' => 'fas fa-clock',
-                'created_at' => now()->subDay()
-            ],
-            (object) [
-                'order_id' => '#ORD-2022',
-                'customer_name' => 'Carol White',
-                'product_name' => 'Laptop Stand',
-                'amount' => '$49.99',
-                'status' => 'Shipped',
-                'status_variant' => 'secondary',
-                'status_icon' => 'fas fa-shipping-fast',
-                'created_at' => now()->subDays(2)
-            ],
-            (object) [
-                'order_id' => '#ORD-2021',
-                'customer_name' => 'David Lee',
-                'product_name' => 'USB-C Hub',
-                'amount' => '$79.99',
-                'status' => 'Delivered',
-                'status_variant' => 'success',
-                'status_icon' => 'fas fa-check-circle',
-                'created_at' => now()->subDays(2)
-            ],
-        ]);
+        $stats = [];
+        $recentData = [];
+        $activeTa = TahunAjaran::where('status_aktif', true)->first();
+        
+        $role = 'admin';
+        
+        $stats = [
+            'total_siswa' => Siswa::count(),
+            'total_guru' => Guru::count(),
+            'total_kelas' => Kelas::count(),
+            'total_mapel' => MataPelajaran::count(),
+        ];
+        
+        $recentData = [
+            'active_ta' => $activeTa
+        ];
 
-        return view('livewire.admin.dashboard', compact('orders'));
+        return view('livewire.admin.dashboard', compact('role', 'stats', 'recentData', 'activeTa'));
     }
 }

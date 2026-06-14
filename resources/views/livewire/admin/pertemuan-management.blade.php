@@ -215,10 +215,9 @@
                                             <td class="text-muted">{{ $data['nisn'] }}</td>
                                             <td>
                                                 <select class="form-select form-control" wire:model="absensiData.{{ $id_siswa }}.status" style="width: auto;">
-                                                    <option value="hadir">Hadir</option>
-                                                    <option value="sakit">Sakit</option>
-                                                    <option value="izin">Izin</option>
-                                                    <option value="alpa">Alpa</option>
+                                                    @foreach(\App\Enums\StatusKehadiran::cases() as $statusEnum)
+                                                        <option value="{{ $statusEnum->value }}">{{ $statusEnum->getLabel() }}</option>
+                                                    @endforeach
                                                 </select>
                                             </td>
                                         </tr>

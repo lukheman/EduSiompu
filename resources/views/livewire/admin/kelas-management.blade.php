@@ -40,9 +40,7 @@
             <table class="table table-modern">
                 <thead>
                     <tr>
-                        <th>ID Kelas</th>
                         <th>Nama Kelas</th>
-                        <th>Dibuat Pada</th>
                         <th style="width: 120px;">Tindakan</th>
                     </tr>
                 </thead>
@@ -50,12 +48,8 @@
                     @forelse ($kelasList as $kelas)
                         <tr wire:key="kelas-{{ $kelas->id_kelas }}">
                             <td>
-                                <div class="fw-semibold" style="color: var(--text-primary);">{{ $kelas->id_kelas }}</div>
-                            </td>
-                            <td>
                                 <div class="fw-semibold" style="color: var(--text-primary);">{{ $kelas->nama_kelas }}</div>
                             </td>
-                            <td class="text-muted">{{ $kelas->created_at->format('M d, Y') }}</td>
                             <td>
                                 <div class="d-flex gap-1">
                                     <x-ui.btn-edit wire:click="openEditModal({{ $kelas->id_kelas }})" tooltip="Edit kelas" />

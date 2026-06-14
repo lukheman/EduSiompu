@@ -13,6 +13,10 @@ class Absensi extends Model
     protected $primaryKey = 'id_absensi';
     protected $fillable = ['id_pertemuan', 'id_siswa', 'status_kehadiran'];
 
+    protected $casts = [
+        'status_kehadiran' => \App\Enums\StatusKehadiran::class,
+    ];
+
     public function pertemuan()
     {
         return $this->belongsTo(Pertemuan::class, 'id_pertemuan', 'id_pertemuan');

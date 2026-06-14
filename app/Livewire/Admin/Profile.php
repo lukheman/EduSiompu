@@ -11,7 +11,7 @@ use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
-#[Title('Profile - AdminPro')]
+#[Title('Profile - EduSiompu')]
 class Profile extends Component
 {
     use WithFileUploads;
@@ -30,45 +30,22 @@ class Profile extends Component
 
     public function mount(): void
     {
-        $user = Auth::user();
-        if (Auth::guard('admin')->check()) {
-            $this->name = $user->nama;
-            $this->email = $user->email;
-            $this->identifierName = 'Email';
-        } elseif (Auth::guard('guru')->check()) {
-            $this->name = $user->nama_guru;
-            $this->email = $user->nip;
-            $this->identifierName = 'NIP';
-        } elseif (Auth::guard('siswa')->check()) {
-            $this->name = $user->nama_siswa;
-            $this->email = $user->nisn;
-            $this->identifierName = 'NISN';
-        } else {
-            $this->name = $user->name ?? '';
-            $this->email = $user->email ?? '';
-        }
-
-        $this->currentAvatar = $user->avatar ?? null;
+        $user = Auth::guard('admin')->user();
+        $this->name = $user->nama;
+        $this->email = $user->email;
+        $this->identifierName = 'Email';
+        $this->currentAvatar = $user->avatar;
     }
 
     protected function rules(): array
     {
         $rules = [
             'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:admin,email,' . Auth::guard('admin')->id() . ',id_admin'],
         ];
 
-        if (Auth::guard('admin')->check()) {
-            $rules['email'] = ['required', 'email', 'max:255', 'unique:admin,email,' . Auth::guard('admin')->id() . ',id_admin'];
-        } elseif (Auth::guard('guru')->check()) {
-            $rules['email'] = ['required', 'string', 'max:255', 'unique:guru,nip,' . Auth::guard('guru')->id() . ',id_guru'];
-        } elseif (Auth::guard('siswa')->check()) {
-            $rules['email'] = ['required', 'string', 'max:255', 'unique:siswa,nisn,' . Auth::guard('siswa')->id() . ',id_siswa'];
-        } else {
-            $rules['email'] = ['required', 'email', 'max:255'];
-        }
-
         if ($this->showPasswordSection && $this->password) {
-            $rules['current_password'] = ['required', 'current_password'];
+            $rules['current_password'] = ['required', 'current_password:admin'];
             $rules['password'] = ['required', 'confirmed', Password::defaults()];
         }
 
@@ -103,13 +80,7 @@ class Profile extends Component
             'avatar' => ['required', 'image', 'max:2048'],
         ]);
 
-        $user = Auth::user();
-
-        // Check if user model actually has avatar column to prevent SQL error
-        if (!in_array('avatar', $user->getFillable()) && !property_exists($user, 'avatar')) {
-            session()->flash('error', 'Fitur foto profil tidak didukung untuk tipe pengguna ini.');
-            return;
-        }
+        $user = Auth::guard('admin')->user();
 
         if ($user->avatar && Storage::exists($user->avatar)) {
             Storage::delete($user->avatar);
@@ -149,20 +120,9 @@ class Profile extends Component
     {
         $validated = $this->validate();
 
-        $user = Auth::user();
-        if (Auth::guard('admin')->check()) {
-            $user->nama = $validated['name'];
-            $user->email = $validated['email'];
-        } elseif (Auth::guard('guru')->check()) {
-            $user->nama_guru = $validated['name'];
-            $user->nip = $validated['email'];
-        } elseif (Auth::guard('siswa')->check()) {
-            $user->nama_siswa = $validated['name'];
-            $user->nisn = $validated['email'];
-        } else {
-            $user->name = $validated['name'];
-            $user->email = $validated['email'];
-        }
+        $user = Auth::guard('admin')->user();
+        $user->nama = $validated['name'];
+        $user->email = $validated['email'];
         $user->save();
 
         session()->flash('success', 'Profile berhasil diperbarui.');
@@ -171,11 +131,11 @@ class Profile extends Component
     public function updatePassword(): void
     {
         $this->validate([
-            'current_password' => ['required', 'current_password'],
+            'current_password' => ['required', 'current_password:admin'],
             'password' => ['required', 'confirmed', Password::defaults()],
         ]);
 
-        $user = Auth::user();
+        $user = Auth::guard('admin')->user();
         $user->password = Hash::make($this->password);
         $user->save();
 

@@ -1,15 +1,27 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Livewire\Admin\Dashboard;
-use App\Livewire\Admin\UserManagement;
-use App\Livewire\Admin\Profile;
-use App\Livewire\Admin\ComponentDocs;
-use App\Livewire\Admin\SiswaManagement;
+
+use App\Livewire\Guest\LandingPage;
 use App\Livewire\Auth\Login;
 use App\Livewire\Auth\Register;
-use App\Livewire\Guest\LandingPage;
+
+use App\Livewire\Admin\Dashboard;
 use App\Http\Controllers\Admin\LogoutController;
+
+use App\Livewire\Admin\SiswaManagement;
+use App\Livewire\Admin\KelasManagement;
+use App\Livewire\Admin\MataPelajaranManagement;
+use App\Livewire\Admin\GuruManagement;
+use App\Livewire\Admin\GuruAmpuManagement;
+use App\Livewire\Admin\TahunAjaranManagement;
+use App\Livewire\Admin\Profile as AdminProfile;
+use App\Livewire\Admin\ComponentDocs;
+
+use App\Livewire\Admin\MateriManagement;
+use App\Livewire\Admin\PertemuanManagement;
+use App\Livewire\Guru\Profile as GuruProfile;
+
 use App\Livewire\Siswa\AbsensiList;
 use App\Livewire\Siswa\MateriList;
 use App\Livewire\Siswa\Profile as SiswaProfile;
@@ -18,27 +30,42 @@ use App\Livewire\Siswa\Profile as SiswaProfile;
 Route::get('/', LandingPage::class)->name('home');
 
 // Auth Routes
-Route::get('/login', Login::class)->name('login');
-Route::get('/register', Register::class)->name('register');
+Route::middleware('guest')->group(function () {
+    Route::get('/login', Login::class)->name('login');
+    Route::get('/register', Register::class)->name('register');
+});
 
-Route::prefix('admin')->middleware('auth:admin,guru,siswa,web')->group(function () {
-    Route::get('/dashboard', Dashboard::class)->name('dashboard');
-    Route::get('/users', UserManagement::class)->name('admin.users');
-    Route::get('/siswa', SiswaManagement::class)->name('admin.siswa');
-    Route::get('/kelas', \App\Livewire\Admin\KelasManagement::class)->name('admin.kelas');
-    Route::get('/mata-pelajaran', \App\Livewire\Admin\MataPelajaranManagement::class)->name('admin.mata-pelajaran');
-    Route::get('/guru', \App\Livewire\Admin\GuruManagement::class)->name('admin.guru');
-    Route::get('/guru-ampu', \App\Livewire\Admin\GuruAmpuManagement::class)->name('admin.guru-ampu');
-    Route::get('/materi', \App\Livewire\Admin\MateriManagement::class)->name('admin.materi');
-    Route::get('/pertemuan', \App\Livewire\Admin\PertemuanManagement::class)->name('admin.pertemuan');
-    Route::get('/tahun-ajaran', \App\Livewire\Admin\TahunAjaranManagement::class)->name('admin.tahun-ajaran');
-    Route::get('/profile', Profile::class)->name('admin.profile');
-    Route::get('/components', ComponentDocs::class)->name('admin.components');
+// Shared App Routes (Logout for all roles)
+Route::middleware('auth:admin,guru,siswa,web')->group(function () {
     Route::post('/logout', [LogoutController::class, '__invoke'])->name('logout');
 });
 
+// Admin-only Routes
+Route::prefix('admin')->middleware('auth:admin,web')->group(function () {
+    Route::get('/dashboard', Dashboard::class)->name('admin.dashboard');
+    Route::get('/tahun-ajaran', TahunAjaranManagement::class)->name('admin.tahun-ajaran');
+    Route::get('/kelas', KelasManagement::class)->name('admin.kelas');
+    Route::get('/mata-pelajaran', MataPelajaranManagement::class)->name('admin.mata-pelajaran');
+    Route::get('/guru', GuruManagement::class)->name('admin.guru');
+    Route::get('/siswa', SiswaManagement::class)->name('admin.siswa');
+    Route::get('/guru-ampu', GuruAmpuManagement::class)->name('admin.guru-ampu');
+    
+    Route::get('/profile', AdminProfile::class)->name('admin.profile');
+    Route::get('/components', ComponentDocs::class)->name('admin.components');
+});
+
+// Guru-only Routes
+Route::prefix('guru')->middleware('auth:guru,web')->group(function () {
+    Route::get('/dashboard', \App\Livewire\Guru\Dashboard::class)->name('guru.dashboard');
+    Route::get('/materi', MateriManagement::class)->name('guru.materi');
+    Route::get('/pertemuan', PertemuanManagement::class)->name('guru.pertemuan');
+    Route::get('/profil', GuruProfile::class)->name('guru.profile');
+});
+
+// Siswa-only Routes
 Route::prefix('siswa')->middleware('auth:siswa,web')->group(function () {
-    Route::get('/absensi-saya', AbsensiList::class)->name('siswa.absensi');
+    Route::get('/dashboard', \App\Livewire\Siswa\Dashboard::class)->name('siswa.dashboard');
     Route::get('/materi-belajar', MateriList::class)->name('siswa.materi');
+    Route::get('/absensi-saya', AbsensiList::class)->name('siswa.absensi');
     Route::get('/profil', SiswaProfile::class)->name('siswa.profile');
 });

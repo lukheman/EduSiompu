@@ -42,7 +42,6 @@
                     <tr>
                         <th>Kode Mapel</th>
                         <th>Nama Mata Pelajaran</th>
-                        <th>Dibuat Pada</th>
                         <th style="width: 120px;">Tindakan</th>
                     </tr>
                 </thead>
@@ -55,7 +54,6 @@
                             <td>
                                 <div class="fw-semibold" style="color: var(--text-primary);">{{ $mapel->nama_mapel }}</div>
                             </td>
-                            <td class="text-muted">{{ $mapel->created_at->format('M d, Y') }}</td>
                             <td>
                                 <div class="d-flex gap-1">
                                     <x-ui.btn-edit wire:click="openEditModal({{ $mapel->id_mata_pelajaran }})" tooltip="Edit Mata Pelajaran" />

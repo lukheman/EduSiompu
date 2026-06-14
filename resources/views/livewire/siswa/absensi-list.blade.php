@@ -87,23 +87,7 @@
                                 </div>
                             </td>
                             <td>
-                                @php
-                                    $variant = match($absensi->status_kehadiran) {
-                                        'hadir' => 'success',
-                                        'sakit' => 'warning',
-                                        'izin' => 'info',
-                                        'alpa' => 'danger',
-                                        default => 'secondary'
-                                    };
-                                    $icon = match($absensi->status_kehadiran) {
-                                        'hadir' => 'fas fa-check-circle',
-                                        'sakit' => 'fas fa-briefcase-medical',
-                                        'izin' => 'fas fa-envelope-open-text',
-                                        'alpa' => 'fas fa-times-circle',
-                                        default => 'fas fa-question-circle'
-                                    };
-                                @endphp
-                                <x-ui.badge variant="{{ $variant }}" icon="{{ $icon }}">{{ ucfirst($absensi->status_kehadiran) }}</x-ui.badge>
+                                <x-ui.badge variant="{{ $absensi->status_kehadiran->getColor() }}" icon="{{ $absensi->status_kehadiran->getIcon() }}">{{ $absensi->status_kehadiran->getLabel() }}</x-ui.badge>
                             </td>
                             <td>
                                 <x-ui.btn-view wire:click="openViewModal({{ $absensi->id_absensi }})" tooltip="Lihat Detail" />
@@ -120,7 +104,7 @@
                 </tbody>
             </table>
         </div>
-        
+
         @if($absensiList->hasPages())
             <div class="mt-4">
                 {{ $absensiList->links() }}
@@ -140,7 +124,7 @@
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
-                
+
                 <div class="mb-3">
                     <table class="table table-bordered">
                         <tbody>
@@ -167,16 +151,7 @@
                             <tr>
                                 <th style="background-color: var(--input-bg);">Status Kehadiran</th>
                                 <td>
-                                    @php
-                                        $variant = match($viewingAbsensi->status_kehadiran) {
-                                            'hadir' => 'success',
-                                            'sakit' => 'warning',
-                                            'izin' => 'info',
-                                            'alpa' => 'danger',
-                                            default => 'secondary'
-                                        };
-                                    @endphp
-                                    <x-ui.badge variant="{{ $variant }}">{{ ucfirst($viewingAbsensi->status_kehadiran) }}</x-ui.badge>
+                                    <x-ui.badge variant="{{ $viewingAbsensi->status_kehadiran->getColor() }}">{{ $viewingAbsensi->status_kehadiran->getLabel() }}</x-ui.badge>
                                 </td>
                             </tr>
                         </tbody>

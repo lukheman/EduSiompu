@@ -185,8 +185,8 @@ class PertemuanManagement extends Component
         $this->absensiData = [];
         foreach ($siswaList as $siswa) {
             $status = isset($existingAbsensi[$siswa->id_siswa]) 
-                ? $existingAbsensi[$siswa->id_siswa]->status_kehadiran 
-                : 'hadir'; // default
+                ? $existingAbsensi[$siswa->id_siswa]->status_kehadiran->value 
+                : \App\Enums\StatusKehadiran::HADIR->value; // default
 
             $this->absensiData[$siswa->id_siswa] = [
                 'nama' => $siswa->nama_siswa,

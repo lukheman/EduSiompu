@@ -1,6 +1,6 @@
 @props([
-    'brandName' => 'AdminPro',
-    'brandIcon' => 'fas fa-layer-group'
+    'brandName' => 'EduSiompu',
+    'brandIcon' => 'fas fa-graduation-cap'
 ])
 
 <div class="sidebar" id="sidebar">

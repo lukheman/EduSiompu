@@ -7,20 +7,24 @@ use App\Models\Guru;
 use App\Models\MataPelajaran;
 use App\Models\Kelas;
 use App\Models\TahunAjaran;
-use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-#[Title('Manajemen Guru Ampu')]
+#[Title('Manajemen Penugasan Guru')]
 class GuruAmpuManagement extends Component
 {
     use WithPagination;
 
-    // Search
-    #[Url(as: 'q')]
+    #[Url]
     public string $search = '';
+    
+    #[Url]
+    public ?int $filter_tahun_ajaran = null;
+    
+    #[Url]
+    public ?int $filter_guru = null;
 
     // Form fields
     public ?int $id_guru = null;
@@ -30,9 +34,20 @@ class GuruAmpuManagement extends Component
 
     // State
     public ?int $editingGuruAmpuId = null;
+    public ?int $viewingGuruAmpuId = null;
     public bool $showModal = false;
+    public bool $showViewModal = false;
     public bool $showDeleteModal = false;
     public ?int $deletingGuruAmpuId = null;
+
+    public function mount()
+    {
+        // Secara natural, admin ingin melihat tahun ajaran yang sedang berjalan
+        $activeTa = TahunAjaran::where('status_aktif', true)->first();
+        if ($activeTa && !$this->filter_tahun_ajaran) {
+            $this->filter_tahun_ajaran = $activeTa->id_tahun_ajaran;
+        }
+    }
 
     protected function rules(): array
     {
@@ -44,14 +59,18 @@ class GuruAmpuManagement extends Component
         ];
     }
 
-    public function updatedSearch(): void
-    {
-        $this->resetPage();
-    }
+    public function updatedSearch(): void { $this->resetPage(); }
+    public function updatedFilterTahunAjaran(): void { $this->resetPage(); }
+    public function updatedFilterGuru(): void { $this->resetPage(); }
 
     public function openCreateModal(): void
     {
         $this->resetForm();
+        
+        // Memudahkan admin: otomatis set form ke filter yang sedang dipilih
+        $this->id_tahun_ajaran = $this->filter_tahun_ajaran;
+        $this->id_guru = $this->filter_guru;
+
         $this->editingGuruAmpuId = null;
         $this->showModal = true;
     }
@@ -65,6 +84,18 @@ class GuruAmpuManagement extends Component
         $this->id_kelas = $guruAmpu->id_kelas;
         $this->id_tahun_ajaran = $guruAmpu->id_tahun_ajaran;
         $this->showModal = true;
+    }
+
+    public function openViewModal(int $guruAmpuId): void
+    {
+        $this->viewingGuruAmpuId = $guruAmpuId;
+        $this->showViewModal = true;
+    }
+
+    public function closeViewModal(): void
+    {
+        $this->showViewModal = false;
+        $this->viewingGuruAmpuId = null;
     }
 
     public function save(): void
@@ -82,17 +113,16 @@ class GuruAmpuManagement extends Component
         }
 
         if ($query->exists()) {
-            $this->addError('id_guru', 'Kombinasi Guru, Mata Pelajaran, Kelas dan Tahun Ajaran ini sudah wujud.');
+            $this->addError('id_guru', 'Kombinasi Guru, Mata Pelajaran, Kelas, dan Tahun Ajaran ini sudah ada.');
             return;
         }
 
         if ($this->editingGuruAmpuId) {
-            $guruAmpu = GuruAmpu::findOrFail($this->editingGuruAmpuId);
-            $guruAmpu->update($validated);
-            session()->flash('success', 'Data guru ampu berhasil diperbarui.');
+            GuruAmpu::findOrFail($this->editingGuruAmpuId)->update($validated);
+            session()->flash('success', 'Data penugasan guru berhasil diperbarui.');
         } else {
             GuruAmpu::create($validated);
-            session()->flash('success', 'Data guru ampu berhasil ditambahkan.');
+            session()->flash('success', 'Data penugasan guru berhasil ditambahkan.');
         }
 
         $this->closeModal();
@@ -115,9 +145,8 @@ class GuruAmpuManagement extends Component
     {
         if ($this->deletingGuruAmpuId) {
             GuruAmpu::destroy($this->deletingGuruAmpuId);
-            session()->flash('success', 'Data guru ampu berhasil dihapus.');
+            session()->flash('success', 'Data penugasan berhasil dihapus.');
         }
-
         $this->showDeleteModal = false;
         $this->deletingGuruAmpuId = null;
     }
@@ -141,24 +170,29 @@ class GuruAmpuManagement extends Component
     {
         $guruAmpuList = GuruAmpu::query()
             ->with(['guru', 'mataPelajaran', 'kelas', 'tahunAjaran'])
+            ->when($this->filter_tahun_ajaran, fn($q) => $q->where('id_tahun_ajaran', $this->filter_tahun_ajaran))
+            ->when($this->filter_guru, fn($q) => $q->where('id_guru', $this->filter_guru))
             ->when($this->search, function ($query) {
-                $query->whereHas('guru', function ($q) {
-                    $q->where('nama_guru', 'like', '%' . $this->search . '%');
-                })->orWhereHas('mataPelajaran', function ($q) {
-                    $q->where('nama_mapel', 'like', '%' . $this->search . '%');
-                })->orWhereHas('kelas', function ($q) {
-                    $q->where('nama_kelas', 'like', '%' . $this->search . '%');
+                $query->where(function ($q) {
+                    $q->whereHas('mataPelajaran', fn($sub) => $sub->where('nama_mapel', 'like', '%' . $this->search . '%'))
+                      ->orWhereHas('kelas', fn($sub) => $sub->where('nama_kelas', 'like', '%' . $this->search . '%'))
+                      ->orWhereHas('guru', fn($sub) => $sub->where('nama_guru', 'like', '%' . $this->search . '%'));
                 });
             })
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->paginate(12);
+
+        $viewingGuruAmpu = $this->viewingGuruAmpuId 
+            ? GuruAmpu::with(['guru', 'mataPelajaran', 'kelas', 'tahunAjaran'])->find($this->viewingGuruAmpuId) 
+            : null;
 
         return view('livewire.admin.guru-ampu-management', [
             'guruAmpuList' => $guruAmpuList,
             'gurus' => Guru::orderBy('nama_guru')->get(),
             'mapels' => MataPelajaran::orderBy('nama_mapel')->get(),
             'kelasList' => Kelas::orderBy('nama_kelas')->get(),
-            'tahunAjarans' => TahunAjaran::orderBy('nama_tahun')->get(),
+            'tahunAjarans' => TahunAjaran::orderBy('nama_tahun', 'desc')->get(),
+            'viewingGuruAmpu' => $viewingGuruAmpu,
         ]);
     }
 }

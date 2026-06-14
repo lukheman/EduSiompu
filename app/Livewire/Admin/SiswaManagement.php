@@ -11,15 +11,20 @@ use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\WithFileUploads;
+use Illuminate\Support\Facades\Storage;
 
 #[Title('Manajemen Siswa')]
 class SiswaManagement extends Component
 {
-    use WithPagination;
+    use WithPagination, WithFileUploads;
 
-    // Search
+    // Search and Filter
     #[Url(as: 'q')]
     public string $search = '';
+    
+    #[Url]
+    public ?int $filter_kelas = null;
 
     // Form fields
     public string $nama_siswa = '';
@@ -27,10 +32,14 @@ class SiswaManagement extends Component
     public ?int $id_kelas = null;
     public string $password = '';
     public string $password_confirmation = '';
+    public $avatar;
+    public ?string $currentAvatar = null;
 
     // State
     public ?int $editingSiswaId = null;
+    public ?int $viewingSiswaId = null;
     public bool $showModal = false;
+    public bool $showViewModal = false;
     public bool $showDeleteModal = false;
     public ?int $deletingSiswaId = null;
 
@@ -39,13 +48,12 @@ class SiswaManagement extends Component
         $rules = [
             'nama_siswa' => ['required', 'string', 'max:255'],
             'id_kelas' => ['required', 'exists:kelas,id_kelas'],
+            'avatar' => ['nullable', 'image', 'max:2048'],
         ];
 
         if ($this->editingSiswaId) {
             $rules['nisn'] = ['required', 'string', 'max:20', 'unique:siswa,nisn,' . $this->editingSiswaId . ',id_siswa'];
-            if ($this->password) {
-                $rules['password'] = ['confirmed', Password::defaults()];
-            }
+            // Tidak ada validasi password saat edit
         } else {
             $rules['nisn'] = ['required', 'string', 'max:20', 'unique:siswa,nisn'];
             $rules['password'] = ['required', 'confirmed', Password::defaults()];
@@ -59,9 +67,17 @@ class SiswaManagement extends Component
         $this->resetPage();
     }
 
+    public function updatedFilterKelas(): void
+    {
+        $this->resetPage();
+    }
+
     public function openCreateModal(): void
     {
         $this->resetForm();
+        if ($this->filter_kelas) {
+            $this->id_kelas = $this->filter_kelas;
+        }
         $this->editingSiswaId = null;
         $this->showModal = true;
     }
@@ -75,7 +91,20 @@ class SiswaManagement extends Component
         $this->id_kelas = $siswa->id_kelas;
         $this->password = '';
         $this->password_confirmation = '';
+        $this->currentAvatar = $siswa->avatar;
         $this->showModal = true;
+    }
+
+    public function openViewModal(int $siswaId): void
+    {
+        $this->viewingSiswaId = $siswaId;
+        $this->showViewModal = true;
+    }
+
+    public function closeViewModal(): void
+    {
+        $this->showViewModal = false;
+        $this->viewingSiswaId = null;
     }
 
     public function save(): void
@@ -88,6 +117,13 @@ class SiswaManagement extends Component
             $siswa->nisn = $validated['nisn'];
             $siswa->id_kelas = $validated['id_kelas'];
 
+            if ($this->avatar) {
+                if ($siswa->avatar && Storage::disk('public')->exists($siswa->avatar)) {
+                    Storage::disk('public')->delete($siswa->avatar);
+                }
+                $siswa->avatar = $this->avatar->store('avatars', 'public');
+            }
+
             if (!empty($this->password)) {
                 $siswa->password = Hash::make($this->password);
             }
@@ -95,11 +131,17 @@ class SiswaManagement extends Component
             $siswa->save();
             session()->flash('success', 'Data siswa berhasil diperbarui.');
         } else {
+            $avatarPath = null;
+            if ($this->avatar) {
+                $avatarPath = $this->avatar->store('avatars', 'public');
+            }
+
             Siswa::create([
                 'nama_siswa' => $validated['nama_siswa'],
                 'nisn' => $validated['nisn'],
                 'id_kelas' => $validated['id_kelas'],
                 'password' => Hash::make($validated['password']),
+                'avatar' => $avatarPath,
             ]);
             session()->flash('success', 'Siswa berhasil ditambahkan.');
         }
@@ -123,8 +165,14 @@ class SiswaManagement extends Component
     public function deleteSiswa(): void
     {
         if ($this->deletingSiswaId) {
-            Siswa::destroy($this->deletingSiswaId);
-            session()->flash('success', 'Data siswa berhasil dihapus.');
+            $siswa = Siswa::find($this->deletingSiswaId);
+            if ($siswa) {
+                if ($siswa->avatar && Storage::disk('public')->exists($siswa->avatar)) {
+                    Storage::disk('public')->delete($siswa->avatar);
+                }
+                $siswa->delete();
+                session()->flash('success', 'Data siswa berhasil dihapus.');
+            }
         }
 
         $this->showDeleteModal = false;
@@ -144,6 +192,8 @@ class SiswaManagement extends Component
         $this->id_kelas = null;
         $this->password = '';
         $this->password_confirmation = '';
+        $this->avatar = null;
+        $this->currentAvatar = null;
         $this->editingSiswaId = null;
     }
 
@@ -151,18 +201,26 @@ class SiswaManagement extends Component
     {
         $siswas = Siswa::query()
             ->with('kelas')
+            ->when($this->filter_kelas, fn($q) => $q->where('id_kelas', $this->filter_kelas))
             ->when($this->search, function ($query) {
-                $query->where('nama_siswa', 'like', '%' . $this->search . '%')
-                    ->orWhere('nisn', 'like', '%' . $this->search . '%');
+                $query->where(function($q) {
+                    $q->where('nama_siswa', 'like', '%' . $this->search . '%')
+                      ->orWhere('nisn', 'like', '%' . $this->search . '%');
+                });
             })
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->paginate(12);
 
         $kelasList = Kelas::orderBy('nama_kelas', 'asc')->get();
+
+        $viewingSiswa = $this->viewingSiswaId 
+            ? Siswa::with('kelas')->find($this->viewingSiswaId) 
+            : null;
 
         return view('livewire.admin.siswa-management', [
             'siswas' => $siswas,
             'kelasList' => $kelasList,
+            'viewingSiswa' => $viewingSiswa,
         ]);
     }
 }

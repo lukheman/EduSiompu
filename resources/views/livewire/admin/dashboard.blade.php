@@ -1,135 +1,70 @@
 <div>
     {{-- Page Header --}}
-    <x-layout.page-header title="Dashboard Overview" subtitle="Welcome back, John! Here's what's happening today.">
-        <x-slot:actions>
-            <x-ui.button variant="primary" icon="fas fa-plus">New Report</x-ui.button>
-        </x-slot:actions>
-    </x-layout.page-header>
+    @php
+        $userName = Auth::guard('admin')->user()->nama ?? 'Admin';
+        $greeting = 'Selamat Datang, ' . $userName;
+        $subtitle = $activeTa ? 'Tahun Ajaran Aktif: ' . $activeTa->nama_tahun . ' (Semester ' . ucfirst($activeTa->semester) . ')' : 'Belum ada Tahun Ajaran Aktif';
+    @endphp
 
-    {{-- Stats Cards --}}
+    <x-layout.page-header :title="$greeting" :subtitle="$subtitle" />
+
     <div class="row g-4 mb-4">
-        <div class="col-md-6 col-lg-3">
-            <x-layout.stat-card icon="fas fa-dollar-sign" label="Total Revenue" value="$48,574"
-                trend-value="12.5% from last month" trend-direction="up" variant="primary" />
-        </div>
-        <div class="col-md-6 col-lg-3">
-            <x-layout.stat-card icon="fas fa-shopping-bag" label="New Orders" value="1,245"
-                trend-value="8.2% from last month" trend-direction="up" variant="secondary" />
-        </div>
-        <div class="col-md-6 col-lg-3">
-            <x-layout.stat-card icon="fas fa-users" label="Total Users" value="8,456" trend-value="15.3% from last month"
-                trend-direction="up" variant="success" />
-        </div>
-        <div class="col-md-6 col-lg-3">
-            <x-layout.stat-card icon="fas fa-chart-pie" label="Conversion Rate" value="3.24%"
-                trend-value="2.1% from last month" trend-direction="down" variant="warning" />
-        </div>
-    </div>
-
-    {{-- Component Preview Section --}}
-    <div class="component-preview">
-        <h2 class="mb-4" style="color: #1e293b; font-weight: 700;">UI Components Preview</h2>
-
-        {{-- Buttons Preview --}}
-        <div class="preview-section">
-            <div class="preview-title">Buttons</div>
-            <div class="d-flex flex-wrap gap-2">
-                <x-ui.button variant="primary">Primary Button</x-ui.button>
-                <x-ui.button variant="secondary">Secondary Button</x-ui.button>
-                <x-ui.button variant="success">Success Button</x-ui.button>
-                <x-ui.button variant="warning">Warning Button</x-ui.button>
-                <x-ui.button variant="danger">Danger Button</x-ui.button>
-                <x-ui.button variant="outline">Outline Button</x-ui.button>
+        <div class="col-md-3">
+            <div class="stat-card" style="--accent-color: var(--primary-color);">
+                <div class="stat-icon bg-primary-subtle text-primary">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                <div class="text-muted fw-medium mb-1">Total Siswa</div>
+                <h3 class="fw-bold text-primary mb-0">{{ number_format($stats['total_siswa'] ?? 0) }}</h3>
             </div>
         </div>
-
-        {{-- Badges Preview --}}
-        <div class="preview-section">
-            <div class="preview-title">Badges</div>
-            <div class="d-flex flex-wrap gap-2">
-                <x-ui.badge variant="primary" icon="fas fa-circle">Primary</x-ui.badge>
-                <x-ui.badge variant="success" icon="fas fa-check-circle">Success</x-ui.badge>
-                <x-ui.badge variant="warning" icon="fas fa-exclamation-circle">Warning</x-ui.badge>
-                <x-ui.badge variant="danger" icon="fas fa-times-circle">Danger</x-ui.badge>
-                <x-ui.badge variant="info" icon="fas fa-info-circle">Info</x-ui.badge>
+        <div class="col-md-3">
+            <div class="stat-card" style="--accent-color: var(--secondary-color);">
+                <div class="stat-icon bg-secondary-subtle text-secondary">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                </div>
+                <div class="text-muted fw-medium mb-1">Total Guru</div>
+                <h3 class="fw-bold text-secondary mb-0">{{ number_format($stats['total_guru'] ?? 0) }}</h3>
             </div>
         </div>
-
-        {{-- Alerts Preview --}}
-        <div class="preview-section">
-            <div class="preview-title">Alerts</div>
-            <x-ui.alert variant="success" title="Success!" class="mb-3">
-                Your changes have been saved successfully.
-            </x-ui.alert>
-            <x-ui.alert variant="danger" title="Error!" class="mb-3">
-                There was a problem processing your request.
-            </x-ui.alert>
-            <x-ui.alert variant="info" title="Info!">
-                You have 3 new notifications waiting for you.
-            </x-ui.alert>
+        <div class="col-md-3">
+            <div class="stat-card" style="--accent-color: var(--info-color);">
+                <div class="stat-icon bg-info-subtle text-info">
+                    <i class="fas fa-chalkboard"></i>
+                </div>
+                <div class="text-muted fw-medium mb-1">Total Kelas</div>
+                <h3 class="fw-bold text-info mb-0">{{ number_format($stats['total_kelas'] ?? 0) }}</h3>
+            </div>
         </div>
-
-        {{-- Progress Bars Preview --}}
-        <div class="preview-section">
-            <div class="preview-title">Progress Bars</div>
-            <x-ui.progress-bar :value="75" label="Project Progress" variant="primary" class="mb-3" />
-            <x-ui.progress-bar :value="45" label="Storage Used" variant="secondary" class="mb-3" />
-            <x-ui.progress-bar :value="32" label="CPU Usage" variant="success" />
-        </div>
-
-        {{-- Feature Cards Preview --}}
-        <div class="preview-section">
-            <div class="preview-title">Feature Cards</div>
-            <div class="row g-3">
-                <div class="col-md-4">
-                    <x-layout.feature-card icon="fas fa-rocket" title="Fast Performance"
-                        description="Lightning fast load times and smooth interactions" variant="primary" />
+        <div class="col-md-3">
+            <div class="stat-card" style="--accent-color: var(--warning-color);">
+                <div class="stat-icon bg-warning-subtle text-warning">
+                    <i class="fas fa-book"></i>
                 </div>
-                <div class="col-md-4">
-                    <x-layout.feature-card icon="fas fa-shield-alt" title="Secure by Default"
-                        description="Enterprise-grade security for your data" variant="secondary" />
-                </div>
-                <div class="col-md-4">
-                    <x-layout.feature-card icon="fas fa-mobile-alt" title="Mobile Responsive"
-                        description="Perfect experience on any device" variant="success" />
-                </div>
+                <div class="text-muted fw-medium mb-1">Mata Pelajaran</div>
+                <h3 class="fw-bold text-warning mb-0">{{ number_format($stats['total_mapel'] ?? 0) }}</h3>
             </div>
         </div>
     </div>
 
-    {{-- Recent Orders Table --}}
-    <x-layout.table-card title="Recent Orders" view-all-href="#orders" :headers="['Order ID', 'Customer', 'Product', 'Amount', 'Status', 'Date']">
-        <tr>
-            <td><strong style="color: #1e293b;">#ORD-2024</strong></td>
-            <td>Alice Johnson</td>
-            <td>Wireless Headphones</td>
-            <td><strong style="color: #1e293b;">$129.99</strong></td>
-            <td><x-ui.badge variant="success" icon="fas fa-check-circle">Delivered</x-ui.badge></td>
-            <td class="text-muted">Jan 10, 2026</td>
-        </tr>
-        <tr>
-            <td><strong style="color: #1e293b;">#ORD-2023</strong></td>
-            <td>Bob Smith</td>
-            <td>Smart Watch</td>
-            <td><strong style="color: #1e293b;">$299.99</strong></td>
-            <td><x-ui.badge variant="warning" icon="fas fa-clock">Pending</x-ui.badge></td>
-            <td class="text-muted">Jan 10, 2026</td>
-        </tr>
-        <tr>
-            <td><strong style="color: #1e293b;">#ORD-2022</strong></td>
-            <td>Carol White</td>
-            <td>Laptop Stand</td>
-            <td><strong style="color: #1e293b;">$49.99</strong></td>
-            <td><x-ui.badge variant="secondary" icon="fas fa-shipping-fast">Shipped</x-ui.badge></td>
-            <td class="text-muted">Jan 9, 2026</td>
-        </tr>
-        <tr>
-            <td><strong style="color: #1e293b;">#ORD-2021</strong></td>
-            <td>David Lee</td>
-            <td>USB-C Hub</td>
-            <td><strong style="color: #1e293b;">$79.99</strong></td>
-            <td><x-ui.badge variant="success" icon="fas fa-check-circle">Delivered</x-ui.badge></td>
-            <td class="text-muted">Jan 9, 2026</td>
-        </tr>
-    </x-layout.table-card>
+    <div class="modern-card">
+        <h4 class="preview-title"><i class="fas fa-info-circle text-primary me-2"></i>Status Sistem</h4>
+        @if($activeTa)
+            <div class="alert-modern bg-success-subtle border-0">
+                <i class="fas fa-check-circle text-success fa-2x mt-1"></i>
+                <div>
+                    <h6 class="fw-bold text-success mb-1">Sistem Berjalan Normal</h6>
+                    <p class="mb-0 text-success-emphasis small">Tahun Ajaran <strong>{{ $activeTa->nama_tahun }}</strong> (Semester {{ ucfirst($activeTa->semester) }}) saat ini sedang aktif. Semua aktivitas presensi dan KBM mengacu pada periode ini.</p>
+                </div>
+            </div>
+        @else
+            <div class="alert-modern bg-danger-subtle border-0">
+                <i class="fas fa-exclamation-circle text-danger fa-2x mt-1"></i>
+                <div>
+                    <h6 class="fw-bold text-danger mb-1">Perhatian: Tidak Ada Tahun Ajaran Aktif!</h6>
+                    <p class="mb-0 text-danger-emphasis small">Silakan menuju menu <strong>Tahun Ajaran</strong> untuk mengaktifkan salah satu periode agar sistem pembelajaran dan presensi dapat berjalan.</p>
+                </div>
+            </div>
+        @endif
+    </div>
 </div>

@@ -1,11 +1,6 @@
 <div>
     {{-- Page Header --}}
     <x-layout.page-header title="Profile" subtitle="Kelola informasi akun Anda">
-        <x-slot:actions>
-            <x-ui.badge variant="success" icon="fas fa-user-check">
-                {{ Auth::user()->email_verified_at ? 'Terverifikasi' : 'Belum Terverifikasi' }}
-            </x-ui.badge>
-        </x-slot:actions>
     </x-layout.page-header>
 
     {{-- Flash Messages --}}
@@ -41,18 +36,6 @@
                 <p class="text-muted mb-3">{{ $email }}</p>
                 <x-ui.badge variant="primary" icon="fas fa-user-shield">Administrator</x-ui.badge>
 
-                <hr style="border-color: var(--border-color); margin: 1.5rem 0;">
-
-                <div class="text-start">
-                    <div class="d-flex justify-content-between mb-2">
-                        <span class="text-muted">Bergabung</span>
-                        <span style="color: var(--text-primary);">{{ Auth::user()->created_at->format('d M Y') }}</span>
-                    </div>
-                    <div class="d-flex justify-content-between">
-                        <span class="text-muted">Terakhir diperbarui</span>
-                        <span style="color: var(--text-primary);">{{ Auth::user()->updated_at->diffForHumans() }}</span>
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -207,8 +190,7 @@
                             </div>
                         </div>
 
-                        <x-ui.alert variant="info" class="mt-3">
-                            <i class="fas fa-info-circle me-2"></i>
+                        <x-ui.alert variant="warning" class="mt-3">
                             Password harus minimal 8 karakter dan mengandung huruf dan angka.
                         </x-ui.alert>
 

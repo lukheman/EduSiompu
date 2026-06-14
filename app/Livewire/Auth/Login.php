@@ -42,17 +42,17 @@ class Login extends Component
         if ($this->role === 'admin') {
             if (Auth::guard('admin')->attempt(['email' => $identifier, 'password' => $password], $remember)) {
                 session()->regenerate();
-                return redirect()->to(route('dashboard'));
+                return redirect()->to(route('admin.dashboard'));
             }
         } elseif ($this->role === 'guru') {
             if (Auth::guard('guru')->attempt(['nip' => $identifier, 'password' => $password], $remember)) {
                 session()->regenerate();
-                return redirect()->to(route('dashboard'));
+                return redirect()->to(route('guru.dashboard'));
             }
         } elseif ($this->role === 'siswa') {
             if (Auth::guard('siswa')->attempt(['nisn' => $identifier, 'password' => $password], $remember)) {
                 session()->regenerate();
-                return redirect()->to(route('dashboard'));
+                return redirect()->to(route('siswa.dashboard'));
             }
         }
 

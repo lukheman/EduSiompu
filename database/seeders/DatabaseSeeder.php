@@ -68,6 +68,7 @@ class DatabaseSeeder extends Seeder
             'nama' => 'Administrator EduSiompu',
             'email' => 'admin@gmail.com',
             'password' => Hash::make('password123'),
+            'avatar' => 'avatars/admin.png',
             'created_at' => $now,
             'updated_at' => $now,
         ]);
@@ -86,6 +87,7 @@ class DatabaseSeeder extends Seeder
                 'nip' => $g[0],
                 'nama_guru' => $g[1],
                 'password' => Hash::make('password123'), // default password for testing
+                'avatar' => 'avatars/guru.png',
                 'created_at' => $now,
                 'updated_at' => $now,
             ]);
@@ -113,6 +115,7 @@ class DatabaseSeeder extends Seeder
                     'nisn' => (string)($nisnBase++),
                     'nama_siswa' => $siswaNames[$idx++],
                     'password' => Hash::make('password123'),
+                    'avatar' => 'avatars/siswa.png',
                     'created_at' => $now,
                     'updated_at' => $now,
                 ]);

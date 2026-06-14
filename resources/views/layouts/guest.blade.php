@@ -1,6 +1,6 @@
 @props([
-    'title' => 'AdminPro - Modern Admin Dashboard',
-    'description' => 'A beautiful, modern admin dashboard template built with Laravel, Livewire, and Tailwind CSS',
+    'title' => 'EduSiompu - SMAN 1 Siompu',
+    'description' => 'Sistem Informasi Akademik Terpadu SMAN 1 Siompu',
     'type' => 'guest',
 ])
 
@@ -35,6 +35,31 @@
             --border-color: #e2e8f0;
             --bg-light: #f8fafc;
             --bg-white: #ffffff;
+
+            --bs-primary: #0d9488;
+            --bs-primary-rgb: 13, 148, 136;
+            --bs-secondary: #8b5cf6;
+            --bs-secondary-rgb: 139, 92, 246;
+            --bs-success: #22c55e;
+            --bs-success-rgb: 34, 197, 94;
+            --bs-warning: #eab308;
+            --bs-warning-rgb: 234, 179, 8;
+            --bs-danger: #f43f5e;
+            --bs-danger-rgb: 244, 63, 94;
+            --bs-info: #0ea5e9;
+            --bs-info-rgb: 14, 165, 233;
+
+            /* Light theme (default) */
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f1f5f9;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --border-color: #e2e8f0;
+            --border-light: #f8fafc;
+            --input-bg: #ffffff;
+            --hover-bg: #f1f5f9;
         }
 
         [data-theme="dark"] {
@@ -382,7 +407,10 @@
         .auth-section {
             min-height: calc(100vh - 73px);
             margin-top: 73px;
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            background-image: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(30, 58, 138, 0.75) 100%), url('/images/school-bg.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -773,23 +801,19 @@
     <nav class="site-navbar">
         <div class="site-navbar-container">
             <a href="/" class="site-brand">
-                <i class="fas fa-layer-group"></i>
-                <span>AdminPro</span>
+                <i class="fas fa-graduation-cap"></i>
+                <span>EduSiompu</span>
             </a>
 
             <ul class="site-nav">
-                <li><a href="/#features" class="site-nav-link">Features</a></li>
-                <li><a href="/#components" class="site-nav-link">Components</a></li>
-                <li><a href="/#pricing" class="site-nav-link">Pricing</a></li>
-                <li><a href="/#contact" class="site-nav-link">Contact</a></li>
+                <li><a href="/#tentang" class="site-nav-link">Tentang Aplikasi</a></li>
             </ul>
 
             <div class="site-navbar-actions">
                 <button class="theme-toggle" onclick="toggleTheme()">
                     <i class="fas fa-moon" id="theme-icon"></i>
                 </button>
-                <a href="{{ route('login') }}" class="btn-nav btn-nav-outline">Sign In</a>
-                <a href="{{ route('register') }}" class="btn-nav btn-nav-primary">Get Started</a>
+                <a href="{{ route('login') }}" class="btn-nav btn-nav-primary" style="color: white; border: none;">Masuk Portal</a>
                 <button class="mobile-menu-btn">
                     <i class="fas fa-bars"></i>
                 </button>
@@ -819,52 +843,30 @@
                 <div class="footer-container">
                     <div class="footer-brand">
                         <a href="/" class="site-brand">
-                            <i class="fas fa-layer-group"></i>
-                            <span>AdminPro</span>
+                            <i class="fas fa-graduation-cap"></i>
+                            <span>EduSiompu</span>
                         </a>
-                        <p>A modern, elegant admin dashboard template built with Laravel, Livewire, and Tailwind CSS.</p>
+                        <p>Sistem Informasi Akademik Terpadu SMAN 1 Siompu.</p>
                     </div>
 
                     <div class="footer-links">
                         <div class="footer-column">
-                            <h4>Product</h4>
+                            <h4>Menu Utama</h4>
                             <ul>
-                                <li><a href="#features">Features</a></li>
-                                <li><a href="#components">Components</a></li>
-                                <li><a href="#pricing">Pricing</a></li>
-                                <li><a href="#">Changelog</a></li>
+                                <li><a href="/#tentang">Tentang EduSiompu</a></li>
+                                <li><a href="{{ route('login') }}">Masuk Sistem</a></li>
                             </ul>
                         </div>
                         <div class="footer-column">
-                            <h4>Resources</h4>
+                            <h4>Bantuan</h4>
                             <ul>
-                                <li><a href="#">Documentation</a></li>
-                                <li><a href="#">Tutorials</a></li>
-                                <li><a href="#">Blog</a></li>
-                                <li><a href="#">Support</a></li>
-                            </ul>
-                        </div>
-                        <div class="footer-column">
-                            <h4>Company</h4>
-                            <ul>
-                                <li><a href="#">About</a></li>
-                                <li><a href="#">Careers</a></li>
-                                <li><a href="#">Privacy</a></li>
-                                <li><a href="#">Terms</a></li>
+                                <li><a href="#">Panduan Pengguna</a></li>
+                                <li><a href="#">Hubungi Admin</a></li>
                             </ul>
                         </div>
                     </div>
                 </div>
 
-                <div class="footer-bottom">
-                    <p>&copy; {{ date('Y') }} AdminPro. All rights reserved.</p>
-                    <div class="footer-social">
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-github"></i></a>
-                        <a href="#"><i class="fab fa-linkedin"></i></a>
-                        <a href="#"><i class="fab fa-youtube"></i></a>
-                    </div>
-                </div>
             </div>
         </footer>
     @endif

@@ -10,11 +10,13 @@ use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\WithFileUploads;
+use Illuminate\Support\Facades\Storage;
 
 #[Title('Manajemen Guru')]
 class GuruManagement extends Component
 {
-    use WithPagination;
+    use WithPagination, WithFileUploads;
 
     // Search
     #[Url(as: 'q')]
@@ -25,10 +27,14 @@ class GuruManagement extends Component
     public string $nama_guru = '';
     public string $password = '';
     public string $password_confirmation = '';
+    public $avatar;
+    public ?string $currentAvatar = null;
 
     // State
     public ?int $editingGuruId = null;
+    public ?int $viewingGuruId = null;
     public bool $showModal = false;
+    public bool $showViewModal = false;
     public bool $showDeleteModal = false;
     public ?int $deletingGuruId = null;
 
@@ -36,6 +42,7 @@ class GuruManagement extends Component
     {
         $rules = [
             'nama_guru' => ['required', 'string', 'max:255'],
+            'avatar' => ['nullable', 'image', 'max:2048'],
         ];
 
         if ($this->editingGuruId) {
@@ -71,7 +78,20 @@ class GuruManagement extends Component
         $this->nama_guru = $guru->nama_guru;
         $this->password = '';
         $this->password_confirmation = '';
+        $this->currentAvatar = $guru->avatar;
         $this->showModal = true;
+    }
+
+    public function openViewModal(int $guruId): void
+    {
+        $this->viewingGuruId = $guruId;
+        $this->showViewModal = true;
+    }
+
+    public function closeViewModal(): void
+    {
+        $this->showViewModal = false;
+        $this->viewingGuruId = null;
     }
 
     public function save(): void
@@ -83,6 +103,13 @@ class GuruManagement extends Component
             $guru->nip = $validated['nip'];
             $guru->nama_guru = $validated['nama_guru'];
 
+            if ($this->avatar) {
+                if ($guru->avatar && Storage::disk('public')->exists($guru->avatar)) {
+                    Storage::disk('public')->delete($guru->avatar);
+                }
+                $guru->avatar = $this->avatar->store('avatars', 'public');
+            }
+
             if (!empty($this->password)) {
                 $guru->password = Hash::make($this->password);
             }
@@ -90,10 +117,16 @@ class GuruManagement extends Component
             $guru->save();
             session()->flash('success', 'Data guru berhasil diperbarui.');
         } else {
+            $avatarPath = null;
+            if ($this->avatar) {
+                $avatarPath = $this->avatar->store('avatars', 'public');
+            }
+
             Guru::create([
                 'nip' => $validated['nip'],
                 'nama_guru' => $validated['nama_guru'],
                 'password' => Hash::make($validated['password']),
+                'avatar' => $avatarPath,
             ]);
             session()->flash('success', 'Guru berhasil ditambahkan.');
         }
@@ -117,8 +150,14 @@ class GuruManagement extends Component
     public function deleteGuru(): void
     {
         if ($this->deletingGuruId) {
-            Guru::destroy($this->deletingGuruId);
-            session()->flash('success', 'Data guru berhasil dihapus.');
+            $guru = Guru::find($this->deletingGuruId);
+            if ($guru) {
+                if ($guru->avatar && Storage::disk('public')->exists($guru->avatar)) {
+                    Storage::disk('public')->delete($guru->avatar);
+                }
+                $guru->delete();
+                session()->flash('success', 'Data guru berhasil dihapus.');
+            }
         }
 
         $this->showDeleteModal = false;
@@ -137,6 +176,8 @@ class GuruManagement extends Component
         $this->nama_guru = '';
         $this->password = '';
         $this->password_confirmation = '';
+        $this->avatar = null;
+        $this->currentAvatar = null;
         $this->editingGuruId = null;
     }
 
@@ -150,8 +191,11 @@ class GuruManagement extends Component
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
+        $viewingGuru = $this->viewingGuruId ? Guru::find($this->viewingGuruId) : null;
+
         return view('livewire.admin.guru-management', [
             'gurus' => $gurus,
+            'viewingGuru' => $viewingGuru,
         ]);
     }
 }
