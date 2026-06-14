@@ -26,12 +26,22 @@
         {{-- Search and Filters --}}
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h5 class="mb-0" style="color: var(--text-primary); font-weight: 600;">Daftar Pertemuan</h5>
-            <div class="input-group" style="max-width: 300px;">
-                <span class="input-group-text" style="background: var(--input-bg); border-color: var(--border-color);">
-                    <i class="fas fa-search" style="color: var(--text-muted);"></i>
-                </span>
-                <input type="text" class="form-control" placeholder="Cari pertemuan, kelas, mapel..."
-                    wire:model.live.debounce.300ms="search" style="border-left: none;">
+            <div class="d-flex gap-2" style="max-width: 500px; width: 100%;">
+                <select class="form-control form-select" wire:model.live="filter_guru_ampu">
+                    <option value="">Semua Kelas & Mapel</option>
+                    @foreach($guruAmpuOptions as $ampu)
+                        <option value="{{ $ampu->id_guru_ampu }}">
+                            {{ $ampu->kelas->nama_kelas ?? '' }} - {{ $ampu->mataPelajaran->nama_mapel ?? '' }}
+                        </option>
+                    @endforeach
+                </select>
+                <div class="input-group">
+                    <span class="input-group-text" style="background: var(--input-bg); border-color: var(--border-color);">
+                        <i class="fas fa-search" style="color: var(--text-muted);"></i>
+                    </span>
+                    <input type="text" class="form-control" placeholder="Cari..."
+                        wire:model.live.debounce.300ms="search" style="border-left: none;">
+                </div>
             </div>
         </div>
 
@@ -41,7 +51,8 @@
                 <thead>
                     <tr>
                         <th>Pertemuan Ke</th>
-                        <th>Penugasan Guru & Subjek</th>
+                        <th>Kelas</th>
+                        <th>Mata Pelajaran</th>
                         <th>Tanggal</th>
                         <th>Pokok Bahasan</th>
                         <th style="width: 150px;">Tindakan</th>
@@ -55,10 +66,12 @@
                             </td>
                             <td>
                                 <div class="fw-semibold" style="color: var(--text-primary);">
-                                    {{ $pertemuan->guruAmpu->mataPelajaran->nama_mapel ?? 'N/A' }}
+                                    {{ $pertemuan->guruAmpu->kelas->nama_kelas ?? 'N/A' }}
                                 </div>
-                                <div class="text-muted" style="font-size: 0.85rem;">
-                                    Kelas: {{ $pertemuan->guruAmpu->kelas->nama_kelas ?? 'N/A' }} | Guru: {{ $pertemuan->guruAmpu->guru->nama_guru ?? 'N/A' }}
+                            </td>
+                            <td>
+                                <div class="fw-semibold" style="color: var(--text-primary);">
+                                    {{ $pertemuan->guruAmpu->mataPelajaran->nama_mapel ?? 'N/A' }}
                                 </div>
                             </td>
                             <td>{{ \Carbon\Carbon::parse($pertemuan->tanggal)->format('d M Y') }}</td>
@@ -69,7 +82,11 @@
                             </td>
                             <td>
                                 <div class="d-flex gap-1">
-                                    <x-ui.btn-view wire:click="openAbsensiModal({{ $pertemuan->id_pertemuan }})" tooltip="Kelola Absensi">Absensi</x-ui.btn-view>
+                                    <x-ui.button variant="warning" wire:click="openAbsensiModal({{ $pertemuan->id_pertemuan }})" tooltip="Kelola Absensi" icon="fas fa-calendar-check">
+
+                                    Absensi
+                                    </x-ui.button>
+                                    <x-ui.btn-view wire:click="openViewModal({{ $pertemuan->id_pertemuan }})" tooltip="Lihat Detail" />
                                     <x-ui.btn-edit wire:click="openEditModal({{ $pertemuan->id_pertemuan }})" tooltip="Edit Pertemuan" />
                                     <x-ui.btn-delete wire:click="confirmDelete({{ $pertemuan->id_pertemuan }})" tooltip="Hapus Pertemuan" />
                                 </div>
@@ -77,7 +94,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="text-center py-4">
+                            <td colspan="6" class="text-center py-4">
                                 <div class="text-muted">
                                     <i class="fas fa-calendar-times mb-2" style="font-size: 2rem;"></i>
                                     <p class="mb-0">Tidak ada data pertemuan ditemukan</p>
@@ -112,12 +129,12 @@
 
                 <form wire:submit="save">
                     <div class="mb-3">
-                        <label for="id_guru_ampu" class="form-label">Penugasan (Guru - Mapel - Kelas) <span style="color: var(--danger-color);">*</span></label>
-                        <select class="form-control form-select @error('id_guru_ampu') is-invalid @enderror" id="id_guru_ampu" wire:model="id_guru_ampu">
+                        <label for="id_guru_ampu" class="form-label">Pilih Kelas & Mapel <span style="color: var(--danger-color);">*</span></label>
+                        <select class="form-control form-select @error('id_guru_ampu') is-invalid @enderror" id="id_guru_ampu" wire:model.live="id_guru_ampu">
                             <option value="">-- Pilih Penugasan --</option>
                             @foreach($guruAmpuOptions as $ampu)
                                 <option value="{{ $ampu->id_guru_ampu }}">
-                                    {{ $ampu->mataPelajaran->nama_mapel ?? '' }} | {{ $ampu->kelas->nama_kelas ?? '' }} | {{ $ampu->guru->nama_guru ?? '' }}
+                                    {{ $ampu->kelas->nama_kelas ?? '' }} - {{ $ampu->mataPelajaran->nama_mapel ?? '' }}
                                 </option>
                             @endforeach
                         </select>
@@ -229,6 +246,55 @@
                             Simpan Absensi
                         </x-ui.button>
                     @endif
+                </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- View Confirmation Modal --}}
+    @if ($showViewModal && $viewingPertemuan)
+        <div class="modal-backdrop-custom" wire:click.self="closeViewModal">
+            <div class="modal-content-custom" wire:click.stop style="max-width: 600px;">
+                <div class="modal-header-custom">
+                    <h5 class="modal-title-custom">
+                        Detail Pertemuan
+                    </h5>
+                    <button type="button" class="modal-close-btn" wire:click="closeViewModal">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <div class="mb-3">
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <th style="width: 35%; background-color: var(--input-bg);">Pertemuan Ke</th>
+                                <td>{{ $viewingPertemuan->pertemuan_ke }}</td>
+                            </tr>
+                            <tr>
+                                <th style="background-color: var(--input-bg);">Kelas</th>
+                                <td>{{ $viewingPertemuan->guruAmpu->kelas->nama_kelas ?? 'N/A' }}</td>
+                            </tr>
+                            <tr>
+                                <th style="background-color: var(--input-bg);">Mata Pelajaran</th>
+                                <td>{{ $viewingPertemuan->guruAmpu->mataPelajaran->nama_mapel ?? 'N/A' }}</td>
+                            </tr>
+                            <tr>
+                                <th style="background-color: var(--input-bg);">Tanggal</th>
+                                <td>{{ \Carbon\Carbon::parse($viewingPertemuan->tanggal)->translatedFormat('l, d F Y') }}</td>
+                            </tr>
+                            <tr>
+                                <th style="background-color: var(--input-bg);">Pokok Bahasan</th>
+                                <td>{{ $viewingPertemuan->pokok_bahasan }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="d-flex justify-content-end mt-4">
+                    <x-ui.button type="button" variant="primary" wire:click="closeViewModal">
+                        Tutup
+                    </x-ui.button>
                 </div>
             </div>
         </div>

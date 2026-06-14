@@ -10,5 +10,5 @@
     title="{{ $tooltip }}"
     {{ $attributes }}
 >
-    {{ $slot->isEmpty() ? 'Lihat' : $slot }}
+    {{ $slot->isEmpty() ? 'Detail' : $slot }}
 </x-ui.button>

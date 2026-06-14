@@ -10,6 +10,9 @@ use App\Livewire\Auth\Login;
 use App\Livewire\Auth\Register;
 use App\Livewire\Guest\LandingPage;
 use App\Http\Controllers\Admin\LogoutController;
+use App\Livewire\Siswa\AbsensiList;
+use App\Livewire\Siswa\MateriList;
+use App\Livewire\Siswa\Profile as SiswaProfile;
 
 // Guest Routes
 Route::get('/', LandingPage::class)->name('home');
@@ -32,4 +35,10 @@ Route::prefix('admin')->middleware('auth:admin,guru,siswa,web')->group(function 
     Route::get('/profile', Profile::class)->name('admin.profile');
     Route::get('/components', ComponentDocs::class)->name('admin.components');
     Route::post('/logout', [LogoutController::class, '__invoke'])->name('logout');
+});
+
+Route::prefix('siswa')->middleware('auth:siswa,web')->group(function () {
+    Route::get('/absensi-saya', AbsensiList::class)->name('siswa.absensi');
+    Route::get('/materi-belajar', MateriList::class)->name('siswa.materi');
+    Route::get('/profil', SiswaProfile::class)->name('siswa.profile');
 });

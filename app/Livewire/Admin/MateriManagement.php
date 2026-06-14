@@ -33,6 +33,9 @@ class MateriManagement extends Component
     public bool $showDeleteModal = false;
     public ?int $deletingMateriId = null;
 
+    // Filter
+    public ?int $filter_guru_ampu = null;
+
     protected function rules(): array
     {
         $rules = [
@@ -54,10 +57,21 @@ class MateriManagement extends Component
         $this->resetPage();
     }
 
+    public function updatedFilterGuruAmpu(): void
+    {
+        $this->resetPage();
+    }
+
     public function openCreateModal(): void
     {
         $this->resetForm();
         $this->editingMateriId = null;
+        
+        // Auto select if filter is active
+        if ($this->filter_guru_ampu) {
+            $this->id_guru_ampu = $this->filter_guru_ampu;
+        }
+
         $this->showModal = true;
     }
 
@@ -99,7 +113,7 @@ class MateriManagement extends Component
             session()->flash('success', 'Data materi berhasil diperbarui.');
         } else {
             Materi::create($data);
-            session()->flash('success', 'Materi berhasil ditambahkan.');
+            session()->flash('success', 'Materi berhasil diunggah.');
         }
 
         $this->closeModal();
@@ -151,21 +165,35 @@ class MateriManagement extends Component
 
     public function render()
     {
-        $materiList = Materi::query()
-            ->with(['guruAmpu.guru', 'guruAmpu.mataPelajaran', 'guruAmpu.kelas'])
-            ->when($this->search, function ($query) {
-                $query->where('judul_materi', 'like', '%' . $this->search . '%')
-                    ->orWhereHas('guruAmpu.mataPelajaran', function ($q) {
-                        $q->where('nama_mapel', 'like', '%' . $this->search . '%');
-                    })
-                    ->orWhereHas('guruAmpu.kelas', function ($q) {
-                        $q->where('nama_kelas', 'like', '%' . $this->search . '%');
-                    });
-            })
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+        $query = Materi::query()->with(['guruAmpu.guru', 'guruAmpu.mataPelajaran', 'guruAmpu.kelas']);
+        $guruQuery = GuruAmpu::with(['guru', 'mataPelajaran', 'kelas', 'tahunAjaran']);
 
-        $guruAmpuOptions = GuruAmpu::with(['guru', 'mataPelajaran', 'kelas', 'tahunAjaran'])->get();
+        if (\Illuminate\Support\Facades\Auth::guard('guru')->check()) {
+            $guruId = \Illuminate\Support\Facades\Auth::guard('guru')->id();
+            $query->whereHas('guruAmpu', function($q) use ($guruId) {
+                $q->where('id_guru', $guruId);
+            });
+            $guruQuery->where('id_guru', $guruId);
+        }
+
+        if ($this->filter_guru_ampu) {
+            $query->where('id_guru_ampu', $this->filter_guru_ampu);
+        }
+
+        if ($this->search) {
+            $query->where(function($q) {
+                $q->where('judul_materi', 'like', '%' . $this->search . '%')
+                  ->orWhereHas('guruAmpu.mataPelajaran', function ($q2) {
+                      $q2->where('nama_mapel', 'like', '%' . $this->search . '%');
+                  })
+                  ->orWhereHas('guruAmpu.kelas', function ($q3) {
+                      $q3->where('nama_kelas', 'like', '%' . $this->search . '%');
+                  });
+            });
+        }
+
+        $materiList = $query->orderBy('created_at', 'desc')->paginate(10);
+        $guruAmpuOptions = $guruQuery->get();
 
         return view('livewire.admin.materi-management', [
             'materiList' => $materiList,

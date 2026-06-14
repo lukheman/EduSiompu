@@ -31,6 +31,9 @@
             --danger-color: #f43f5e;
             --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 
+            --bs-primary: #0d9488;
+            --bs-primary-rgb: 13, 148, 136;
+
             /* Light theme (default) */
             --bg-primary: #f8fafc;
             --bg-secondary: #ffffff;
@@ -307,6 +310,8 @@
             border-radius: 50px;
         }
 
+
+
         @media (max-width: 768px) {
             .sidebar {
                 transform: translateX(-100%);
@@ -575,7 +580,7 @@
     <x-layout.sidebar :brand-name="$brandName" :brand-icon="$brandIcon">
         <x-layout.sidebar-section title="Main">
             <x-layout.sidebar-link href="{{ route('dashboard') }}" icon="fas fa-home" :active="request()->routeIs('dashboard')">Dashboard</x-layout.sidebar-link>
-            
+
             @if(Auth::guard('admin')->check())
                 <x-layout.sidebar-link href="{{ route('admin.users') }}" icon="fas fa-users" :active="request()->routeIs('admin.users')">Users</x-layout.sidebar-link>
                 <x-layout.sidebar-link href="{{ route('admin.tahun-ajaran') }}" icon="fas fa-calendar-alt" :active="request()->routeIs('admin.tahun-ajaran')">Tahun Ajaran</x-layout.sidebar-link>
@@ -593,10 +598,19 @@
             @if(Auth::guard('admin')->check())
                 <x-layout.sidebar-link href="{{ route('admin.siswa') }}" icon="fas fa-user-graduate" :active="request()->routeIs('admin.siswa')">Siswa</x-layout.sidebar-link>
             @endif
+
+            @if(Auth::guard('siswa')->check())
+                <x-layout.sidebar-link href="{{ route('siswa.materi') }}" icon="fas fa-book-open" :active="request()->routeIs('siswa.materi')">Materi Belajar</x-layout.sidebar-link>
+                <x-layout.sidebar-link href="{{ route('siswa.absensi') }}" icon="fas fa-clipboard-user" :active="request()->routeIs('siswa.absensi')">Absensi Saya</x-layout.sidebar-link>
+            @endif
         </x-layout.sidebar-section>
 
         <x-layout.sidebar-section title="Account">
-            <x-layout.sidebar-link href="{{ route('admin.profile') }}" icon="fas fa-user-circle" :active="request()->routeIs('admin.profile')">Profile</x-layout.sidebar-link>
+            @if(Auth::guard('siswa')->check())
+                <x-layout.sidebar-link href="{{ route('siswa.profile') }}" icon="fas fa-user-circle" :active="request()->routeIs('siswa.profile')">Profil Saya</x-layout.sidebar-link>
+            @else
+                <x-layout.sidebar-link href="{{ route('admin.profile') }}" icon="fas fa-user-circle" :active="request()->routeIs('admin.profile')">Profile</x-layout.sidebar-link>
+            @endif
         </x-layout.sidebar-section>
 
 

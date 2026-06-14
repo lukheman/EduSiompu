@@ -38,6 +38,13 @@ class PertemuanManagement extends Component
     public ?int $activePertemuanId = null;
     public $absensiData = [];
 
+    // Filter
+    public ?int $filter_guru_ampu = null;
+
+    // View State
+    public bool $showViewModal = false;
+    public $viewingPertemuan = null;
+
     protected function rules(): array
     {
         return [
@@ -53,6 +60,19 @@ class PertemuanManagement extends Component
         $this->resetPage();
     }
 
+    public function updatedFilterGuruAmpu(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatedIdGuruAmpu($value): void
+    {
+        if ($value && !$this->editingPertemuanId) {
+            $lastPertemuan = Pertemuan::where('id_guru_ampu', $value)->orderBy('pertemuan_ke', 'desc')->first();
+            $this->pertemuan_ke = $lastPertemuan ? $lastPertemuan->pertemuan_ke + 1 : 1;
+        }
+    }
+
     // --- Pertemuan Methods ---
 
     public function openCreateModal(): void
@@ -60,6 +80,13 @@ class PertemuanManagement extends Component
         $this->resetForm();
         $this->tanggal = date('Y-m-d');
         $this->editingPertemuanId = null;
+        
+        // Auto select if filter is active
+        if ($this->filter_guru_ampu) {
+            $this->id_guru_ampu = $this->filter_guru_ampu;
+            $this->updatedIdGuruAmpu($this->filter_guru_ampu);
+        }
+
         $this->showModal = true;
     }
 
@@ -82,12 +109,13 @@ class PertemuanManagement extends Component
             $pertemuan = Pertemuan::findOrFail($this->editingPertemuanId);
             $pertemuan->update($validated);
             session()->flash('success', 'Data pertemuan berhasil diperbarui.');
+            $this->closeModal();
         } else {
-            Pertemuan::create($validated);
-            session()->flash('success', 'Pertemuan berhasil ditambahkan.');
+            $pertemuan = Pertemuan::create($validated);
+            session()->flash('success', 'Pertemuan berhasil ditambahkan. Silakan isi absensi siswa.');
+            $this->closeModal();
+            $this->openAbsensiModal($pertemuan->id_pertemuan); // Auto open absensi
         }
-
-        $this->closeModal();
     }
 
     public function closeModal(): void
@@ -118,6 +146,18 @@ class PertemuanManagement extends Component
     {
         $this->showDeleteModal = false;
         $this->deletingPertemuanId = null;
+    }
+
+    public function openViewModal(int $id): void
+    {
+        $this->viewingPertemuan = Pertemuan::with(['guruAmpu.guru', 'guruAmpu.mataPelajaran', 'guruAmpu.kelas'])->findOrFail($id);
+        $this->showViewModal = true;
+    }
+
+    public function closeViewModal(): void
+    {
+        $this->showViewModal = false;
+        $this->viewingPertemuan = null;
     }
 
     protected function resetForm(): void
@@ -182,21 +222,35 @@ class PertemuanManagement extends Component
 
     public function render()
     {
-        $pertemuanList = Pertemuan::query()
-            ->with(['guruAmpu.guru', 'guruAmpu.mataPelajaran', 'guruAmpu.kelas'])
-            ->when($this->search, function ($query) {
-                $query->where('pokok_bahasan', 'like', '%' . $this->search . '%')
-                    ->orWhereHas('guruAmpu.mataPelajaran', function ($q) {
-                        $q->where('nama_mapel', 'like', '%' . $this->search . '%');
-                    })
-                    ->orWhereHas('guruAmpu.kelas', function ($q) {
-                        $q->where('nama_kelas', 'like', '%' . $this->search . '%');
-                    });
-            })
-            ->orderBy('tanggal', 'desc')
-            ->paginate(10);
+        $query = Pertemuan::query()->with(['guruAmpu.guru', 'guruAmpu.mataPelajaran', 'guruAmpu.kelas']);
+        $guruQuery = GuruAmpu::with(['guru', 'mataPelajaran', 'kelas', 'tahunAjaran']);
 
-        $guruAmpuOptions = GuruAmpu::with(['guru', 'mataPelajaran', 'kelas', 'tahunAjaran'])->get();
+        if (\Illuminate\Support\Facades\Auth::guard('guru')->check()) {
+            $guruId = \Illuminate\Support\Facades\Auth::guard('guru')->id();
+            $query->whereHas('guruAmpu', function($q) use ($guruId) {
+                $q->where('id_guru', $guruId);
+            });
+            $guruQuery->where('id_guru', $guruId);
+        }
+
+        if ($this->filter_guru_ampu) {
+            $query->where('id_guru_ampu', $this->filter_guru_ampu);
+        }
+
+        if ($this->search) {
+            $query->where(function($q) {
+                $q->where('pokok_bahasan', 'like', '%' . $this->search . '%')
+                  ->orWhereHas('guruAmpu.mataPelajaran', function ($q2) {
+                      $q2->where('nama_mapel', 'like', '%' . $this->search . '%');
+                  })
+                  ->orWhereHas('guruAmpu.kelas', function ($q3) {
+                      $q3->where('nama_kelas', 'like', '%' . $this->search . '%');
+                  });
+            });
+        }
+
+        $pertemuanList = $query->orderBy('tanggal', 'desc')->paginate(10);
+        $guruAmpuOptions = $guruQuery->get();
 
         return view('livewire.admin.pertemuan-management', [
             'pertemuanList' => $pertemuanList,

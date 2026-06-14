@@ -3,7 +3,7 @@
     <x-layout.page-header title="Manajemen Materi" subtitle="Kelola senarai bahan pengajaran dan materi pembelajaran">
         <x-slot:actions>
             <x-ui.button variant="primary" icon="fas fa-plus" wire:click="openCreateModal">
-                Muat Naik Materi
+                Unggah Materi
             </x-ui.button>
         </x-slot:actions>
     </x-layout.page-header>
@@ -25,13 +25,23 @@
     <div class="modern-card">
         {{-- Search and Filters --}}
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h5 class="mb-0" style="color: var(--text-primary); font-weight: 600;">Semua Materi</h5>
-            <div class="input-group" style="max-width: 300px;">
-                <span class="input-group-text" style="background: var(--input-bg); border-color: var(--border-color);">
-                    <i class="fas fa-search" style="color: var(--text-muted);"></i>
-                </span>
-                <input type="text" class="form-control" placeholder="Cari materi, kelas, mapel..."
-                    wire:model.live.debounce.300ms="search" style="border-left: none;">
+            <h5 class="mb-0" style="color: var(--text-primary); font-weight: 600;">Daftar Materi Pembelajaran</h5>
+            <div class="d-flex gap-2" style="max-width: 500px; width: 100%;">
+                <select class="form-control form-select" wire:model.live="filter_guru_ampu">
+                    <option value="">Semua Kelas & Mapel</option>
+                    @foreach($guruAmpuOptions as $ampu)
+                        <option value="{{ $ampu->id_guru_ampu }}">
+                            {{ $ampu->kelas->nama_kelas ?? '' }} - {{ $ampu->mataPelajaran->nama_mapel ?? '' }}
+                        </option>
+                    @endforeach
+                </select>
+                <div class="input-group">
+                    <span class="input-group-text" style="background: var(--input-bg); border-color: var(--border-color);">
+                        <i class="fas fa-search" style="color: var(--text-muted);"></i>
+                    </span>
+                    <input type="text" class="form-control" placeholder="Cari..."
+                        wire:model.live.debounce.300ms="search" style="border-left: none;">
+                </div>
             </div>
         </div>
 
@@ -42,8 +52,8 @@
                     <tr>
                         <th>Judul Materi</th>
                         <th>Penetapan Guru & Subjek</th>
-                        <th>Format Fail</th>
-                        <th>Dimuat Naik</th>
+                        <th>Format File</th>
+                        <th>Diunggah Pada</th>
                         <th style="width: 120px;">Tindakan</th>
                     </tr>
                 </thead>
@@ -54,7 +64,7 @@
                                 <div class="fw-semibold" style="color: var(--text-primary);">{{ $materi->judul_materi }}</div>
                                 @if($materi->file_path)
                                     <a href="{{ Storage::url($materi->file_path) }}" target="_blank" class="text-primary" style="font-size: 0.85rem; text-decoration: none;">
-                                        <i class="fas fa-external-link-alt me-1"></i>Lihat Fail
+                                        <i class="fas fa-download me-1"></i>Unduh File
                                     </a>
                                 @endif
                             </td>
@@ -67,7 +77,18 @@
                                 </div>
                             </td>
                             <td>
-                                <x-ui.badge variant="secondary" icon="fas fa-file">.{{ strtoupper($materi->jenis_file) }}</x-ui.badge>
+                                @php
+                                    $ext = strtolower($materi->jenis_file);
+                                    $icon = 'fas fa-file';
+                                    $color = 'secondary';
+                                    if (in_array($ext, ['pdf'])) { $icon = 'fas fa-file-pdf'; $color = 'danger'; }
+                                    elseif (in_array($ext, ['doc', 'docx'])) { $icon = 'fas fa-file-word'; $color = 'primary'; }
+                                    elseif (in_array($ext, ['xls', 'xlsx'])) { $icon = 'fas fa-file-excel'; $color = 'success'; }
+                                    elseif (in_array($ext, ['ppt', 'pptx'])) { $icon = 'fas fa-file-powerpoint'; $color = 'warning'; }
+                                    elseif (in_array($ext, ['zip', 'rar'])) { $icon = 'fas fa-file-archive'; $color = 'dark'; }
+                                    elseif (in_array($ext, ['jpg', 'jpeg', 'png'])) { $icon = 'fas fa-file-image'; $color = 'info'; }
+                                @endphp
+                                <x-ui.badge variant="{{ $color }}" icon="{{ $icon }}">.{{ strtoupper($ext) }}</x-ui.badge>
                             </td>
                             <td class="text-muted">{{ $materi->created_at->format('M d, Y') }}</td>
                             <td>
@@ -114,12 +135,12 @@
 
                 <form wire:submit="save">
                     <div class="mb-3">
-                        <label for="id_guru_ampu" class="form-label">Penetapan (Guru - Mapel - Kelas) <span style="color: var(--danger-color);">*</span></label>
+                        <label for="id_guru_ampu" class="form-label">Pilih Kelas & Mapel <span style="color: var(--danger-color);">*</span></label>
                         <select class="form-control form-select @error('id_guru_ampu') is-invalid @enderror" id="id_guru_ampu" wire:model="id_guru_ampu">
-                            <option value="">-- Pilih Penetapan --</option>
+                            <option value="">-- Pilih Kelas --</option>
                             @foreach($guruAmpuOptions as $ampu)
                                 <option value="{{ $ampu->id_guru_ampu }}">
-                                    {{ $ampu->mataPelajaran->nama_mapel ?? '' }} | {{ $ampu->kelas->nama_kelas ?? '' }} | {{ $ampu->guru->nama_guru ?? '' }}
+                                    {{ $ampu->kelas->nama_kelas ?? '' }} - {{ $ampu->mataPelajaran->nama_mapel ?? '' }}
                                 </option>
                             @endforeach
                         </select>
@@ -138,11 +159,11 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="file_materi" class="form-label">Fail Materi
+                        <label for="file_materi" class="form-label">File Materi
                             @if (!$editingMateriId)
                                 <span style="color: var(--danger-color);">*</span>
                             @else
-                                <small class="text-muted">(Biarkan kosong untuk mengekalkan fail lama)</small>
+                                <small class="text-muted">(Biarkan kosong untuk mempertahankan file lama)</small>
                             @endif
                         </label>
                         <input type="file" class="form-control @error('file_materi') is-invalid @enderror" id="file_materi"
