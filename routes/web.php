@@ -16,7 +16,6 @@ use App\Livewire\Admin\GuruManagement;
 use App\Livewire\Admin\GuruAmpuManagement;
 use App\Livewire\Admin\TahunAjaranManagement;
 use App\Livewire\Admin\Profile as AdminProfile;
-use App\Livewire\Admin\ComponentDocs;
 
 use App\Livewire\Admin\MateriManagement;
 use App\Livewire\Admin\PertemuanManagement;
@@ -51,7 +50,6 @@ Route::prefix('admin')->middleware('auth:admin,web')->group(function () {
     Route::get('/guru-ampu', GuruAmpuManagement::class)->name('admin.guru-ampu');
     
     Route::get('/profile', AdminProfile::class)->name('admin.profile');
-    Route::get('/components', ComponentDocs::class)->name('admin.components');
 });
 
 // Guru-only Routes
