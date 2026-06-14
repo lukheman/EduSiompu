@@ -58,14 +58,8 @@
                             <td class="text-muted">{{ $mapel->created_at->format('M d, Y') }}</td>
                             <td>
                                 <div class="d-flex gap-1">
-                                    <button class="action-btn action-btn-edit" wire:click="openEditModal({{ $mapel->id_mata_pelajaran }})"
-                                        title="Edit Mata Pelajaran">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="action-btn action-btn-delete" wire:click="confirmDelete({{ $mapel->id_mata_pelajaran }})"
-                                        title="Hapus Mata Pelajaran">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
+                                    <x-ui.btn-edit wire:click="openEditModal({{ $mapel->id_mata_pelajaran }})" tooltip="Edit Mata Pelajaran" />
+                                    <x-ui.btn-delete wire:click="confirmDelete({{ $mapel->id_mata_pelajaran }})" tooltip="Hapus Mata Pelajaran" />
                                 </div>
                             </td>
                         </tr>

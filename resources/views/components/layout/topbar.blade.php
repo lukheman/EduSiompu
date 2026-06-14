@@ -26,12 +26,12 @@
         <button class="btn btn-link mobile-toggle me-3" onclick="toggleSidebar()">
             <i class="fas fa-bars"></i>
         </button>
-        <div class="input-group" style="max-width: 400px;">
-            <span class="input-group-text" style="background: var(--input-bg); border-color: var(--border-color);">
-                <i class="fas fa-search" style="color: var(--text-muted);"></i>
-            </span>
-            <input type="text" class="form-control" placeholder="{{ $searchPlaceholder }}" style="background: var(--input-bg); border-color: var(--border-color); color: var(--text-primary);">
-        </div>
+        <!-- <div class="input-group" style="max-width: 400px;"> -->
+        <!--     <span class="input-group-text" style="background: var(--input-bg); border-color: var(--border-color);"> -->
+        <!--         <i class="fas fa-search" style="color: var(--text-muted);"></i> -->
+        <!--     </span> -->
+        <!--     <input type="text" class="form-control" placeholder="{{ $searchPlaceholder }}" style="background: var(--input-bg); border-color: var(--border-color); color: var(--text-primary);"> -->
+        <!-- </div> -->
     </div>
     <div class="d-flex align-items-center gap-3">
         @if($showThemeToggle)
@@ -39,12 +39,12 @@
                 <i id="theme-icon" class="fas fa-moon"></i>
             </button>
         @endif
-        <button class="btn btn-link position-relative">
-            <i class="fas fa-bell" style="color: var(--text-secondary); font-size: 1.25rem;"></i>
-            @if($notificationCount > 0)
-                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem;">{{ $notificationCount }}</span>
-            @endif
-        </button>
+        <!-- <button class="btn btn-link position-relative"> -->
+        <!--     <i class="fas fa-bell" style="color: var(--text-secondary); font-size: 1.25rem;"></i> -->
+        <!--     @if($notificationCount > 0) -->
+        <!--         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem;">{{ $notificationCount }}</span> -->
+        <!--     @endif -->
+        <!-- </button> -->
         <a href="{{ route('admin.profile') }}" class="d-flex align-items-center gap-2 text-decoration-none" title="Go to Profile">
             @if(Auth::user() && method_exists(Auth::user(), 'hasAvatar') && Auth::user()->hasAvatar())
                 <img src="{{ Auth::user()->avatarUrl() }}" alt="Avatar" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">

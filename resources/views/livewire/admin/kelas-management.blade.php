@@ -58,14 +58,8 @@
                             <td class="text-muted">{{ $kelas->created_at->format('M d, Y') }}</td>
                             <td>
                                 <div class="d-flex gap-1">
-                                    <button class="action-btn action-btn-edit" wire:click="openEditModal({{ $kelas->id_kelas }})"
-                                        title="Edit kelas">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="action-btn action-btn-delete" wire:click="confirmDelete({{ $kelas->id_kelas }})"
-                                        title="Hapus kelas">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
+                                    <x-ui.btn-edit wire:click="openEditModal({{ $kelas->id_kelas }})" tooltip="Edit kelas" />
+                                    <x-ui.btn-delete wire:click="confirmDelete({{ $kelas->id_kelas }})" tooltip="Hapus kelas" />
                                 </div>
                             </td>
                         </tr>

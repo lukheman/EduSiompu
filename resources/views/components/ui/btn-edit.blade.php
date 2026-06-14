@@ -1,26 +1,14 @@
 @props([
-    'size' => 'sm', // 'sm', 'md', 'lg'
+    'size' => 'sm',
     'tooltip' => 'Edit',
-    'iconOnly' => true,
 ])
 
-@php
-    $sizeStyles = [
-        'sm' => 'width: 32px; height: 32px; font-size: 0.8rem;',
-        'md' => 'width: 38px; height: 38px; font-size: 0.9rem;',
-        'lg' => 'width: 44px; height: 44px; font-size: 1rem;',
-    ];
-
-    $btnSize = $sizeStyles[$size] ?? $sizeStyles['sm'];
-@endphp
-
-<button
-    {{ $attributes->merge(['class' => 'action-btn action-btn-edit', 'type' => 'button']) }}
-    style="{{ $btnSize }}"
+<x-ui.button
+    variant="primary"
+    :size="$size"
+    icon="fas fa-edit"
     title="{{ $tooltip }}"
+    {{ $attributes }}
 >
-    <i class="fas fa-edit"></i>
-    @if(!$iconOnly)
-        <span class="ms-1">{{ $slot->isEmpty() ? 'Edit' : $slot }}</span>
-    @endif
-</button>
+    {{ $slot->isEmpty() ? 'Edit' : $slot }}
+</x-ui.button>

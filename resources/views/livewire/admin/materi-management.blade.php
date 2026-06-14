@@ -72,14 +72,8 @@
                             <td class="text-muted">{{ $materi->created_at->format('M d, Y') }}</td>
                             <td>
                                 <div class="d-flex gap-1">
-                                    <button class="action-btn action-btn-edit" wire:click="openEditModal({{ $materi->id_materi }})"
-                                        title="Edit Materi">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="action-btn action-btn-delete" wire:click="confirmDelete({{ $materi->id_materi }})"
-                                        title="Hapus Materi">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
+                                    <x-ui.btn-edit wire:click="openEditModal({{ $materi->id_materi }})" tooltip="Edit Materi" />
+                                    <x-ui.btn-delete wire:click="confirmDelete({{ $materi->id_materi }})" tooltip="Hapus Materi" />
                                 </div>
                             </td>
                         </tr>

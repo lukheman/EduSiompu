@@ -70,14 +70,8 @@
                             </td>
                             <td>
                                 <div class="d-flex gap-1">
-                                    <button class="action-btn action-btn-edit" wire:click="openEditModal({{ $user->id_admin }})"
-                                        title="Edit admin">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="action-btn action-btn-delete" wire:click="confirmDelete({{ $user->id_admin }})"
-                                        title="Hapus admin">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
+                                    <x-ui.btn-edit wire:click="openEditModal({{ $user->id_admin }})" tooltip="Edit admin" />
+                                    <x-ui.btn-delete wire:click="confirmDelete({{ $user->id_admin }})" tooltip="Hapus admin" />
                                 </div>
                             </td>
                         </tr>

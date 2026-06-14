@@ -28,6 +28,7 @@ Route::prefix('admin')->middleware('auth:admin,guru,siswa,web')->group(function 
     Route::get('/guru-ampu', \App\Livewire\Admin\GuruAmpuManagement::class)->name('admin.guru-ampu');
     Route::get('/materi', \App\Livewire\Admin\MateriManagement::class)->name('admin.materi');
     Route::get('/pertemuan', \App\Livewire\Admin\PertemuanManagement::class)->name('admin.pertemuan');
+    Route::get('/tahun-ajaran', \App\Livewire\Admin\TahunAjaranManagement::class)->name('admin.tahun-ajaran');
     Route::get('/profile', Profile::class)->name('admin.profile');
     Route::get('/components', ComponentDocs::class)->name('admin.components');
     Route::post('/logout', [LogoutController::class, '__invoke'])->name('logout');

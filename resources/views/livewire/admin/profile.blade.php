@@ -32,13 +32,13 @@
                             style="width: 120px; height: 120px; object-fit: cover; border: 4px solid var(--primary-color);">
                     @else
                         <div class="user-avatar mx-auto" style="width: 120px; height: 120px; font-size: 3rem;">
-                            {{ Auth::user()->initials() }}
+                            {{ strtoupper(substr($name ?? 'A', 0, 2)) }}
                         </div>
                     @endif
                 </div>
 
-                <h4 style="color: var(--text-primary); font-weight: 600;">{{ Auth::user()->name }}</h4>
-                <p class="text-muted mb-3">{{ Auth::user()->email }}</p>
+                <h4 style="color: var(--text-primary); font-weight: 600;">{{ $name }}</h4>
+                <p class="text-muted mb-3">{{ $email }}</p>
                 <x-ui.badge variant="primary" icon="fas fa-user-shield">Administrator</x-ui.badge>
 
                 <hr style="border-color: var(--border-color); margin: 1.5rem 0;">
@@ -76,7 +76,7 @@
                                 style="width: 80px; height: 80px; object-fit: cover; border: 3px solid var(--border-color);">
                         @else
                             <div class="user-avatar" style="width: 80px; height: 80px; font-size: 2rem;">
-                                {{ Auth::user()->initials() }}
+                                {{ strtoupper(substr($name ?? 'A', 0, 2)) }}
                             </div>
                         @endif
                     </div>
@@ -144,10 +144,10 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label for="email" class="form-label">Email <span
+                            <label for="email" class="form-label">{{ $identifierName }} <span
                                     style="color: var(--danger-color);">*</span></label>
-                            <input type="email" class="form-control @error('email') is-invalid @enderror" id="email"
-                                wire:model="email" placeholder="Masukkan email">
+                            <input type="{{ $identifierName === 'Email' ? 'email' : 'text' }}" class="form-control @error('email') is-invalid @enderror" id="email"
+                                wire:model="email" placeholder="Masukkan {{ strtolower($identifierName) }}">
                             @error('email')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror

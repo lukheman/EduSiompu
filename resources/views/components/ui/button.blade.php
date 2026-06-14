@@ -18,7 +18,7 @@
 
     $sizeClasses = [
         'sm' => 'btn-sm',
-        'md' => '',
+        'md' => 'btn-md',
         'lg' => 'btn-lg',
     ];
 
@@ -26,23 +26,23 @@
     $sizeClass = $sizeClasses[$size] ?? '';
 @endphp
 @if($href)
-    <a href="{{ $href }}" {{ $attributes->merge(['class' => "btn btn-modern {$sizeClass}"]) }} style="{{ $style }}">
+    <a href="{{ $href }}" {{ $attributes->merge(['class' => "btn btn-modern d-inline-flex align-items-center justify-content-center {$sizeClass}"]) }} style="{{ $style }}">
         @if($icon && $iconPosition === 'left')
             <i class="{{ $icon }} me-2"></i>
         @endif
-        {{ $slot }}
-    @if($icon && $iconPosition === 'right')
-        <i class="{{ $icon }} ms-2"></i>
-    @endif
+        <span>{{ $slot }}</span>
+        @if($icon && $iconPosition === 'right')
+            <i class="{{ $icon }} ms-2"></i>
+        @endif
     </a>
 @else
-    <button type="{{ $type }}" {{ $attributes->merge(['class' => "btn btn-modern {$sizeClass}"]) }} style="{{ $style }}">
+    <button type="{{ $type }}" {{ $attributes->merge(['class' => "btn btn-modern d-inline-flex align-items-center justify-content-center {$sizeClass}"]) }} style="{{ $style }}">
         @if($icon && $iconPosition === 'left')
             <i class="{{ $icon }} me-2"></i>
         @endif
-            {{ $slot }}
-            @if($icon && $iconPosition === 'right')
-                <i class="{{ $icon }} ms-2"></i>
-            @endif
-        </button>
+        <span>{{ $slot }}</span>
+        @if($icon && $iconPosition === 'right')
+            <i class="{{ $icon }} ms-2"></i>
+        @endif
+    </button>
 @endif

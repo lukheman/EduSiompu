@@ -1,26 +1,14 @@
 @props([
-    'size' => 'sm', // 'sm', 'md', 'lg'
-    'tooltip' => 'Delete',
-    'iconOnly' => true,
+    'size' => 'sm',
+    'tooltip' => 'Hapus',
 ])
 
-@php
-    $sizeStyles = [
-        'sm' => 'width: 32px; height: 32px; font-size: 0.8rem;',
-        'md' => 'width: 38px; height: 38px; font-size: 0.9rem;',
-        'lg' => 'width: 44px; height: 44px; font-size: 1rem;',
-    ];
-
-    $btnSize = $sizeStyles[$size] ?? $sizeStyles['sm'];
-@endphp
-
-<button
-    {{ $attributes->merge(['class' => 'action-btn action-btn-delete', 'type' => 'button']) }}
-    style="{{ $btnSize }}"
+<x-ui.button
+    variant="danger"
+    :size="$size"
+    icon="fas fa-trash-alt"
     title="{{ $tooltip }}"
+    {{ $attributes }}
 >
-    <i class="fas fa-trash-alt"></i>
-    @if(!$iconOnly)
-        <span class="ms-1">{{ $slot->isEmpty() ? 'Delete' : $slot }}</span>
-    @endif
-</button>
+    {{ $slot->isEmpty() ? 'Hapus' : $slot }}
+</x-ui.button>

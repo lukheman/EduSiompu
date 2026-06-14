@@ -69,18 +69,9 @@
                             </td>
                             <td>
                                 <div class="d-flex gap-1">
-                                    <button class="action-btn action-btn-view" wire:click="openAbsensiModal({{ $pertemuan->id_pertemuan }})"
-                                        title="Kelola Absensi">
-                                        <i class="fas fa-clipboard-list"></i>
-                                    </button>
-                                    <button class="action-btn action-btn-edit" wire:click="openEditModal({{ $pertemuan->id_pertemuan }})"
-                                        title="Edit Pertemuan">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="action-btn action-btn-delete" wire:click="confirmDelete({{ $pertemuan->id_pertemuan }})"
-                                        title="Hapus Pertemuan">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
+                                    <x-ui.btn-view wire:click="openAbsensiModal({{ $pertemuan->id_pertemuan }})" tooltip="Kelola Absensi">Absensi</x-ui.btn-view>
+                                    <x-ui.btn-edit wire:click="openEditModal({{ $pertemuan->id_pertemuan }})" tooltip="Edit Pertemuan" />
+                                    <x-ui.btn-delete wire:click="confirmDelete({{ $pertemuan->id_pertemuan }})" tooltip="Hapus Pertemuan" />
                                 </div>
                             </td>
                         </tr>

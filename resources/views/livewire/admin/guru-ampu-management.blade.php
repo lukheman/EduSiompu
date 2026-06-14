@@ -65,14 +65,8 @@
                             </td>
                             <td>
                                 <div class="d-flex gap-1">
-                                    <button class="action-btn action-btn-edit" wire:click="openEditModal({{ $guruAmpu->id_guru_ampu }})"
-                                        title="Edit Penugasan">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="action-btn action-btn-delete" wire:click="confirmDelete({{ $guruAmpu->id_guru_ampu }})"
-                                        title="Hapus Penugasan">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
+                                    <x-ui.btn-edit wire:click="openEditModal({{ $guruAmpu->id_guru_ampu }})" tooltip="Edit Penugasan" />
+                                    <x-ui.btn-delete wire:click="confirmDelete({{ $guruAmpu->id_guru_ampu }})" tooltip="Hapus Penugasan" />
                                 </div>
                             </td>
                         </tr>

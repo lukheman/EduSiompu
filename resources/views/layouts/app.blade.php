@@ -575,19 +575,28 @@
     <x-layout.sidebar :brand-name="$brandName" :brand-icon="$brandIcon">
         <x-layout.sidebar-section title="Main">
             <x-layout.sidebar-link href="{{ route('dashboard') }}" icon="fas fa-home" :active="request()->routeIs('dashboard')">Dashboard</x-layout.sidebar-link>
-            <x-layout.sidebar-link href="{{ route('admin.users') }}" icon="fas fa-users" :active="request()->routeIs('admin.users')">Users</x-layout.sidebar-link>
-            <x-layout.sidebar-link href="{{ route('admin.kelas') }}" icon="fas fa-chalkboard" :active="request()->routeIs('admin.kelas')">Kelas</x-layout.sidebar-link>
-            <x-layout.sidebar-link href="{{ route('admin.mata-pelajaran') }}" icon="fas fa-book" :active="request()->routeIs('admin.mata-pelajaran')">Mata Pelajaran</x-layout.sidebar-link>
-            <x-layout.sidebar-link href="{{ route('admin.guru') }}" icon="fas fa-chalkboard-teacher" :active="request()->routeIs('admin.guru')">Guru</x-layout.sidebar-link>
-            <x-layout.sidebar-link href="{{ route('admin.guru-ampu') }}" icon="fas fa-user-tag" :active="request()->routeIs('admin.guru-ampu')">Guru Ampu</x-layout.sidebar-link>
-            <x-layout.sidebar-link href="{{ route('admin.materi') }}" icon="fas fa-file-alt" :active="request()->routeIs('admin.materi')">Materi</x-layout.sidebar-link>
-            <x-layout.sidebar-link href="{{ route('admin.pertemuan') }}" icon="fas fa-calendar-check" :active="request()->routeIs('admin.pertemuan')">Pertemuan & Absensi</x-layout.sidebar-link>
-            <x-layout.sidebar-link href="{{ route('admin.siswa') }}" icon="fas fa-user-graduate" :active="request()->routeIs('admin.siswa')">Siswa</x-layout.sidebar-link>
+            
+            @if(Auth::guard('admin')->check())
+                <x-layout.sidebar-link href="{{ route('admin.users') }}" icon="fas fa-users" :active="request()->routeIs('admin.users')">Users</x-layout.sidebar-link>
+                <x-layout.sidebar-link href="{{ route('admin.tahun-ajaran') }}" icon="fas fa-calendar-alt" :active="request()->routeIs('admin.tahun-ajaran')">Tahun Ajaran</x-layout.sidebar-link>
+                <x-layout.sidebar-link href="{{ route('admin.kelas') }}" icon="fas fa-chalkboard" :active="request()->routeIs('admin.kelas')">Kelas</x-layout.sidebar-link>
+                <x-layout.sidebar-link href="{{ route('admin.mata-pelajaran') }}" icon="fas fa-book" :active="request()->routeIs('admin.mata-pelajaran')">Mata Pelajaran</x-layout.sidebar-link>
+                <x-layout.sidebar-link href="{{ route('admin.guru') }}" icon="fas fa-chalkboard-teacher" :active="request()->routeIs('admin.guru')">Guru</x-layout.sidebar-link>
+                <x-layout.sidebar-link href="{{ route('admin.guru-ampu') }}" icon="fas fa-user-tag" :active="request()->routeIs('admin.guru-ampu')">Guru Ampu</x-layout.sidebar-link>
+            @endif
+
+            @if(Auth::guard('admin')->check() || Auth::guard('guru')->check())
+                <x-layout.sidebar-link href="{{ route('admin.materi') }}" icon="fas fa-file-alt" :active="request()->routeIs('admin.materi')">Materi</x-layout.sidebar-link>
+                <x-layout.sidebar-link href="{{ route('admin.pertemuan') }}" icon="fas fa-calendar-check" :active="request()->routeIs('admin.pertemuan')">Pertemuan & Absensi</x-layout.sidebar-link>
+            @endif
+
+            @if(Auth::guard('admin')->check())
+                <x-layout.sidebar-link href="{{ route('admin.siswa') }}" icon="fas fa-user-graduate" :active="request()->routeIs('admin.siswa')">Siswa</x-layout.sidebar-link>
+            @endif
         </x-layout.sidebar-section>
 
         <x-layout.sidebar-section title="Account">
             <x-layout.sidebar-link href="{{ route('admin.profile') }}" icon="fas fa-user-circle" :active="request()->routeIs('admin.profile')">Profile</x-layout.sidebar-link>
-            <x-layout.sidebar-link href="#settings" icon="fas fa-cog">Settings</x-layout.sidebar-link>
         </x-layout.sidebar-section>
 
 

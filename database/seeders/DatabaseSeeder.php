@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Admin;
+use App\Models\Guru;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -17,6 +18,12 @@ class DatabaseSeeder extends Seeder
         Admin::query()->create([
             'nama' => 'Admin',
             'email' => 'admin@gmail.com',
+            'password' => bcrypt('password123'),
+        ]);
+
+        Guru::query()->create([
+            'nama_guru' => 'Guruku Ladde',
+            'nip' => '123321123',
             'password' => bcrypt('password123'),
         ]);
 
