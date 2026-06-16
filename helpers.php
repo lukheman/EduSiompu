@@ -255,6 +255,35 @@ function setEnv(string $file, string $key, string $val): void
 }
 
 // ============================================================
+//  Config JSON
+// ============================================================
+
+/**
+ * Load konfigurasi dari config.json
+ */
+function getConfig(): array
+{
+    $file = __DIR__ . '/config.json';
+    $default = [
+        'app_name' => 'EduSiompu',
+        'db_host' => '127.0.0.1',
+        'db_port' => '3306',
+        'db_name' => 'edusiompu',
+        'db_user' => 'root',
+        'db_pass' => '',
+        'serve_port' => '8000'
+    ];
+
+    if (file_exists($file)) {
+        $data = json_decode(file_get_contents($file), true);
+        if (is_array($data)) {
+            return array_merge($default, $data);
+        }
+    }
+    return $default;
+}
+
+// ============================================================
 //  Browser
 // ============================================================
 

@@ -1,0 +1,9 @@
+{
+    "app_name": "EDUSIOMPU",
+    "db_host": "127.0.0.1",
+    "db_port": "3306",
+    "db_name": "edusiompu",
+    "db_user": "root",
+    "db_pass": "",
+    "serve_port": "8000"
+}

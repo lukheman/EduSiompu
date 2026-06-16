@@ -21,11 +21,14 @@ require __DIR__.'/helpers.php';
 // ============================================================
 
 chdir(__DIR__);
-$url = 'http://localhost:8000';
+$config = getConfig();
+$port = $config['serve_port'] ?? '8000';
+$url = "http://localhost:{$port}";
 
 out('');
 out('+'.str_repeat('-', 63).'+', 'bold', 'green');
-out('|'.str_pad('  SIMKA - SERVER', 63).'|', 'bold', 'green');
+$appName = strtoupper($config['app_name'] ?? 'EduSiompu');
+out('|'.str_pad("  {$appName} - SERVER", 63).'|', 'bold', 'green');
 out('+'.str_repeat('-', 63).'+', 'bold', 'green');
 out('');
 info('Lokasi Project : '.__DIR__);
@@ -41,4 +44,4 @@ if (IS_WIN) {
     exec("(sleep 2 && xdg-open {$url} 2>/dev/null || open {$url} 2>/dev/null) &");
 }
 
-passthru('php artisan serve');
+passthru("php artisan serve --port={$port}");
