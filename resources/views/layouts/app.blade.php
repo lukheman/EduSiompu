@@ -593,6 +593,8 @@
                 <x-layout.sidebar-link href="{{ route('siswa.dashboard') }}" icon="fas fa-home" :active="request()->routeIs('siswa.dashboard')">Dashboard</x-layout.sidebar-link>
             @elseif(Auth::guard('guru')->check())
                 <x-layout.sidebar-link href="{{ route('guru.dashboard') }}" icon="fas fa-home" :active="request()->routeIs('guru.dashboard')">Dashboard</x-layout.sidebar-link>
+            @elseif(Auth::guard('orang_tua')->check())
+                <x-layout.sidebar-link href="{{ route('orang-tua.dashboard') }}" icon="fas fa-home" :active="request()->routeIs('orang-tua.dashboard')">Dashboard</x-layout.sidebar-link>
             @else
                 <x-layout.sidebar-link href="{{ route('admin.dashboard') }}" icon="fas fa-home" :active="request()->routeIs('admin.dashboard')">Dashboard</x-layout.sidebar-link>
             @endif
@@ -608,6 +610,7 @@
             <x-layout.sidebar-section title="Data Personalia">
                 <x-layout.sidebar-link href="{{ route('admin.guru') }}" icon="fas fa-chalkboard-teacher" :active="request()->routeIs('admin.guru')">Data Guru</x-layout.sidebar-link>
                 <x-layout.sidebar-link href="{{ route('admin.siswa') }}" icon="fas fa-user-graduate" :active="request()->routeIs('admin.siswa')">Data Siswa</x-layout.sidebar-link>
+                <x-layout.sidebar-link href="{{ route('admin.orang-tua') }}" icon="fas fa-users" :active="request()->routeIs('admin.orang-tua')">Data Orang Tua</x-layout.sidebar-link>
             </x-layout.sidebar-section>
 
             <x-layout.sidebar-section title="Akademik">
@@ -629,11 +632,19 @@
             </x-layout.sidebar-section>
         @endif
 
+        @if(Auth::guard('orang_tua')->check())
+            <x-layout.sidebar-section title="Akademik Anak">
+                <x-layout.sidebar-link href="{{ route('orang-tua.absensi') }}" icon="fas fa-clipboard-user" :active="request()->routeIs('orang-tua.absensi')">Absensi Anak</x-layout.sidebar-link>
+            </x-layout.sidebar-section>
+        @endif
+
         <x-layout.sidebar-section title="Account">
             @if(Auth::guard('siswa')->check())
                 <x-layout.sidebar-link href="{{ route('siswa.profile') }}" icon="fas fa-user-circle" :active="request()->routeIs('siswa.profile')">Profil Saya</x-layout.sidebar-link>
             @elseif(Auth::guard('guru')->check())
                 <x-layout.sidebar-link href="{{ route('guru.profile') }}" icon="fas fa-user-circle" :active="request()->routeIs('guru.profile')">Profil Guru</x-layout.sidebar-link>
+            @elseif(Auth::guard('orang_tua')->check())
+                <x-layout.sidebar-link href="#" icon="fas fa-user-circle" :active="false">Profil Orang Tua</x-layout.sidebar-link>
             @else
                 <x-layout.sidebar-link href="{{ route('admin.profile') }}" icon="fas fa-user-circle" :active="request()->routeIs('admin.profile')">Profil Admin</x-layout.sidebar-link>
             @endif
@@ -664,11 +675,16 @@
                 $user = Auth::guard('siswa')->user();
                 $profileRoute = route('siswa.profile');
             }
+            elseif (Auth::guard('orang_tua')->check()) {
+                $roleName = 'Orang Tua';
+                $user = Auth::guard('orang_tua')->user();
+                $profileRoute = '#';
+            }
         @endphp
 
         <!-- Top Bar -->
         <x-layout.topbar
-            :user-name="$user?->nama ?? $user?->nama_guru ?? $user?->nama_siswa ?? 'Guest'"
+            :user-name="$user?->nama ?? $user?->nama_guru ?? $user?->nama_siswa ?? $user?->nama_orang_tua ?? 'Guest'"
             :user-role="$roleName"
             :user-avatar="$user?->avatar"
             :profile-route="$profileRoute"

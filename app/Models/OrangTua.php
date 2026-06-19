@@ -1,0 +1,32 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+
+class OrangTua extends Authenticatable
+{
+    use HasFactory, Notifiable;
+
+    protected $table = 'orang_tua';
+    protected $primaryKey = 'id_orang_tua';
+
+    protected $fillable = [
+        'nik',
+        'nama_orang_tua',
+        'password',
+        'no_hp',
+        'avatar',
+    ];
+
+    protected $hidden = [
+        'password',
+    ];
+
+    public function siswa()
+    {
+        return $this->hasMany(Siswa::class, 'id_orang_tua', 'id_orang_tua');
+    }
+}

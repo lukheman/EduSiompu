@@ -93,7 +93,28 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        // 6. Siswa
+        // 6. Orang Tua
+        $orangTuaData = [
+            ['3201010101010001', 'Bapak Budi Hartono', '081234567890'],
+            ['3201010101010002', 'Ibu Siti Khadijah', '081234567891'],
+            ['3201010101010003', 'Bapak Herman Santoso', '081234567892'],
+            ['3201010101010004', 'Ibu Ani Suryani', '081234567893'],
+            ['3201010101010005', 'Bapak Joko Susilo', '081234567894'],
+        ];
+
+        $orangTuaIds = [];
+        foreach ($orangTuaData as $ot) {
+            $orangTuaIds[] = DB::table('orang_tua')->insertGetId([
+                'nik' => $ot[0],
+                'nama_orang_tua' => $ot[1],
+                'no_hp' => $ot[2],
+                'password' => Hash::make('password123'),
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]);
+        }
+
+        // 7. Siswa
         $siswaNames = [
             'Agus Saputra', 'Bima Aryo', 'Citra Dewi', 'Dina Lestari', 'Eko Purnomo',
             'Fikri Haikal', 'Gita Gutawa', 'Hadi Prasetio', 'Indah Permatasari', 'Joko Susanto',
@@ -112,6 +133,7 @@ class DatabaseSeeder extends Seeder
 
                 $siswaIds[] = DB::table('siswa')->insertGetId([
                     'id_kelas' => $idKelas,
+                    'id_orang_tua' => ($idx % 2 == 0) ? $orangTuaIds[$idx % count($orangTuaIds)] : null,
                     'nisn' => (string)($nisnBase++),
                     'nama_siswa' => $siswaNames[$idx++],
                     'password' => Hash::make('password123'),
@@ -122,7 +144,7 @@ class DatabaseSeeder extends Seeder
             }
         }
 
-        // 7. Guru Ampu (Penugasan)
+        // 8. Guru Ampu (Penugasan)
         // Budi Santoso (0) ajar Matematika (MAT-01) di X MIPA 1 & X MIPA 2
         $idGuruAmpu1 = DB::table('guru_ampu')->insertGetId([
             'id_guru' => $guruIds[0],
@@ -162,7 +184,7 @@ class DatabaseSeeder extends Seeder
             'updated_at' => $now,
         ]);
 
-        // 8. Pertemuan & Absensi (X MIPA 1 - Matematika - Budi Santoso)
+        // 9. Pertemuan & Absensi (X MIPA 1 - Matematika - Budi Santoso)
         $idPertemuan1 = DB::table('pertemuan')->insertGetId([
             'id_guru_ampu' => $idGuruAmpu1,
             'pertemuan_ke' => 1,
@@ -207,7 +229,7 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        // 9. Materi
+        // 10. Materi
         DB::table('materi')->insert([
             [
                 'id_guru_ampu' => $idGuruAmpu1,

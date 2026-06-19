@@ -48,6 +48,7 @@
                         <th>Profil Siswa</th>
                         <th>NISN</th>
                         <th>Kelas / Rombel</th>
+                        <th>Orang Tua</th>
                         <th style="width: 120px;">Tindakan</th>
                     </tr>
                 </thead>
@@ -73,6 +74,13 @@
                             </td>
                             <td>
                                 <x-ui.badge variant="info" icon="fas fa-door-open">{{ $siswa->kelas->nama_kelas ?? 'Belum ada kelas' }}</x-ui.badge>
+                            </td>
+                            <td>
+                                @if($siswa->orangTua)
+                                    <span class="badge bg-light text-dark border"><i class="fas fa-users text-primary me-1"></i> {{ $siswa->orangTua->nama_orang_tua }}</span>
+                                @else
+                                    <span class="text-muted small">-</span>
+                                @endif
                             </td>
                             <td>
                                 <div class="d-flex gap-1">
@@ -177,6 +185,20 @@
                             @enderror
                         </div>
 
+                        {{-- Orang Tua --}}
+                        <div class="col-md-12">
+                            <label for="id_orang_tua" class="form-label text-muted fw-bold small">Pilih Orang Tua (Opsional)</label>
+                            <select class="form-select @error('id_orang_tua') is-invalid @enderror" id="id_orang_tua" wire:model="id_orang_tua">
+                                <option value="">-- Tidak Terhubung --</option>
+                                @foreach($orangTuaList as $ot)
+                                    <option value="{{ $ot->id_orang_tua }}">{{ $ot->nama_orang_tua }} - NIK: {{ $ot->nik }}</option>
+                                @endforeach
+                            </select>
+                            @error('id_orang_tua')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
                         {{-- Password Section --}}
                         <div class="col-12 mt-4">
                             <h6 class="fw-bold text-primary border-bottom pb-2"><i class="fas fa-lock me-2"></i>Kredensial Login</h6>
@@ -251,6 +273,12 @@
                                 <th class="text-muted fw-medium w-50"><i class="fas fa-door-open me-2 text-info"></i> Rombongan Belajar</th>
                                 <td class="text-end">
                                     <span class="fw-bold">{{ $viewingSiswa->kelas->nama_kelas ?? 'Belum ada kelas' }}</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted fw-medium"><i class="fas fa-users me-2 text-primary"></i> Orang Tua</th>
+                                <td class="text-end">
+                                    <span class="fw-bold">{{ $viewingSiswa->orangTua->nama_orang_tua ?? 'Belum terhubung' }}</span>
                                 </td>
                             </tr>
                             <tr>

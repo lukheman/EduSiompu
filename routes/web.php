@@ -15,6 +15,7 @@ use App\Livewire\Admin\MataPelajaranManagement;
 use App\Livewire\Admin\GuruManagement;
 use App\Livewire\Admin\GuruAmpuManagement;
 use App\Livewire\Admin\TahunAjaranManagement;
+use App\Livewire\Admin\OrangTuaManagement;
 use App\Livewire\Admin\Profile as AdminProfile;
 
 use App\Livewire\Admin\MateriManagement;
@@ -35,7 +36,7 @@ Route::middleware('guest')->group(function () {
 });
 
 // Shared App Routes (Logout for all roles)
-Route::middleware('auth:admin,guru,siswa,web')->group(function () {
+Route::middleware('auth:admin,guru,siswa,orang_tua,web')->group(function () {
     Route::post('/logout', [LogoutController::class, '__invoke'])->name('logout');
 });
 
@@ -47,6 +48,7 @@ Route::prefix('admin')->middleware('auth:admin,web')->group(function () {
     Route::get('/mata-pelajaran', MataPelajaranManagement::class)->name('admin.mata-pelajaran');
     Route::get('/guru', GuruManagement::class)->name('admin.guru');
     Route::get('/siswa', SiswaManagement::class)->name('admin.siswa');
+    Route::get('/orang-tua', OrangTuaManagement::class)->name('admin.orang-tua');
     Route::get('/guru-ampu', GuruAmpuManagement::class)->name('admin.guru-ampu');
     
     Route::get('/profile', AdminProfile::class)->name('admin.profile');
@@ -66,4 +68,10 @@ Route::prefix('siswa')->middleware('auth:siswa,web')->group(function () {
     Route::get('/materi-belajar', MateriList::class)->name('siswa.materi');
     Route::get('/absensi-saya', AbsensiList::class)->name('siswa.absensi');
     Route::get('/profil', SiswaProfile::class)->name('siswa.profile');
+});
+
+// Orang Tua-only Routes
+Route::prefix('orang-tua')->middleware('auth:orang_tua,web')->group(function () {
+    Route::get('/dashboard', \App\Livewire\OrangTua\Dashboard::class)->name('orang-tua.dashboard');
+    Route::get('/absensi-anak', \App\Livewire\OrangTua\AbsensiAnak::class)->name('orang-tua.absensi');
 });

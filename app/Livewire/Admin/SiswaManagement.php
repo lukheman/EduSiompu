@@ -4,6 +4,7 @@ namespace App\Livewire\Admin;
 
 use App\Models\Siswa;
 use App\Models\Kelas;
+use App\Models\OrangTua;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 use Livewire\Attributes\Layout;
@@ -30,6 +31,7 @@ class SiswaManagement extends Component
     public string $nama_siswa = '';
     public string $nisn = '';
     public ?int $id_kelas = null;
+    public ?int $id_orang_tua = null;
     public string $password = '';
     public string $password_confirmation = '';
     public $avatar;
@@ -48,6 +50,7 @@ class SiswaManagement extends Component
         $rules = [
             'nama_siswa' => ['required', 'string', 'max:255'],
             'id_kelas' => ['required', 'exists:kelas,id_kelas'],
+            'id_orang_tua' => ['nullable', 'exists:orang_tua,id_orang_tua'],
             'avatar' => ['nullable', 'image', 'max:2048'],
         ];
 
@@ -89,6 +92,7 @@ class SiswaManagement extends Component
         $this->nama_siswa = $siswa->nama_siswa;
         $this->nisn = $siswa->nisn;
         $this->id_kelas = $siswa->id_kelas;
+        $this->id_orang_tua = $siswa->id_orang_tua;
         $this->password = '';
         $this->password_confirmation = '';
         $this->currentAvatar = $siswa->avatar;
@@ -116,6 +120,7 @@ class SiswaManagement extends Component
             $siswa->nama_siswa = $validated['nama_siswa'];
             $siswa->nisn = $validated['nisn'];
             $siswa->id_kelas = $validated['id_kelas'];
+            $siswa->id_orang_tua = $validated['id_orang_tua'] ?? null;
 
             if ($this->avatar) {
                 if ($siswa->avatar && Storage::disk('public')->exists($siswa->avatar)) {
@@ -140,6 +145,7 @@ class SiswaManagement extends Component
                 'nama_siswa' => $validated['nama_siswa'],
                 'nisn' => $validated['nisn'],
                 'id_kelas' => $validated['id_kelas'],
+                'id_orang_tua' => $validated['id_orang_tua'] ?? null,
                 'password' => Hash::make($validated['password']),
                 'avatar' => $avatarPath,
             ]);
@@ -190,6 +196,7 @@ class SiswaManagement extends Component
         $this->nama_siswa = '';
         $this->nisn = '';
         $this->id_kelas = null;
+        $this->id_orang_tua = null;
         $this->password = '';
         $this->password_confirmation = '';
         $this->avatar = null;
@@ -200,7 +207,7 @@ class SiswaManagement extends Component
     public function render()
     {
         $siswas = Siswa::query()
-            ->with('kelas')
+            ->with(['kelas', 'orangTua'])
             ->when($this->filter_kelas, fn($q) => $q->where('id_kelas', $this->filter_kelas))
             ->when($this->search, function ($query) {
                 $query->where(function($q) {
@@ -212,14 +219,16 @@ class SiswaManagement extends Component
             ->paginate(12);
 
         $kelasList = Kelas::orderBy('nama_kelas', 'asc')->get();
+        $orangTuaList = OrangTua::orderBy('nama_orang_tua', 'asc')->get();
 
         $viewingSiswa = $this->viewingSiswaId 
-            ? Siswa::with('kelas')->find($this->viewingSiswaId) 
+            ? Siswa::with(['kelas', 'orangTua'])->find($this->viewingSiswaId) 
             : null;
 
         return view('livewire.admin.siswa-management', [
             'siswas' => $siswas,
             'kelasList' => $kelasList,
+            'orangTuaList' => $orangTuaList,
             'viewingSiswa' => $viewingSiswa,
         ]);
     }

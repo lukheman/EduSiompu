@@ -54,6 +54,11 @@ class Login extends Component
                 session()->regenerate();
                 return redirect()->to(route('siswa.dashboard'));
             }
+        } elseif ($this->role === 'orang_tua') {
+            if (Auth::guard('orang_tua')->attempt(['nik' => $this->identifier, 'password' => $this->password], $this->remember)) {
+                session()->regenerate();
+                return redirect()->intended(route('orang-tua.dashboard'));
+            }
         }
 
         $this->addError('identifier', 'Identitas atau password salah.');

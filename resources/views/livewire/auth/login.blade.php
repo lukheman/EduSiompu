@@ -45,6 +45,11 @@
                     <i class="fas fa-user-shield mb-1 d-block"></i> Admin
                 </button>
             </li>
+            <li class="nav-item">
+                <button class="nav-link {{ $role === 'orang_tua' ? 'active' : '' }}" wire:click="setRole('orang_tua')" type="button" style="border-radius: 8px;">
+                    <i class="fas fa-users mb-1 d-block"></i> Orang Tua
+                </button>
+            </li>
         </ul>
 
         <!-- Login Form -->
@@ -52,8 +57,8 @@
             <!-- Identifier Field -->
             <div class="form-floating position-relative">
                 @php
-                    $placeholder = $role === 'admin' ? 'Email Admin' : ($role === 'guru' ? 'NIP Guru' : 'NISN Siswa');
-                    $icon = $role === 'admin' ? 'fas fa-envelope' : ($role === 'guru' ? 'fas fa-chalkboard-teacher' : 'fas fa-user-graduate');
+                    $placeholder = $role === 'admin' ? 'Email Admin' : ($role === 'guru' ? 'NIP Guru' : ($role === 'orang_tua' ? 'NIK Orang Tua' : 'NISN Siswa'));
+                    $icon = $role === 'admin' ? 'fas fa-envelope' : ($role === 'guru' ? 'fas fa-id-card' : ($role === 'orang_tua' ? 'fas fa-id-badge' : 'fas fa-user-graduate'));
                 @endphp
                 <i class="{{ $icon }} input-icon"></i>
                 <input type="text" wire:model="identifier" class="form-control @error('identifier') is-invalid @enderror"

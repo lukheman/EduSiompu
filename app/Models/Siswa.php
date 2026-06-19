@@ -12,7 +12,7 @@ class Siswa extends Authenticatable
 
     protected $table = 'siswa';
     protected $primaryKey = 'id_siswa';
-    protected $fillable = ['id_kelas', 'nisn', 'nama_siswa', 'password'];
+    protected $fillable = ['id_kelas', 'nisn', 'nama_siswa', 'password', 'id_orang_tua'];
 
     protected $hidden = [
         'password',
@@ -21,5 +21,10 @@ class Siswa extends Authenticatable
     public function kelas()
     {
         return $this->belongsTo(Kelas::class, 'id_kelas', 'id_kelas');
+    }
+
+    public function orangTua()
+    {
+        return $this->belongsTo(OrangTua::class, 'id_orang_tua', 'id_orang_tua');
     }
 }

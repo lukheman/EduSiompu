@@ -55,6 +55,11 @@ return [
             'driver' => 'session',
             'provider' => 'siswas',
         ],
+
+        'orang_tua' => [
+            'driver' => 'session',
+            'provider' => 'orang_tuas',
+        ],
     ],
 
     /*
@@ -93,6 +98,11 @@ return [
         'siswas' => [
             'driver' => 'eloquent',
             'model' => App\Models\Siswa::class,
+        ],
+
+        'orang_tuas' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\OrangTua::class,
         ],
 
         // 'users' => [
@@ -141,6 +151,12 @@ return [
         ],
         'siswas' => [
             'provider' => 'siswas',
+            'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+        'orang_tuas' => [
+            'provider' => 'orang_tuas',
             'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
             'expire' => 60,
             'throttle' => 60,
