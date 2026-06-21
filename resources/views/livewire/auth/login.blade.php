@@ -53,7 +53,7 @@
         </ul>
 
         <!-- Login Form -->
-        <form wire:submit="submit">
+        <form wire:submit="submit" x-data @submit="$wire.identifier = $refs.identifier.value; $wire.password = $refs.password.value">
             <!-- Identifier Field -->
             <div class="form-floating position-relative">
                 @php
@@ -61,7 +61,7 @@
                     $icon = $role === 'admin' ? 'fas fa-envelope' : ($role === 'guru' ? 'fas fa-id-card' : ($role === 'orang_tua' ? 'fas fa-id-badge' : 'fas fa-user-graduate'));
                 @endphp
                 <i class="{{ $icon }} input-icon"></i>
-                <input type="text" wire:model="identifier" class="form-control @error('identifier') is-invalid @enderror"
+                <input type="text" wire:model="identifier" x-ref="identifier" class="form-control @error('identifier') is-invalid @enderror"
                     id="identifier" placeholder="{{ $placeholder }}" autofocus>
                 <label for="identifier">{{ $placeholder }}</label>
                 @error('identifier')
@@ -72,7 +72,7 @@
             <!-- Password Field -->
             <div class="form-floating position-relative">
                 <i class="fas fa-lock input-icon"></i>
-                <input type="password" wire:model="password"
+                <input type="password" wire:model="password" x-ref="password"
                     class="form-control @error('password') is-invalid @enderror" id="password" placeholder="Kata Sandi">
                 <label for="password">Kata Sandi</label>
                 <button type="button" class="password-toggle" onclick="togglePassword()">
