@@ -18,20 +18,20 @@ new class extends Component
         </x-ui.alert>
     @endif
 
-    <ul class="nav nav-pills mb-4 gap-2">
+    <x-ui.tabs variant="pills" class="mb-4">
         <li class="nav-item">
-            <button class="nav-link {{ $activeTab == 'belum_selesai' ? 'active btn-primary-modern' : 'bg-white text-muted border' }} fw-bold px-4 py-2" wire:click="$set('activeTab', 'belum_selesai')">
+            <button class="nav-link {{ $activeTab == 'belum_selesai' ? 'active' : '' }}" wire:click="$set('activeTab', 'belum_selesai')">
                 <i class="fas fa-tasks me-2"></i>Belum Selesai
             </button>
         </li>
         <li class="nav-item">
-            <button class="nav-link {{ $activeTab == 'selesai' ? 'active btn-primary-modern' : 'bg-white text-muted border' }} fw-bold px-4 py-2" wire:click="$set('activeTab', 'selesai')">
+            <button class="nav-link {{ $activeTab == 'selesai' ? 'active' : '' }}" wire:click="$set('activeTab', 'selesai')">
                 <i class="fas fa-check-circle me-2"></i>Sudah Selesai
             </button>
         </li>
-    </ul>
+    </x-ui.tabs>
 
-    <div class="row g-4">
+    <div class="row g-4 mt-2">
         @forelse($tugasList as $tugas)
             <div class="col-md-6 col-lg-4">
                 <x-layout.modern-card class="h-100 d-flex flex-column hover-elevate">
@@ -41,11 +41,11 @@ new class extends Component
                             <x-ui.badge variant="primary" class="opacity-75">{{ $tugas->jadwalPelajaran->guruAmpu->mataPelajaran->nama_mapel }}</x-ui.badge>
                         </div>
                     </div>
-                    
+
                     <p class="text-muted small text-truncate-3 mb-3" style="min-height: 60px;">
                         {{ $tugas->deskripsi ?? 'Tidak ada instruksi tambahan.' }}
                     </p>
-                    
+
                     <div class="mb-4 bg-light rounded p-3">
                         <div class="d-flex align-items-center text-muted small mb-2">
                             <i class="far fa-calendar-alt text-primary me-2 w-15px"></i>
@@ -62,7 +62,7 @@ new class extends Component
                             </div>
                         @endif
                     </div>
-                    
+
                     <div class="mt-auto border-top pt-3">
                         @if($activeTab == 'selesai')
                             @php $pengumpulan = $tugas->pengumpulan->first(); @endphp
@@ -72,7 +72,7 @@ new class extends Component
                                     {{ $pengumpulan->nilai !== null ? 'Nilai: ' . $pengumpulan->nilai : 'Belum Dinilai' }}
                                 </x-ui.badge>
                             </div>
-                            <x-ui.button variant="outline" size="sm" class="w-100 mt-2" wire:click="openSubmitModal({{ $tugas->id_tugas }})">
+                            <x-ui.button variant="warning" size="sm" class="w-100 mt-2" wire:click="openSubmitModal({{ $tugas->id_tugas }})">
                                 Edit Pengumpulan
                             </x-ui.button>
                         @else
@@ -85,8 +85,8 @@ new class extends Component
             </div>
         @empty
             <div class="col-12">
-                <x-ui.empty-state icon="{{ $activeTab == 'selesai' ? 'fas fa-check-circle' : 'fas fa-tasks' }}" 
-                    title="{{ $activeTab == 'selesai' ? 'Belum ada tugas selesai' : 'Hore! Tidak ada tugas' }}" 
+                <x-ui.empty-state icon="{{ $activeTab == 'selesai' ? 'fas fa-check-circle' : 'fas fa-tasks' }}"
+                    title="{{ $activeTab == 'selesai' ? 'Belum ada tugas selesai' : 'Hore! Tidak ada tugas' }}"
                     description="{{ $activeTab == 'selesai' ? 'Anda belum mengumpulkan tugas apa pun.' : 'Anda sudah menyelesaikan semua tugas. Waktunya bersantai!' }}" />
             </div>
         @endforelse
@@ -107,7 +107,7 @@ new class extends Component
                     </div>
 
                     <div class="mb-3">
-                        <x-form.file-upload label="File Tugas (PDF, DOCX, dll)" wire:model="file_tugas" required="true" hint="Maksimal 10MB." :error="$errors->first('file_tugas')" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.zip,.rar" />
+                        <x-form.file-upload label="File Tugas (PDF, DOCX, dll) *" wire:model="file_tugas" hint="Maksimal 10MB." :error="$errors->first('file_tugas')" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.zip,.rar" />
                     </div>
 
                     <div class="mb-4">

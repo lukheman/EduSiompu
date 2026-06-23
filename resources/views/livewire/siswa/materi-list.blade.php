@@ -96,7 +96,7 @@
                         </div>
                     </div>
                     <div class="bg-light p-3 border-top" style="background-color: var(--bg-tertiary) !important;">
-                        <x-ui.button href="{{ \Illuminate\Support\Facades\Storage::url($materi->file_path) }}" target="_blank" class="w-100">
+                        <x-ui.button variant="danger" href="{{ \Illuminate\Support\Facades\Storage::url($materi->file_path) }}" target="_blank" class="w-100">
                             <i class="fas fa-external-link-alt me-2"></i> Download Materi
                         </x-ui.button>
                     </div>

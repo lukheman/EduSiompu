@@ -19,6 +19,13 @@
     dragging: false,
     handleFiles(event) {
         const newFiles = event.target.files || event.dataTransfer.files;
+        
+        // If files were dropped, sync them to the hidden input so Livewire's wire:model catches them
+        if (event.dataTransfer && event.dataTransfer.files.length > 0) {
+            this.$refs.fileInput.files = event.dataTransfer.files;
+            this.$refs.fileInput.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+
         for (let i = 0; i < newFiles.length; i++) {
             this.files.push({
                 file: newFiles[i],

@@ -141,14 +141,14 @@
                                         </div>
                                     </td>
                                     <td>
-                                        @if($p->file_tugas)
-                                            <a href="{{ Storage::url($p->file_tugas) }}" target="_blank" class="btn btn-sm btn-outline-primary mb-1"><i class="fas fa-download me-1"></i>Unduh</a>
-                                        @else
-                                            <span class="text-muted small italic">Tidak ada file</span>
-                                        @endif
-                                        @if($p->catatan)
-                                            <p class="mb-0 small text-muted mt-1">"{{ $p->catatan }}"</p>
-                                        @endif
+                                        <div class="d-flex flex-column flex-sm-row gap-2">
+                                            @if($p->file_tugas)
+                                                <x-ui.button size="sm" variant="danger" href="{{ Storage::url($p->file_tugas) }}" target="_blank" icon="fas fa-download" >Unduh File</x-ui.button>
+                                            @else
+                                                <span class="text-muted small italic">Tidak ada file</span>
+                                            @endif
+                                            <x-ui.button size="sm" variant="info" wire:click="lihatDetail({{ $p->id_pengumpulan }})" icon="fas fa-eye" >Detail</x-ui.button>
+                                        </div>
                                     </td>
                                     <td>
                                         <div class="small">
@@ -181,6 +181,47 @@
 
                 <div class="d-flex justify-content-end pt-3 mt-3 border-top">
                     <x-ui.button type="button" variant="primary" wire:click="$set('showPengumpulanModal', false)">Tutup</x-ui.button>
+                </div>
+            </x-layout.modern-card>
+        </div>
+    @endif
+
+    {{-- Modal Detail Pengumpulan --}}
+    @if($showDetailModal && $selectedPengumpulan)
+        <div class="modal-backdrop-custom" style="z-index: 1060;" wire:click.self="$set('showDetailModal', false)">
+            <x-layout.modern-card class="modal-content-custom m-auto" style="max-width: 500px; margin-top: 5rem !important;">
+                <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+                    <h5 class="mb-0 fw-bold">Detail Pengumpulan</h5>
+                    <button wire:click="$set('showDetailModal', false)" class="btn-close"></button>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted small mb-1">Nama Siswa</label>
+                    <p class="fw-bold mb-0 text-dark">{{ $selectedPengumpulan->siswa->nama_siswa }}</p>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted small mb-1">Waktu Pengumpulan</label>
+                    <p class="mb-0 text-dark">
+                        {{ \Carbon\Carbon::parse($selectedPengumpulan->waktu_pengumpulan)->translatedFormat('d M Y, H:i') }}
+                        @if(\Carbon\Carbon::parse($selectedPengumpulan->waktu_pengumpulan)->isAfter($selectedPengumpulan->tugas->tenggat_waktu))
+                            <x-ui.badge variant="danger" class="ms-2">Terlambat</x-ui.badge>
+                        @endif
+                    </p>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label text-muted small mb-1">Catatan dari Siswa</label>
+                    <div class="p-3 bg-light rounded text-dark" style="min-height: 80px; font-style: italic;">
+                        {{ $selectedPengumpulan->catatan ?: 'Tidak ada catatan yang diberikan.' }}
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 border-top pt-3">
+                    @if($selectedPengumpulan->file_tugas)
+                        <x-ui.button variant="danger" href="{{ Storage::url($selectedPengumpulan->file_tugas) }}" target="_blank" icon="fas fa-download">Unduh File</x-ui.button>
+                    @endif
+                    <x-ui.button type="button" variant="primary" wire:click="$set('showDetailModal', false)">Tutup</x-ui.button>
                 </div>
             </x-layout.modern-card>
         </div>

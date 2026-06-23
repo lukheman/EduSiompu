@@ -38,6 +38,10 @@ class TugasManagement extends Component
     public $nilai = [];
     public $catatanGuru = [];
 
+    // Detail Modal state
+    public $showDetailModal = false;
+    public $selectedPengumpulan = null;
+
     public function mount()
     {
         $this->guruId = Auth::guard('guru')->user()->id_guru;
@@ -147,6 +151,12 @@ class TugasManagement extends Component
         }
 
         $this->showPengumpulanModal = true;
+    }
+
+    public function lihatDetail($idPengumpulan)
+    {
+        $this->selectedPengumpulan = PengumpulanTugas::with('siswa', 'tugas')->findOrFail($idPengumpulan);
+        $this->showDetailModal = true;
     }
 
     public function saveNilai($idPengumpulan)
