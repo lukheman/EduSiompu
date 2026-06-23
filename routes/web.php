@@ -65,6 +65,7 @@ Route::prefix('guru')->middleware('auth:guru,web')->group(function () {
     Route::get('/materi', MateriManagement::class)->name('guru.materi');
     Route::get('/jadwal-absensi', \App\Livewire\Guru\JadwalAbsensi::class)->name('guru.jadwal-absensi');
     Route::get('/input-nilai', InputNilai::class)->name('guru.input-nilai');
+    Route::get('/tugas', App\Livewire\Guru\TugasManagement::class)->name('guru.tugas');
     Route::get('/profil', GuruProfile::class)->name('guru.profile');
 });
 
@@ -74,6 +75,7 @@ Route::prefix('siswa')->middleware('auth:siswa,web')->group(function () {
     Route::get('/materi-belajar', MateriList::class)->name('siswa.materi');
     Route::get('/absensi-saya', AbsensiList::class)->name('siswa.absensi');
     Route::get('/raport-saya', RaportSaya::class)->name('siswa.raport');
+    Route::get('/tugas', App\Livewire\Siswa\TugasList::class)->name('siswa.tugas');
     Route::get('/profil', SiswaProfile::class)->name('siswa.profile');
 });
 
