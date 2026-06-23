@@ -5,52 +5,54 @@ namespace App\Livewire\Auth;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
-use Livewire\Attributes\Rule;
-
 use Livewire\Component;
 
 #[Layout('layouts.guest')]
 #[Title('Login - EduSiompu')]
 class Login extends Component
 {
-    public string $role = 'siswa';
+    public string $role = '';
 
-    #[Rule(['required'])]
     public string $identifier = '';
 
-    #[Rule(['required'])]
     public string $password = '';
 
     public bool $remember = false;
 
-    public function setRole(string $role)
+    public function getRoleOptionsProperty(): array
     {
-        $this->role = $role;
-        $this->resetErrorBag();
-        $this->identifier = '';
-        $this->password = '';
+        return [
+            'siswa' => 'Siswa',
+            'guru' => 'Guru',
+            'admin' => 'Admin',
+            'orang_tua' => 'Orang Tua',
+        ];
     }
 
     public function submit()
     {
-        $this->validate();
-
-        $identifier = $this->identifier;
-        $password = $this->password;
-        $remember = $this->remember;
+        $this->validate([
+            'role' => ['required', 'in:siswa,guru,admin,orang_tua'],
+            'identifier' => ['required'],
+            'password' => ['required'],
+        ], [
+            'role.required' => 'Silakan pilih role terlebih dahulu.',
+            'identifier.required' => 'Identitas wajib diisi.',
+            'password.required' => 'Kata sandi wajib diisi.',
+        ]);
 
         if ($this->role === 'admin') {
-            if (Auth::guard('admin')->attempt(['email' => $identifier, 'password' => $password], $remember)) {
+            if (Auth::guard('admin')->attempt(['email' => $this->identifier, 'password' => $this->password], $this->remember)) {
                 session()->regenerate();
                 return redirect()->to(route('admin.dashboard'));
             }
         } elseif ($this->role === 'guru') {
-            if (Auth::guard('guru')->attempt(['nip' => $identifier, 'password' => $password], $remember)) {
+            if (Auth::guard('guru')->attempt(['nip' => $this->identifier, 'password' => $this->password], $this->remember)) {
                 session()->regenerate();
                 return redirect()->to(route('guru.dashboard'));
             }
         } elseif ($this->role === 'siswa') {
-            if (Auth::guard('siswa')->attempt(['nisn' => $identifier, 'password' => $password], $remember)) {
+            if (Auth::guard('siswa')->attempt(['nisn' => $this->identifier, 'password' => $this->password], $this->remember)) {
                 session()->regenerate();
                 return redirect()->to(route('siswa.dashboard'));
             }
@@ -61,7 +63,7 @@ class Login extends Component
             }
         }
 
-        $this->addError('identifier', 'Identitas atau password salah.');
+        $this->addError('identifier', 'Identitas atau kata sandi salah.');
     }
 
     public function render()

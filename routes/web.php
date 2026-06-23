@@ -25,6 +25,10 @@ use App\Livewire\Guru\Profile as GuruProfile;
 use App\Livewire\Siswa\AbsensiList;
 use App\Livewire\Siswa\MateriList;
 use App\Livewire\Siswa\Profile as SiswaProfile;
+use App\Livewire\Siswa\RaportSaya;
+
+use App\Livewire\Guru\InputNilai;
+use App\Livewire\OrangTua\RaportAnak;
 
 // Guest Routes
 Route::get('/', LandingPage::class)->name('home');
@@ -59,6 +63,7 @@ Route::prefix('guru')->middleware('auth:guru,web')->group(function () {
     Route::get('/dashboard', \App\Livewire\Guru\Dashboard::class)->name('guru.dashboard');
     Route::get('/materi', MateriManagement::class)->name('guru.materi');
     Route::get('/pertemuan', PertemuanManagement::class)->name('guru.pertemuan');
+    Route::get('/input-nilai', InputNilai::class)->name('guru.input-nilai');
     Route::get('/profil', GuruProfile::class)->name('guru.profile');
 });
 
@@ -67,6 +72,7 @@ Route::prefix('siswa')->middleware('auth:siswa,web')->group(function () {
     Route::get('/dashboard', \App\Livewire\Siswa\Dashboard::class)->name('siswa.dashboard');
     Route::get('/materi-belajar', MateriList::class)->name('siswa.materi');
     Route::get('/absensi-saya', AbsensiList::class)->name('siswa.absensi');
+    Route::get('/raport-saya', RaportSaya::class)->name('siswa.raport');
     Route::get('/profil', SiswaProfile::class)->name('siswa.profile');
 });
 
@@ -74,4 +80,5 @@ Route::prefix('siswa')->middleware('auth:siswa,web')->group(function () {
 Route::prefix('orang-tua')->middleware('auth:orang_tua,web')->group(function () {
     Route::get('/dashboard', \App\Livewire\OrangTua\Dashboard::class)->name('orang-tua.dashboard');
     Route::get('/absensi-anak', \App\Livewire\OrangTua\AbsensiAnak::class)->name('orang-tua.absensi');
+    Route::get('/raport-anak', RaportAnak::class)->name('orang-tua.raport');
 });
