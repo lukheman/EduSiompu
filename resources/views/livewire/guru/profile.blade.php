@@ -34,10 +34,10 @@
                 <h5 class="fw-bold text-primary mb-4 border-bottom pb-3"><i class="fas fa-user-edit me-2"></i>Informasi Dasar</h5>
 
                 @if (session('success_profile'))
-                    <x-ui.alert variant="success" title="Sukses!" class="mb-4">
+                    <x-ui.toast variant="success">
                         {{ session('success_profile') }}
-                    </x-ui.alert>
-                @endif
+                    </x-ui.toast>
+    @endif
 
                 <form wire:submit="updateProfile">
                     <div class="mb-3">
@@ -72,10 +72,10 @@
                 </div>
 
                 @if (session('success_password'))
-                    <x-ui.alert variant="success" title="Keamanan Diperbarui!" class="mb-4">
+                    <x-ui.toast variant="success">
                         {{ session('success_password') }}
-                    </x-ui.alert>
-                @endif
+                    </x-ui.toast>
+    @endif
 
                 @if($showPasswordSection)
                     <form wire:submit="updatePassword">

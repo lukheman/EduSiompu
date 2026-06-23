@@ -13,9 +13,9 @@ new class extends Component
     </x-layout.page-header>
 
     @if (session('success'))
-        <x-ui.alert variant="success" class="mb-4">
+        <x-ui.toast variant="success">
             {{ session('success') }}
-        </x-ui.alert>
+        </x-ui.toast>
     @endif
 
     <x-ui.tabs variant="pills" class="mb-4">

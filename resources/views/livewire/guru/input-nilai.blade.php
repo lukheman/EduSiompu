@@ -13,9 +13,9 @@
     </x-layout.page-header>
 
     @if(session()->has('message'))
-        <x-ui.alert variant="success" dismissible="true" class="mb-4">
+        <x-ui.toast variant="success">
             {{ session('message') }}
-        </x-ui.alert>
+        </x-ui.toast>
     @endif
 
     @if($selectedAmpuId && count($siswas) > 0)

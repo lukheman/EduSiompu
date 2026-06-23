@@ -13,10 +13,10 @@
         </x-slot:actions>
     </x-layout.page-header>
 
-    @if (session()->has('success'))
-        <x-ui.alert variant="success" dismissible="true" class="mb-4">
+    @if (session('success'))
+        <x-ui.toast variant="success">
             {{ session('success') }}
-        </x-ui.alert>
+        </x-ui.toast>
     @endif
 
     @if(!$selectedKelasId)

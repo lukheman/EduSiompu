@@ -10,15 +10,15 @@
 
     {{-- Flash Messages --}}
     @if (session('success'))
-        <x-ui.alert variant="success" title="Berhasil!" class="mb-4">
+        <x-ui.toast variant="success">
             {{ session('success') }}
-        </x-ui.alert>
+        </x-ui.toast>
     @endif
 
     @if (session('error'))
-        <x-ui.alert variant="danger" title="Gagal!" class="mb-4">
+        <x-ui.toast variant="danger">
             {{ session('error') }}
-        </x-ui.alert>
+        </x-ui.toast>
     @endif
 
     {{-- Materi Table Card --}}

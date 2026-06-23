@@ -10,9 +10,9 @@
 
     {{-- Flash Messages --}}
     @if (session('success'))
-        <x-ui.alert variant="success" title="Berhasil!" class="mb-4">
+        <x-ui.toast variant="success">
             {{ session('success') }}
-        </x-ui.alert>
+        </x-ui.toast>
     @endif
 
     {{-- Data Table Card --}}
