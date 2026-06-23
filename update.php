@@ -4,22 +4,14 @@
 require __DIR__.'/helpers.php';
 
 /**
- * Script Update Project Laravel
+ * Script Update Project Laravel (Versi Sederhana)
  *
- * 1. Git pull perubahan terbaru
- * 2. Composer install jika ada perubahan dependencies
- * 3. Migrasi database
+ * 1. Mengambil pembaruan secara paksa dari repository git (Fetch & Hard Reset)
+ * 2. Memperbarui dependensi (Composer)
+ * 3. Reset dan migrasi database
  * 4. Bersihkan cache
- * 5. Optimasi aplikasi
- *
- * @author    Akmal
- *
- * @instagram @lukheeman
- *
- * @phone     082250223147
- *
- * @portfolio https://lukheman.github.io/portfolio/
  */
+
 $dir = __DIR__;
 $start = microtime(true);
 chdir($dir);
@@ -29,167 +21,75 @@ out('+'.str_repeat('-', 63).'+', 'bold', 'green');
 out('|'.str_pad('  SIMKA - SCRIPT UPDATE APLIKASI', 63).'|', 'bold', 'green');
 out('+'.str_repeat('-', 63).'+', 'bold', 'green');
 out('');
-info("Lokasi : {$dir}");
-info('Waktu  : '.date('Y-m-d H:i:s'));
+info('Memulai pembaruan sistem. Mohon tunggu...');
+out('');
 
 // ============================================================
-//  Langkah 0 – Cek Kebutuhan
+//  Langkah 1 – Git Fetch & Reset (Force Pull)
 // ============================================================
+step(1, 'Mengunduh Pembaruan (Force Update)');
 
-step(0, 'Mengecek Kebutuhan');
-
-if (! hasCmd('git')) {
-    err('Git tidak ditemukan!');
-    exit(1);
-} ok('Git ditemukan');
-if (! is_dir("$dir/.git")) {
-    err('Bukan repository Git!');
-    exit(1);
-} ok('Repository Git terdeteksi');
-if (! hasCmd('composer')) {
-    err('Composer tidak ditemukan!');
-    exit(1);
-} ok('Composer ditemukan');
-
-// ============================================================
-//  Langkah 1 – Status Git
-// ============================================================
-
-step(1, 'Mengecek Status Git');
-
-$branch = shell('git branch --show-current');
-info("Branch saat ini: {$branch}");
-
-$status = shell('git status --porcelain');
-if (! empty($status)) {
-    warn('Ada perubahan lokal yang belum di-commit:');
-    out((USE_COLOR ? C['yellow'] : '').$status.(USE_COLOR ? C['reset'] : ''));
-    out('');
-    warn('Perubahan lokal akan tetap dipertahankan.');
-    out('');
+$branch = shell('git rev-parse --abbrev-ref HEAD');
+if (empty($branch)) {
+    $branch = 'main'; // Fallback
 }
 
-// ============================================================
-//  Langkah 2 – Git Pull
-// ============================================================
-
-step(2, 'Mengambil Pembaruan dari Repository (Git Pull)');
-
-$hashBefore = shell('git rev-parse HEAD');
-
-if (! run('git pull')) {
-    err('Git pull gagal!');
-    out('');
-    warn('Kemungkinan penyebab:');
-    out('  1. Tidak ada koneksi internet', 'yellow');
-    out('  2. Ada konflik dengan perubahan lokal', 'yellow');
-    out('  3. Remote repository tidak tersedia', 'yellow');
+// Mengambil perubahan dari server origin
+if (!run('git fetch origin')) {
+    err('Gagal terhubung ke internet atau server pembaruan!');
     exit(1);
 }
 
-$hashAfter = shell('git rev-parse HEAD');
-
-if ($hashBefore === $hashAfter) {
-    ok('Project sudah versi terbaru, tidak ada pembaruan.');
-} else {
-    ok('Pembaruan berhasil diambil!');
-    info('Commit baru:');
-    out((USE_COLOR ? C['cyan'] : '').shell("git log --oneline {$hashBefore}..{$hashAfter}").(USE_COLOR ? C['reset'] : ''));
-}
-
-// ============================================================
-//  Langkah 3 – Composer Install (jika ada perubahan)
-// ============================================================
-
-step(3, 'Update Dependencies Composer');
-
-$composerUpdated = false;
-
-if ($hashBefore !== $hashAfter) {
-    $changed = shell("git diff --name-only {$hashBefore} {$hashAfter}");
-
-    if (str_contains($changed, 'composer.json') || str_contains($changed, 'composer.lock')) {
-        info('Terdeteksi perubahan composer.json/composer.lock, menjalankan install...');
-
-        if (! run('composer install --no-interaction --optimize-autoloader')) {
-            err('Composer install gagal!');
-            exit(1);
-        }
-
-        $composerUpdated = true;
-        ok('Dependencies Composer berhasil diupdate!');
-    } else {
-        ok('Tidak ada perubahan dependencies, melewati composer install.');
-    }
-} else {
-    ok('Tidak ada update, melewati composer install.');
-}
-
-// ============================================================
-//  Langkah 4 – Migrasi Database
-// ============================================================
-
-step(4, 'Menjalankan Migrasi Database');
-
-if (! run('php artisan migrate:fresh --seed')) {
-    err('Migrasi database gagal!');
-    out('');
-    warn('Kemungkinan penyebab:');
-    out('  1. Database tidak terhubung', 'yellow');
-    out('  2. Kredensial database pada .env salah', 'yellow');
-    out('  3. Ada error pada file migrasi', 'yellow');
+// Memaksa sistem lokal sama persis dengan server (menghapus perubahan lokal yang konflik)
+if (!run("git reset --hard origin/{$branch}")) {
+    err('Gagal menerapkan pembaruan sistem!');
     exit(1);
 }
-ok('Migrasi database selesai!');
+ok('Pembaruan sistem berhasil diterapkan!');
 
 // ============================================================
-//  Langkah 5 – Bersihkan Cache
+//  Langkah 2 – Update Composer
 // ============================================================
-
-step(5, 'Membersihkan Cache Aplikasi');
-
-foreach (['config', 'route', 'view', 'cache'] as $cache) {
-    run("php artisan {$cache}:clear");
+step(2, 'Memperbarui Modul & Dependensi');
+if (!run('composer install --no-interaction --optimize-autoloader')) {
+    err('Gagal memperbarui modul sistem!');
+    exit(1);
 }
-run('php artisan clear-compiled');
-
-ok('Semua cache berhasil dibersihkan!');
+ok('Modul sistem berhasil diperbarui!');
 
 // ============================================================
-//  Langkah 6 – Optimasi
+//  Langkah 3 – Database
 // ============================================================
-
-step(6, 'Mengoptimasi Aplikasi');
-
-run('composer dump-autoload --optimize');
-ok('Aplikasi berhasil dioptimasi!');
+step(3, 'Memperbarui & Mereset Database');
+if (!run('php artisan migrate:fresh --seed --force')) {
+    err('Gagal memperbarui database aplikasi!');
+    exit(1);
+}
+ok('Database berhasil diperbarui dan dikembalikan ke awal!');
 
 // ============================================================
-//  Selesai!
+//  Langkah 4 – Bersihkan Cache
 // ============================================================
+step(4, 'Membersihkan Cache');
+run('php artisan optimize:clear');
+ok('Cache sistem berhasil dibersihkan!');
 
+// ============================================================
+//  Selesai
+// ============================================================
 $duration = round(microtime(true) - $start, 2);
 
 out('');
 out('+'.str_repeat('-', 63).'+', 'bold', 'green');
-out('|'.str_pad('  ✅  UPDATE PROJECT BERHASIL!', 63).'|', 'bold', 'green');
+out('|'.str_pad('  ✅  UPDATE BERHASIL! APLIKASI SIAP DIGUNAKAN', 63).'|', 'bold', 'green');
 out('+'.str_repeat('-', 63).'+', 'bold', 'green');
 out('');
-info("Waktu proses: {$duration} detik");
-info('Project berhasil diupdate ke versi terbaru!');
+info("Seluruh proses pembaruan selesai dalam {$duration} detik.");
+out('');
+out('  Untuk mulai menjalankan aplikasi, silakan jalankan:', 'yellow');
+out('  php serve.php');
 out('');
 
-// Ringkasan
-$composerStatus = $composerUpdated ? 'Selesai' : 'Dilewati (tidak ada perubahan)';
-out('  Ringkasan Update:', 'bold', 'cyan');
-out('  ├─ Git Pull            : Selesai', 'cyan');
-out("  ├─ Composer Install    : {$composerStatus}", 'cyan');
-out('  ├─ Database Migration  : Selesai', 'cyan');
-out('  ├─ Clear Cache         : Selesai', 'cyan');
-out('  └─ Optimasi            : Selesai', 'cyan');
-out('');
-out('  Untuk menjalankan aplikasi, gunakan:', 'yellow');
-out('  php serve.php  atau  php artisan serve');
-out('');
-
-showContact();
+if (function_exists('showContact')) {
+    showContact();
+}
