@@ -184,21 +184,21 @@ class DatabaseSeeder extends Seeder
             'updated_at' => $now,
         ]);
 
-        // 9. Pertemuan & Absensi (X MIPA 1 - Matematika - Budi Santoso)
-        $idPertemuan1 = DB::table('pertemuan')->insertGetId([
+        // 9. Jadwal Pelajaran & Absensi (X MIPA 1 - Matematika - Budi Santoso)
+        $idJadwal1 = DB::table('jadwal_pelajaran')->insertGetId([
             'id_guru_ampu' => $idGuruAmpu1,
-            'pertemuan_ke' => 1,
-            'tanggal' => $now->copy()->subDays(14)->format('Y-m-d'),
-            'pokok_bahasan' => 'Pengenalan Sistem Persamaan Linear Tiga Variabel (SPLTV)',
+            'hari' => 'Senin',
+            'jam_mulai' => '07:30',
+            'jam_selesai' => '09:00',
             'created_at' => $now,
             'updated_at' => $now,
         ]);
 
-        $idPertemuan2 = DB::table('pertemuan')->insertGetId([
+        $idJadwal2 = DB::table('jadwal_pelajaran')->insertGetId([
             'id_guru_ampu' => $idGuruAmpu1,
-            'pertemuan_ke' => 2,
-            'tanggal' => $now->copy()->subDays(7)->format('Y-m-d'),
-            'pokok_bahasan' => 'Penyelesaian SPLTV Menggunakan Metode Substitusi',
+            'hari' => 'Kamis',
+            'jam_mulai' => '10:00',
+            'jam_selesai' => '11:30',
             'created_at' => $now,
             'updated_at' => $now,
         ]);
@@ -209,20 +209,21 @@ class DatabaseSeeder extends Seeder
         $statuses = ['hadir', 'hadir', 'hadir', 'sakit', 'izin', 'alpa'];
 
         foreach ($siswaXmipa1 as $index => $s) {
-            // Absen pertemuan 1
+            // Absen Jadwal 1 (Minggu lalu)
             DB::table('absensi')->insert([
-                'id_pertemuan' => $idPertemuan1,
+                'id_jadwal_pelajaran' => $idJadwal1,
                 'id_siswa' => $s->id_siswa,
-                'status_kehadiran' => 'hadir', // Semua hadir di pertemuan pertama
+                'tanggal' => (clone $now)->startOfWeek()->subWeeks(1)->format('Y-m-d'), // Senin minggu lalu
+                'status_kehadiran' => 'hadir', // Semua hadir
                 'created_at' => $now,
                 'updated_at' => $now,
             ]);
 
-            // Absen pertemuan 2
+            // Absen Jadwal 2 (Minggu lalu)
             DB::table('absensi')->insert([
-                'id_pertemuan' => $idPertemuan2,
+                'id_jadwal_pelajaran' => $idJadwal2,
                 'id_siswa' => $s->id_siswa,
-                // Beri variasi status kehadiran untuk pertemuan kedua
+                'tanggal' => (clone $now)->startOfWeek()->subWeeks(1)->addDays(3)->format('Y-m-d'), // Kamis minggu lalu
                 'status_kehadiran' => $index == 2 ? 'sakit' : ($index == 4 ? 'izin' : 'hadir'),
                 'created_at' => $now,
                 'updated_at' => $now,

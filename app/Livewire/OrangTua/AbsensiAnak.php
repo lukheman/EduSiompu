@@ -33,8 +33,12 @@ class AbsensiAnak extends Component
             $this->id_anak = $anakList->first()->id_siswa;
         }
 
-        $query = Absensi::with(['pertemuan.guruAmpu.mataPelajaran', 'pertemuan.guruAmpu.guru', 'pertemuan.guruAmpu.kelas'])
-            ->where('id_siswa', $this->id_anak);
+        $siswa = $anakList->where('id_siswa', $this->id_anak)->first() ?? $anakList->first();
+
+        $query = Absensi::with(['jadwalPelajaran.guruAmpu.mataPelajaran', 'jadwalPelajaran.guruAmpu.guru', 'jadwalPelajaran.guruAmpu.kelas'])
+            ->where('id_siswa', $siswa->id_siswa);
+
+
 
         $summaryQuery = clone $query;
         $summaryData = $summaryQuery->selectRaw('status_kehadiran, count(*) as total')
@@ -49,9 +53,7 @@ class AbsensiAnak extends Component
             'alpa' => $summaryData['alpa'] ?? 0,
         ];
 
-        $query->join('pertemuan', 'absensi.id_pertemuan', '=', 'pertemuan.id_pertemuan')
-            ->select('absensi.*')
-            ->orderBy('pertemuan.tanggal', 'desc');
+        $query->orderBy('tanggal', 'desc');
 
         $absensiList = $query->paginate(15);
 

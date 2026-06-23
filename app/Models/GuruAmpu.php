@@ -32,4 +32,9 @@ class GuruAmpu extends Model
     {
         return $this->belongsTo(TahunAjaran::class, 'id_tahun_ajaran', 'id_tahun_ajaran');
     }
+
+    public function jadwalPelajaran()
+    {
+        return $this->hasMany(JadwalPelajaran::class, 'id_guru_ampu', 'id_guru_ampu');
+    }
 }

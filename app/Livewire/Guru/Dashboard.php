@@ -4,7 +4,6 @@ namespace App\Livewire\Guru;
 
 use App\Models\GuruAmpu;
 use App\Models\Materi;
-use App\Models\Pertemuan;
 use App\Models\TahunAjaran;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Title;
@@ -32,7 +31,7 @@ class Dashboard extends Component
                 'total_kelas' => $guruAmpus->unique('id_kelas')->count(),
                 'total_mapel' => $guruAmpus->unique('id_mata_pelajaran')->count(),
                 'total_materi' => Materi::whereIn('id_guru_ampu', $guruAmpuIds)->count(),
-                'total_pertemuan' => Pertemuan::whereIn('id_guru_ampu', $guruAmpuIds)->count(),
+                'total_jadwal' => \App\Models\JadwalPelajaran::whereIn('id_guru_ampu', $guruAmpuIds)->count(),
             ];
 
             $recentData = $guruAmpus->load(['kelas', 'mataPelajaran']); // Jadwal Mengajar

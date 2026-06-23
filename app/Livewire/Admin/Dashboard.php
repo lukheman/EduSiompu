@@ -9,7 +9,6 @@ use App\Models\MataPelajaran;
 use App\Models\TahunAjaran;
 use App\Models\GuruAmpu;
 use App\Models\Materi;
-use App\Models\Pertemuan;
 use App\Models\Absensi;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Title;

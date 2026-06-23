@@ -10,8 +10,9 @@ return new class extends Migration
     {
         Schema::create('absensi', function (Blueprint $table) {
             $table->id("id_absensi");
-            $table->foreignId("id_pertemuan")->constrained("pertemuan", "id_pertemuan")->onDelete("cascade");
+            $table->foreignId("id_jadwal_pelajaran")->constrained("jadwal_pelajaran", "id_jadwal_pelajaran")->onDelete("cascade");
             $table->foreignId("id_siswa")->constrained("siswa", "id_siswa")->onDelete("cascade");
+            $table->date("tanggal");
             $table->enum("status_kehadiran", ["hadir", "sakit", "izin", "alpa"]);
             $table->timestamps();
         });

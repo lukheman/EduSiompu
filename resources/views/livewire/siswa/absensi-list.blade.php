@@ -62,8 +62,7 @@
                         <th>Tanggal</th>
                         <th>Mata Pelajaran</th>
                         <th>Guru Pengampu</th>
-                        <th>Pertemuan Ke</th>
-                        <th>Pokok Bahasan</th>
+                        <th>Jadwal (Hari & Waktu)</th>
                         <th>Status</th>
                         <th style="width: 100px;">Tindakan</th>
                     </tr>
@@ -71,20 +70,15 @@
                 <tbody>
                     @forelse($absensiList as $absensi)
                         <tr>
-                            <td>{{ \Carbon\Carbon::parse($absensi->pertemuan->tanggal)->translatedFormat('d M Y') }}</td>
+                            <td>{{ \Carbon\Carbon::parse($absensi->tanggal)->translatedFormat('d M Y') }}</td>
                             <td>
-                                <div class="fw-semibold text-primary">{{ $absensi->pertemuan->guruAmpu->mataPelajaran->nama_mapel ?? '-' }}</div>
+                                <div class="fw-semibold text-primary">{{ $absensi->jadwalPelajaran->guruAmpu->mataPelajaran->nama_mapel ?? '-' }}</div>
                             </td>
                             <td>
-                                <div class="text-muted">{{ $absensi->pertemuan->guruAmpu->guru->nama_guru ?? '-' }}</div>
+                                <div class="text-muted">{{ $absensi->jadwalPelajaran->guruAmpu->guru->nama_guru ?? '-' }}</div>
                             </td>
                             <td>
-                                <x-ui.badge variant="secondary" icon="fas fa-calendar-day">Ke-{{ $absensi->pertemuan->pertemuan_ke }}</x-ui.badge>
-                            </td>
-                            <td>
-                                <div style="max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ $absensi->pertemuan->pokok_bahasan }}">
-                                    {{ $absensi->pertemuan->pokok_bahasan }}
-                                </div>
+                                <x-ui.badge variant="secondary" icon="fas fa-clock">{{ $absensi->jadwalPelajaran->hari }}, {{ \Carbon\Carbon::parse($absensi->jadwalPelajaran->jam_mulai)->format('H:i') }}</x-ui.badge>
                             </td>
                             <td>
                                 <x-ui.badge variant="{{ $absensi->status_kehadiran->getColor() }}" icon="{{ $absensi->status_kehadiran->getIcon() }}">{{ $absensi->status_kehadiran->getLabel() }}</x-ui.badge>
@@ -130,23 +124,19 @@
                         <tbody>
                             <tr>
                                 <th style="width: 35%; background-color: var(--input-bg);">Tanggal</th>
-                                <td>{{ \Carbon\Carbon::parse($viewingAbsensi->pertemuan->tanggal)->translatedFormat('l, d F Y') }}</td>
+                                <td>{{ \Carbon\Carbon::parse($viewingAbsensi->tanggal)->translatedFormat('l, d F Y') }}</td>
                             </tr>
                             <tr>
-                                <th style="background-color: var(--input-bg);">Pertemuan Ke</th>
-                                <td>{{ $viewingAbsensi->pertemuan->pertemuan_ke }}</td>
+                                <th style="background-color: var(--input-bg);">Jadwal (Hari & Jam)</th>
+                                <td>{{ $viewingAbsensi->jadwalPelajaran->hari }}, {{ \Carbon\Carbon::parse($viewingAbsensi->jadwalPelajaran->jam_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($viewingAbsensi->jadwalPelajaran->jam_selesai)->format('H:i') }}</td>
                             </tr>
                             <tr>
                                 <th style="background-color: var(--input-bg);">Mata Pelajaran</th>
-                                <td>{{ $viewingAbsensi->pertemuan->guruAmpu->mataPelajaran->nama_mapel ?? '-' }}</td>
+                                <td>{{ $viewingAbsensi->jadwalPelajaran->guruAmpu->mataPelajaran->nama_mapel ?? '-' }}</td>
                             </tr>
                             <tr>
                                 <th style="background-color: var(--input-bg);">Guru Pengampu</th>
-                                <td>{{ $viewingAbsensi->pertemuan->guruAmpu->guru->nama_guru ?? '-' }}</td>
-                            </tr>
-                            <tr>
-                                <th style="background-color: var(--input-bg);">Pokok Bahasan</th>
-                                <td>{{ $viewingAbsensi->pertemuan->pokok_bahasan }}</td>
+                                <td>{{ $viewingAbsensi->jadwalPelajaran->guruAmpu->guru->nama_guru ?? '-' }}</td>
                             </tr>
                             <tr>
                                 <th style="background-color: var(--input-bg);">Status Kehadiran</th>

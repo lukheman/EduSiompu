@@ -615,13 +615,14 @@
 
             <x-layout.sidebar-section title="Akademik">
                 <x-layout.sidebar-link href="{{ route('admin.guru-ampu') }}" icon="fas fa-user-tag" :active="request()->routeIs('admin.guru-ampu')">Penugasan Guru</x-layout.sidebar-link>
+                <x-layout.sidebar-link href="{{ route('admin.jadwal-pelajaran') }}" icon="fas fa-clock" :active="request()->routeIs('admin.jadwal-pelajaran')">Jadwal Pelajaran</x-layout.sidebar-link>
             </x-layout.sidebar-section>
         @endif
 
         @if(Auth::guard('guru')->check())
             <x-layout.sidebar-section title="Akademik">
                 <x-layout.sidebar-link href="{{ route('guru.materi') }}" icon="fas fa-file-alt" :active="request()->routeIs('guru.materi')">Materi Pembelajaran</x-layout.sidebar-link>
-                <x-layout.sidebar-link href="{{ route('guru.pertemuan') }}" icon="fas fa-calendar-check" :active="request()->routeIs('guru.pertemuan')">Jadwal & Absensi</x-layout.sidebar-link>
+                <x-layout.sidebar-link href="{{ route('guru.jadwal-absensi') }}" icon="fas fa-calendar-check" :active="request()->routeIs('guru.jadwal-absensi')">Jadwal & Absensi</x-layout.sidebar-link>
                 <x-layout.sidebar-link href="{{ route('guru.input-nilai') }}" icon="fas fa-edit" :active="request()->routeIs('guru.input-nilai')">Input Nilai Raport</x-layout.sidebar-link>
             </x-layout.sidebar-section>
         @endif

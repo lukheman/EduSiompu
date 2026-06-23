@@ -42,7 +42,7 @@ class AbsensiList extends Component
 
     public function openViewModal(int $id)
     {
-        $this->viewingAbsensi = Absensi::with(['pertemuan.guruAmpu.mataPelajaran', 'pertemuan.guruAmpu.guru', 'pertemuan.guruAmpu.kelas'])->findOrFail($id);
+        $this->viewingAbsensi = Absensi::with(['jadwalPelajaran.guruAmpu.mataPelajaran', 'jadwalPelajaran.guruAmpu.guru', 'jadwalPelajaran.guruAmpu.kelas'])->findOrFail($id);
         $this->showViewModal = true;
     }
 
@@ -56,17 +56,17 @@ class AbsensiList extends Component
     {
         $siswa = Auth::guard('siswa')->user();
 
-        $query = Absensi::with(['pertemuan.guruAmpu.mataPelajaran', 'pertemuan.guruAmpu.guru', 'pertemuan.guruAmpu.tahunAjaran'])
+        $query = Absensi::with(['jadwalPelajaran.guruAmpu.mataPelajaran', 'jadwalPelajaran.guruAmpu.guru', 'jadwalPelajaran.guruAmpu.tahunAjaran'])
             ->where('id_siswa', $siswa->id_siswa);
 
         if ($this->id_tahun_ajaran) {
-            $query->whereHas('pertemuan.guruAmpu', function($q) {
+            $query->whereHas('jadwalPelajaran.guruAmpu', function($q) {
                 $q->where('id_tahun_ajaran', $this->id_tahun_ajaran);
             });
         }
 
         if ($this->id_mata_pelajaran) {
-            $query->whereHas('pertemuan.guruAmpu', function($q) {
+            $query->whereHas('jadwalPelajaran.guruAmpu', function($q) {
                 $q->where('id_mata_pelajaran', $this->id_mata_pelajaran);
             });
         }
@@ -85,10 +85,8 @@ class AbsensiList extends Component
             'alpa' => $summaryData['alpa'] ?? 0,
         ];
 
-        // Join to order by pertemuan.tanggal
-        $query->join('pertemuan', 'absensi.id_pertemuan', '=', 'pertemuan.id_pertemuan')
-            ->select('absensi.*') // keep only absensi columns for the model
-            ->orderBy('pertemuan.tanggal', 'desc');
+        // Order by tanggal
+        $query->orderBy('tanggal', 'desc');
 
         $absensiList = $query->paginate(15);
 

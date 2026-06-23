@@ -16,10 +16,10 @@ use App\Livewire\Admin\GuruManagement;
 use App\Livewire\Admin\GuruAmpuManagement;
 use App\Livewire\Admin\TahunAjaranManagement;
 use App\Livewire\Admin\OrangTuaManagement;
+use App\Livewire\Admin\JadwalPelajaranManagement;
 use App\Livewire\Admin\Profile as AdminProfile;
 
 use App\Livewire\Admin\MateriManagement;
-use App\Livewire\Admin\PertemuanManagement;
 use App\Livewire\Guru\Profile as GuruProfile;
 
 use App\Livewire\Siswa\AbsensiList;
@@ -54,6 +54,7 @@ Route::prefix('admin')->middleware('auth:admin,web')->group(function () {
     Route::get('/siswa', SiswaManagement::class)->name('admin.siswa');
     Route::get('/orang-tua', OrangTuaManagement::class)->name('admin.orang-tua');
     Route::get('/guru-ampu', GuruAmpuManagement::class)->name('admin.guru-ampu');
+    Route::get('/jadwal-pelajaran', JadwalPelajaranManagement::class)->name('admin.jadwal-pelajaran');
     
     Route::get('/profile', AdminProfile::class)->name('admin.profile');
 });
@@ -62,7 +63,7 @@ Route::prefix('admin')->middleware('auth:admin,web')->group(function () {
 Route::prefix('guru')->middleware('auth:guru,web')->group(function () {
     Route::get('/dashboard', \App\Livewire\Guru\Dashboard::class)->name('guru.dashboard');
     Route::get('/materi', MateriManagement::class)->name('guru.materi');
-    Route::get('/pertemuan', PertemuanManagement::class)->name('guru.pertemuan');
+    Route::get('/jadwal-absensi', \App\Livewire\Guru\JadwalAbsensi::class)->name('guru.jadwal-absensi');
     Route::get('/input-nilai', InputNilai::class)->name('guru.input-nilai');
     Route::get('/profil', GuruProfile::class)->name('guru.profile');
 });

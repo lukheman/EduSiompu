@@ -53,26 +53,20 @@
                     <tr>
                         <th>Tanggal</th>
                         <th>Mata Pelajaran</th>
-                        <th>Pertemuan</th>
-                        <th>Topik Bahasan</th>
+                        <th>Jadwal (Hari & Waktu)</th>
                         <th class="text-center">Status Kehadiran</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($absensiList as $absensi)
                         <tr>
-                            <td>{{ \Carbon\Carbon::parse($absensi->pertemuan->tanggal)->translatedFormat('d M Y') }}</td>
+                            <td>{{ \Carbon\Carbon::parse($absensi->tanggal)->translatedFormat('d M Y') }}</td>
                             <td>
-                                <div class="fw-semibold text-primary">{{ $absensi->pertemuan->guruAmpu->mataPelajaran->nama_mapel ?? '-' }}</div>
-                                <div class="small text-muted">{{ $absensi->pertemuan->guruAmpu->guru->nama_guru ?? '-' }}</div>
+                                <div class="fw-semibold text-primary">{{ $absensi->jadwalPelajaran->guruAmpu->mataPelajaran->nama_mapel ?? '-' }}</div>
+                                <div class="small text-muted">{{ $absensi->jadwalPelajaran->guruAmpu->guru->nama_guru ?? '-' }}</div>
                             </td>
                             <td>
-                                <x-ui.badge variant="secondary" icon="fas fa-calendar-day">Ke-{{ $absensi->pertemuan->pertemuan_ke }}</x-ui.badge>
-                            </td>
-                            <td>
-                                <div style="max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ $absensi->pertemuan->pokok_bahasan }}">
-                                    {{ $absensi->pertemuan->pokok_bahasan }}
-                                </div>
+                                <x-ui.badge variant="secondary" icon="fas fa-clock">{{ $absensi->jadwalPelajaran->hari }}, {{ \Carbon\Carbon::parse($absensi->jadwalPelajaran->jam_mulai)->format('H:i') }}</x-ui.badge>
                             </td>
                             <td class="text-center">
                                 <x-ui.badge variant="{{ $absensi->status_kehadiran->getColor() }}" icon="{{ $absensi->status_kehadiran->getIcon() }}">{{ $absensi->status_kehadiran->getLabel() }}</x-ui.badge>
@@ -80,7 +74,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="text-center py-5 text-muted">
+                            <td colspan="4" class="text-center py-5 text-muted">
                                 <i class="fas fa-clipboard-check mb-3 text-info opacity-50" style="font-size: 3rem;"></i>
                                 <h5>Belum Ada Riwayat</h5>
                                 <p class="mb-0">Anak Anda belum memiliki rekam absensi sejauh ini.</p>

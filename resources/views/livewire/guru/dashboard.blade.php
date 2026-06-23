@@ -32,8 +32,8 @@
                 <div class="stat-icon bg-info-subtle text-info">
                     <i class="fas fa-calendar-check"></i>
                 </div>
-                <div class="text-muted fw-medium mb-1">Total Pertemuan</div>
-                <h3 class="fw-bold text-info mb-0">{{ $stats['total_pertemuan'] ?? 0 }}</h3>
+                <div class="text-muted fw-medium mb-1">Total Jadwal</div>
+                <h3 class="fw-bold text-info mb-0">{{ $stats['total_jadwal'] ?? 0 }}</h3>
             </div>
         </div>
         <div class="col-md-3">

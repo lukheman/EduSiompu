@@ -23,7 +23,7 @@ class Dashboard extends Component
         if ($activeTa) {
             // Absensi Summary
             $absensi = Absensi::where('id_siswa', $siswa->id_siswa)
-                ->whereHas('pertemuan.guruAmpu', function($q) use ($activeTa) {
+                ->whereHas('jadwalPelajaran.guruAmpu', function($q) use ($activeTa) {
                     $q->where('id_tahun_ajaran', $activeTa->id_tahun_ajaran);
                 })
                 ->get();

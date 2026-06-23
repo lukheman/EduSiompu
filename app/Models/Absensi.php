@@ -11,15 +11,16 @@ class Absensi extends Model
 
     protected $table = 'absensi';
     protected $primaryKey = 'id_absensi';
-    protected $fillable = ['id_pertemuan', 'id_siswa', 'status_kehadiran'];
+    protected $fillable = ['id_jadwal_pelajaran', 'id_siswa', 'tanggal', 'status_kehadiran'];
 
     protected $casts = [
         'status_kehadiran' => \App\Enums\StatusKehadiran::class,
+        'tanggal' => 'date',
     ];
 
-    public function pertemuan()
+    public function jadwalPelajaran()
     {
-        return $this->belongsTo(Pertemuan::class, 'id_pertemuan', 'id_pertemuan');
+        return $this->belongsTo(JadwalPelajaran::class, 'id_jadwal_pelajaran', 'id_jadwal_pelajaran');
     }
 
     public function siswa()
