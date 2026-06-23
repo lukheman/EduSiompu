@@ -133,7 +133,7 @@ class DatabaseSeeder extends Seeder
 
                 $siswaIds[] = DB::table('siswa')->insertGetId([
                     'id_kelas' => $idKelas,
-                    'id_orang_tua' => ($idx % 2 == 0) ? $orangTuaIds[$idx % count($orangTuaIds)] : null,
+                    'id_orang_tua' => $orangTuaIds[$idx % count($orangTuaIds)],
                     'nisn' => (string)($nisnBase++),
                     'nama_siswa' => $siswaNames[$idx++],
                     'password' => Hash::make('password123'),
