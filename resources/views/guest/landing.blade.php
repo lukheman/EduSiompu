@@ -1,3 +1,4 @@
+@component('layouts.guest')
 <div class="landing-wrapper">
     <!-- Hero Section -->
     <section class="hero d-flex align-items-center justify-content-center">
@@ -64,7 +65,7 @@
         </div>
     </section>
 
-    <x-slot:styles>
+    @slot('styles')
         <style>
             .landing-wrapper {
                 margin-top: -100px; /* Pulls up to hide behind translucent navs if applicable */
@@ -185,5 +186,6 @@
                 }
             }
         </style>
-    </x-slot:styles>
+    @endslot
 </div>
+@endcomponent

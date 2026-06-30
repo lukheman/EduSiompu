@@ -2,8 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Livewire\Guest\LandingPage;
-use App\Livewire\Auth\Login;
+use App\Http\Controllers\Auth\LoginController;
 use App\Livewire\Auth\Register;
 
 use App\Livewire\Admin\Dashboard;
@@ -31,11 +30,12 @@ use App\Livewire\Guru\InputNilai;
 use App\Livewire\OrangTua\RaportAnak;
 
 // Guest Routes
-Route::get('/', LandingPage::class)->name('home');
+Route::view('/', 'guest.landing')->name('home');
 
 // Auth Routes
 Route::middleware('guest')->group(function () {
-    Route::get('/login', Login::class)->name('login');
+    Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
     Route::get('/register', Register::class)->name('register');
 });
 
