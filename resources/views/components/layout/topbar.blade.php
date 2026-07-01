@@ -3,7 +3,7 @@
     'userRole' => 'Administrator',
     'userInitials' => null,
     'notificationCount' => 0,
-    'searchPlaceholder' => 'Search anything...',
+    'searchPlaceholder' => 'Cari sesuatu...',
     'showLogout' => true,
     'showThemeToggle' => true,
     'userAvatar' => null,
@@ -37,7 +37,7 @@
     </div>
     <div class="d-flex align-items-center gap-3">
         @if($showThemeToggle)
-            <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+            <button class="theme-toggle" onclick="toggleTheme()" title="Beralih Tema">
                 <i id="theme-icon" class="fas fa-moon"></i>
             </button>
         @endif
@@ -47,7 +47,7 @@
         <!--         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem;">{{ $notificationCount }}</span> -->
         <!--     @endif -->
         <!-- </button> -->
-        <a href="{{ $profileRoute }}" class="d-flex align-items-center gap-2 text-decoration-none" title="Go to Profile">
+        <a href="{{ $profileRoute }}" class="d-flex align-items-center gap-2 text-decoration-none" title="Menuju Profil">
             @if($userAvatar)
                 <img src="{{ Storage::url($userAvatar) }}" alt="Avatar" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover; border: 2px solid var(--border-color);">
             @else
@@ -61,7 +61,7 @@
         @if($showLogout)
             <form method="POST" action="{{ route('logout') }}" class="d-inline">
                 @csrf
-                <button type="submit" class="btn btn-link" title="Logout" style="color: var(--text-secondary);">
+                <button type="submit" class="btn btn-link" title="Keluar" style="color: var(--text-secondary);">
                     <i class="fas fa-sign-out-alt" style="font-size: 1.25rem;"></i>
                 </button>
             </form>

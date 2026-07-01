@@ -644,7 +644,7 @@
             </x-layout.sidebar-section>
         @endif
 
-        <x-layout.sidebar-section title="Account">
+        <x-layout.sidebar-section title="Akun">
             @if(Auth::guard('siswa')->check())
                 <x-layout.sidebar-link href="{{ route('siswa.profile') }}" icon="fas fa-user-circle" :active="request()->routeIs('siswa.profile')">Profil Saya</x-layout.sidebar-link>
             @elseif(Auth::guard('guru')->check())
