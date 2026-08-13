@@ -85,7 +85,7 @@
     {{-- Modal Form Tugas --}}
     @if($showModal)
         <div class="modal-backdrop-custom" wire:click.self="$set('showModal', false)">
-            <x-layout.modern-card class="modal-content-custom m-auto" style="max-width: 600px; margin-top: 5rem !important;">
+            <x-layout.modern-card class="modal-content-custom m-auto" style="max-width: 600px; max-height: 90vh; overflow-y: auto; margin-top: 5rem !important;">
                 <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
                     <h5 class="mb-0 fw-bold">{{ $isEditing ? 'Edit Tugas' : 'Buat Tugas Baru' }}</h5>
                     <button wire:click="$set('showModal', false)" class="btn-close"></button>
@@ -115,7 +115,7 @@
     {{-- Modal Pengumpulan Tugas --}}
     @if($showPengumpulanModal && $selectedTugas)
         <div class="modal-backdrop-custom" wire:click.self="$set('showPengumpulanModal', false)">
-            <x-layout.modern-card class="modal-content-custom m-auto" style="max-width: 800px; margin-top: 3rem !important;">
+            <x-layout.modern-card class="modal-content-custom m-auto" style="max-width: 800px; max-height: 90vh; overflow-y: auto; margin-top: 3rem !important;">
                 <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
                     <h5 class="mb-0 fw-bold">Penilaian Tugas: {{ $selectedTugas->judul }}</h5>
                     <button wire:click="$set('showPengumpulanModal', false)" class="btn-close"></button>
