@@ -78,6 +78,7 @@
                             <td>
                                 @if($siswa->orangTua)
                                     <span class="badge bg-light text-dark border"><i class="fas fa-users text-primary me-1"></i> {{ $siswa->orangTua->nama_orang_tua }}</span>
+                                    <div class="small text-muted mt-1"><i class="fas fa-id-card me-1"></i> NIK: {{ $siswa->orangTua->nik }}</div>
                                 @else
                                     <span class="text-muted small">-</span>
                                 @endif
