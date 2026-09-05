@@ -41,6 +41,7 @@
                 <thead>
                     <tr>
                         <th>Nama Kelas</th>
+                        <th>Wali Kelas</th>
                         <th style="width: 120px;">Tindakan</th>
                     </tr>
                 </thead>
@@ -51,6 +52,13 @@
                                 <div class="fw-semibold" style="color: var(--text-primary);">{{ $kelas->nama_kelas }}</div>
                             </td>
                             <td>
+                                @if($kelas->waliKelas)
+                                    <span class="badge bg-light text-dark border"><i class="fas fa-chalkboard-teacher text-primary me-1"></i> {{ $kelas->waliKelas->nama_guru }}</span>
+                                @else
+                                    <span class="text-muted small">Belum ditentukan</span>
+                                @endif
+                            </td>
+                            <td>
                                 <div class="d-flex gap-1">
                                     <x-ui.btn-edit wire:click="openEditModal({{ $kelas->id_kelas }})" tooltip="Edit kelas" />
                                     <x-ui.btn-delete wire:click="confirmDelete({{ $kelas->id_kelas }})" tooltip="Hapus kelas" />
@@ -59,7 +67,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="text-center py-4">
+                            <td colspan="3" class="text-center py-4">
                                 <div class="text-muted">
                                     <i class="fas fa-chalkboard mb-2" style="font-size: 2rem;"></i>
                                     <p class="mb-0">Tidak ada data kelas ditemukan</p>
@@ -98,6 +106,20 @@
                         <input type="text" class="form-control @error('nama_kelas') is-invalid @enderror" id="nama_kelas"
                             wire:model="nama_kelas" placeholder="Masukkan nama kelas">
                         @error('nama_kelas')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="id_guru" class="form-label">Wali Kelas</label>
+                        <select class="form-select form-control @error('id_guru') is-invalid @enderror" id="id_guru"
+                            wire:model="id_guru">
+                            <option value="">-- Belum ditentukan --</option>
+                            @foreach($guruList as $guru)
+                                <option value="{{ $guru->id_guru }}">{{ $guru->nama_guru }} ({{ $guru->nip }})</option>
+                            @endforeach
+                        </select>
+                        @error('id_guru')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>

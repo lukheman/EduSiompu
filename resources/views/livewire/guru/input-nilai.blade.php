@@ -1,13 +1,23 @@
 <div>
-    <x-layout.page-header title="Input Nilai Raport" subtitle="Isi nilai pengetahuan dan keterampilan siswa berdasarkan mata pelajaran yang Anda ampu">
+    <x-layout.page-header title="Input Nilai Raport" subtitle="Isi nilai pengetahuan dan keterampilan siswa di kelas yang Anda walikan">
         <x-slot:actions>
-            <div style="width: 350px;">
-                <x-form.select 
-                    wire:model.live="selectedAmpuId" 
-                    id="ampu" 
-                    :options="$guruAmpus->mapWithKeys(function($ampu) { return [$ampu->id_guru_ampu => $ampu->kelas->nama_kelas . ' - ' . $ampu->mataPelajaran->nama_mapel . ' (' . $ampu->tahunAjaran->nama_tahun . ' ' . ucfirst($ampu->tahunAjaran->semester) . ')']; })->toArray()" 
-                    placeholder="-- Pilih Kelas & Mata Pelajaran --" 
-                />
+            <div class="d-flex gap-2">
+                <div style="width: 220px;">
+                    <x-form.select
+                        wire:model.live="selectedKelasId"
+                        id="kelas"
+                        :options="$kelasOptions"
+                        placeholder="-- Pilih Kelas Perwalian --"
+                    />
+                </div>
+                <div style="width: 330px;">
+                    <x-form.select
+                        wire:model.live="selectedAmpuId"
+                        id="ampu"
+                        :options="$mapelOptions"
+                        placeholder="-- Pilih Mata Pelajaran --"
+                    />
+                </div>
             </div>
         </x-slot:actions>
     </x-layout.page-header>
@@ -56,18 +66,26 @@
         </form>
     @elseif($selectedAmpuId)
         <x-layout.modern-card>
-            <x-ui.empty-state 
-                icon="fas fa-users-slash" 
-                title="Tidak ada siswa" 
-                description="Tidak ada siswa yang terdaftar di kelas ini." 
+            <x-ui.empty-state
+                icon="fas fa-users-slash"
+                title="Tidak ada siswa"
+                description="Tidak ada siswa yang terdaftar di kelas ini."
+            />
+        </x-layout.modern-card>
+    @elseif(count($kelasOptions) === 0)
+        <x-layout.modern-card>
+            <x-ui.empty-state
+                icon="fas fa-user-shield"
+                title="Bukan Wali Kelas"
+                description="Anda belum ditugaskan sebagai wali kelas. Hubungi admin untuk penugasan wali kelas."
             />
         </x-layout.modern-card>
     @else
         <x-layout.modern-card>
-            <x-ui.empty-state 
-                icon="fas fa-hand-pointer" 
-                title="Pilih Kelas" 
-                description="Silakan pilih kelas dan mata pelajaran di sudut kanan atas untuk mulai memasukkan nilai." 
+            <x-ui.empty-state
+                icon="fas fa-hand-pointer"
+                title="Pilih Kelas & Mata Pelajaran"
+                description="Silakan pilih kelas perwalian dan mata pelajaran di sudut kanan atas untuk mulai memasukkan nilai."
             />
         </x-layout.modern-card>
     @endif

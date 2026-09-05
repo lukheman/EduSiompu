@@ -93,6 +93,15 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
+        // 5b. Wali Kelas (satu guru per kelas, sesuai urutan)
+        $i = 0;
+        foreach ($kelasIds as $idKelas) {
+            if (! isset($guruIds[$i])) {
+                break;
+            }
+            DB::table('kelas')->where('id_kelas', $idKelas)->update(['id_guru' => $guruIds[$i++]]);
+        }
+
         // 6. Orang Tua
         $orangTuaData = [
             ['3201010101010001', 'Bapak Budi Hartono', '081234567890'],

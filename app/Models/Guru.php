@@ -11,10 +11,17 @@ class Guru extends Authenticatable
     use HasFactory, Notifiable;
 
     protected $table = 'guru';
+
     protected $primaryKey = 'id_guru';
+
     protected $fillable = ['nip', 'nama_guru', 'password'];
 
     protected $hidden = [
         'password',
     ];
+
+    public function kelasWali()
+    {
+        return $this->hasMany(Kelas::class, 'id_guru', 'id_guru');
+    }
 }

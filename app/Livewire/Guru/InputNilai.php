@@ -4,11 +4,9 @@ namespace App\Livewire\Guru;
 
 use App\Models\GuruAmpu;
 use App\Models\Kelas;
-use App\Models\MataPelajaran;
 use App\Models\NilaiRaport;
 use App\Models\Raport;
 use App\Models\Siswa;
-use App\Models\TahunAjaran;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -18,20 +16,52 @@ use Livewire\Component;
 #[Title('Input Nilai Raport')]
 class InputNilai extends Component
 {
-    public $guruAmpus = [];
+    public $kelasOptions = [];
+
+    public $selectedKelasId = '';
+
+    public $mapelOptions = [];
+
     public $selectedAmpuId = '';
+
     public $siswas = [];
+
     public $nilaiData = [];
 
     public function mount()
     {
         $id_guru = Auth::guard('guru')->id();
-        $this->guruAmpus = GuruAmpu::with(['kelas', 'mataPelajaran', 'tahunAjaran'])
-            ->where('id_guru', $id_guru)
-            ->whereHas('tahunAjaran', function($q) {
+        $this->kelasOptions = Kelas::where('id_guru', $id_guru)
+            ->orderBy('nama_kelas')
+            ->pluck('nama_kelas', 'id_kelas')
+            ->toArray();
+    }
+
+    public function updatedSelectedKelasId()
+    {
+        $this->selectedAmpuId = '';
+        $this->mapelOptions = [];
+        $this->siswas = [];
+        $this->nilaiData = [];
+
+        if (! $this->selectedKelasId) {
+            return;
+        }
+
+        if (! $this->kelasDiawalikan()) {
+            return;
+        }
+
+        $this->mapelOptions = GuruAmpu::with(['mataPelajaran', 'tahunAjaran'])
+            ->where('id_kelas', $this->selectedKelasId)
+            ->whereHas('tahunAjaran', function ($q) {
                 $q->where('status_aktif', true);
             })
-            ->get();
+            ->get()
+            ->mapWithKeys(function ($ampu) {
+                return [$ampu->id_guru_ampu => $ampu->mataPelajaran->nama_mapel.' ('.$ampu->tahunAjaran->nama_tahun.' '.ucfirst($ampu->tahunAjaran->semester).')'];
+            })
+            ->toArray();
     }
 
     public function updatedSelectedAmpuId()
@@ -39,16 +69,26 @@ class InputNilai extends Component
         $this->loadSiswas();
     }
 
+    private function kelasDiawalikan(): bool
+    {
+        return Kelas::where('id_kelas', $this->selectedKelasId)
+            ->where('id_guru', Auth::guard('guru')->id())
+            ->exists();
+    }
+
     public function loadSiswas()
     {
-        if (!$this->selectedAmpuId) {
+        if (! $this->selectedAmpuId) {
             $this->siswas = [];
             $this->nilaiData = [];
+
             return;
         }
 
         $ampu = GuruAmpu::find($this->selectedAmpuId);
-        if (!$ampu) return;
+        if (! $ampu || $ampu->id_kelas != $this->selectedKelasId || ! $this->kelasDiawalikan()) {
+            return;
+        }
 
         $this->siswas = Siswa::where('id_kelas', $ampu->id_kelas)->get();
 
@@ -65,12 +105,12 @@ class InputNilai extends Component
 
                 $this->nilaiData[$siswa->id_siswa] = [
                     'pengetahuan' => $nilai->nilai_pengetahuan ?? '',
-                    'keterampilan' => $nilai->nilai_keterampilan ?? ''
+                    'keterampilan' => $nilai->nilai_keterampilan ?? '',
                 ];
             } else {
                 $this->nilaiData[$siswa->id_siswa] = [
                     'pengetahuan' => '',
-                    'keterampilan' => ''
+                    'keterampilan' => '',
                 ];
             }
         }
@@ -78,19 +118,33 @@ class InputNilai extends Component
 
     public function getPredikat($nilai)
     {
-        if ($nilai === '' || $nilai === null) return null;
-        if ($nilai >= 90) return 'A';
-        if ($nilai >= 80) return 'B';
-        if ($nilai >= 70) return 'C';
+        if ($nilai === '' || $nilai === null) {
+            return null;
+        }
+        if ($nilai >= 90) {
+            return 'A';
+        }
+        if ($nilai >= 80) {
+            return 'B';
+        }
+        if ($nilai >= 70) {
+            return 'C';
+        }
+
         return 'D';
     }
 
     public function simpan()
     {
-        if (!$this->selectedAmpuId) return;
+        if (! $this->selectedAmpuId) {
+            return;
+        }
 
         $ampu = GuruAmpu::find($this->selectedAmpuId);
-        
+        if (! $ampu || $ampu->id_kelas != $this->selectedKelasId || ! $this->kelasDiawalikan()) {
+            return;
+        }
+
         foreach ($this->siswas as $siswa) {
             $p = $this->nilaiData[$siswa->id_siswa]['pengetahuan'] ?? null;
             $k = $this->nilaiData[$siswa->id_siswa]['keterampilan'] ?? null;

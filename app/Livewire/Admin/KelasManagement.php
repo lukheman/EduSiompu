@@ -2,8 +2,8 @@
 
 namespace App\Livewire\Admin;
 
+use App\Models\Guru;
 use App\Models\Kelas;
-use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
 use Livewire\Component;
@@ -21,20 +21,26 @@ class KelasManagement extends Component
     // Form fields
     public string $nama_kelas = '';
 
+    public ?int $id_guru = null;
+
     // State
     public ?int $editingKelasId = null;
+
     public bool $showModal = false;
+
     public bool $showDeleteModal = false;
+
     public ?int $deletingKelasId = null;
 
     protected function rules(): array
     {
         $rules = [
             'nama_kelas' => ['required', 'string', 'max:255'],
+            'id_guru' => ['nullable', 'integer', 'exists:guru,id_guru'],
         ];
 
         if ($this->editingKelasId) {
-            $rules['nama_kelas'][] = 'unique:kelas,nama_kelas,' . $this->editingKelasId . ',id_kelas';
+            $rules['nama_kelas'][] = 'unique:kelas,nama_kelas,'.$this->editingKelasId.',id_kelas';
         } else {
             $rules['nama_kelas'][] = 'unique:kelas,nama_kelas';
         }
@@ -59,6 +65,7 @@ class KelasManagement extends Component
         $kelas = Kelas::findOrFail($kelasId);
         $this->editingKelasId = $kelasId;
         $this->nama_kelas = $kelas->nama_kelas;
+        $this->id_guru = $kelas->id_guru;
         $this->showModal = true;
     }
 
@@ -69,14 +76,16 @@ class KelasManagement extends Component
         if ($this->editingKelasId) {
             $kelas = Kelas::findOrFail($this->editingKelasId);
             $kelas->nama_kelas = $validated['nama_kelas'];
+            $kelas->id_guru = $validated['id_guru'];
             $kelas->save();
-            
+
             session()->flash('success', 'Data kelas berhasil diperbarui.');
         } else {
             Kelas::create([
                 'nama_kelas' => $validated['nama_kelas'],
+                'id_guru' => $validated['id_guru'],
             ]);
-            
+
             session()->flash('success', 'Kelas berhasil ditambahkan.');
         }
 
@@ -116,20 +125,23 @@ class KelasManagement extends Component
     protected function resetForm(): void
     {
         $this->nama_kelas = '';
+        $this->id_guru = null;
         $this->editingKelasId = null;
     }
 
     public function render()
     {
         $kelasList = Kelas::query()
+            ->with('waliKelas')
             ->when($this->search, function ($query) {
-                $query->where('nama_kelas', 'like', '%' . $this->search . '%');
+                $query->where('nama_kelas', 'like', '%'.$this->search.'%');
             })
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
         return view('livewire.admin.kelas-management', [
             'kelasList' => $kelasList,
+            'guruList' => Guru::orderBy('nama_guru')->get(),
         ]);
     }
 }

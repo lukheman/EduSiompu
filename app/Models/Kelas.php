@@ -10,6 +10,13 @@ class Kelas extends Model
     use HasFactory;
 
     protected $table = 'kelas';
+
     protected $primaryKey = 'id_kelas';
-    protected $fillable = ['nama_kelas'];
+
+    protected $fillable = ['nama_kelas', 'id_guru'];
+
+    public function waliKelas()
+    {
+        return $this->belongsTo(Guru::class, 'id_guru', 'id_guru');
+    }
 }
