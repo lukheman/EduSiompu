@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Carbon\Carbon;
 
 class DatabaseSeeder extends Seeder
 {
@@ -93,56 +93,58 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        // 6. Orang Tua (Dimatikan)
+        // 6. Orang Tua
         $orangTuaData = [
-            // ['3201010101010001', 'Bapak Budi Hartono', '081234567890'],
-            // ['3201010101010002', 'Ibu Siti Khadijah', '081234567891'],
-            // ['3201010101010003', 'Bapak Herman Santoso', '081234567892'],
-            // ['3201010101010004', 'Ibu Ani Suryani', '081234567893'],
-            // ['3201010101010005', 'Bapak Joko Susilo', '081234567894'],
+            ['3201010101010001', 'Bapak Budi Hartono', '081234567890'],
+            ['3201010101010002', 'Ibu Siti Khadijah', '081234567891'],
+            ['3201010101010003', 'Bapak Herman Santoso', '081234567892'],
+            ['3201010101010004', 'Ibu Ani Suryani', '081234567893'],
+            ['3201010101010005', 'Bapak Joko Susilo', '081234567894'],
         ];
 
         $orangTuaIds = [];
-        // foreach ($orangTuaData as $ot) {
-        //     $orangTuaIds[] = DB::table('orang_tua')->insertGetId([
-        //         'nik' => $ot[0],
-        //         'nama_orang_tua' => $ot[1],
-        //         'no_hp' => $ot[2],
-        //         'password' => Hash::make('password123'),
-        //         'created_at' => $now,
-        //         'updated_at' => $now,
-        //     ]);
-        // }
+        foreach ($orangTuaData as $ot) {
+            $orangTuaIds[] = DB::table('orang_tua')->insertGetId([
+                'nik' => $ot[0],
+                'nama_orang_tua' => $ot[1],
+                'no_hp' => $ot[2],
+                'password' => Hash::make('password123'),
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]);
+        }
 
-        // 7. Siswa (Dimatikan)
+        // 7. Siswa
         $siswaNames = [
-            // 'Agus Saputra', 'Bima Aryo', 'Citra Dewi', 'Dina Lestari', 'Eko Purnomo',
-            // 'Fikri Haikal', 'Gita Gutawa', 'Hadi Prasetio', 'Indah Permatasari', 'Joko Susanto',
-            // 'Kiki Amalia', 'Lukman Hakim', 'Mia Rahmawati', 'Nanda Rizky', 'Oscar Saputra',
-            // 'Putri Ayu', 'Qori Akbar', 'Rina Wati', 'Sandi Maulana', 'Tuti Alawiyah',
-            // 'Umar Mutaqin', 'Vina Panduwinata', 'Wawan Gunawan', 'Xaverius', 'Yana Yulianti'
+            'Agus Saputra', 'Bima Aryo', 'Citra Dewi', 'Dina Lestari', 'Eko Purnomo',
+            'Fikri Haikal', 'Gita Gutawa', 'Hadi Prasetio', 'Indah Permatasari', 'Joko Susanto',
+            'Kiki Amalia', 'Lukman Hakim', 'Mia Rahmawati', 'Nanda Rizky', 'Oscar Saputra',
+            'Putri Ayu', 'Qori Akbar', 'Rina Wati', 'Sandi Maulana', 'Tuti Alawiyah',
+            'Umar Mutaqin', 'Vina Panduwinata', 'Wawan Gunawan', 'Xaverius', 'Yana Yulianti',
         ];
 
         $siswaIds = [];
-        // $nisnBase = 10010001;
-        // $idx = 0;
-        // foreach ($kelasIds as $namaKelas => $idKelas) {
-        //     // Put 5 students in each class
-        //     for ($i = 0; $i < 5; $i++) {
-        //         if ($idx >= count($siswaNames)) break;
-        // 
-        //         $siswaIds[] = DB::table('siswa')->insertGetId([
-        //             'id_kelas' => $idKelas,
-        //             'id_orang_tua' => $orangTuaIds[$idx % count($orangTuaIds)],
-        //             'nisn' => (string)($nisnBase++),
-        //             'nama_siswa' => $siswaNames[$idx++],
-        //             'password' => Hash::make('password123'),
-        //             'avatar' => 'avatars/siswa.png',
-        //             'created_at' => $now,
-        //             'updated_at' => $now,
-        //         ]);
-        //     }
-        // }
+        $nisnBase = 10010001;
+        $idx = 0;
+        foreach ($kelasIds as $namaKelas => $idKelas) {
+            // Put 5 students in each class
+            for ($i = 0; $i < 5; $i++) {
+                if ($idx >= count($siswaNames)) {
+                    break;
+                }
+
+                $siswaIds[] = DB::table('siswa')->insertGetId([
+                    'id_kelas' => $idKelas,
+                    'id_orang_tua' => $orangTuaIds[$idx % count($orangTuaIds)],
+                    'nisn' => (string) ($nisnBase++),
+                    'nama_siswa' => $siswaNames[$idx++],
+                    'password' => Hash::make('password123'),
+                    'avatar' => 'avatars/siswa.png',
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ]);
+            }
+        }
 
         // 8. Guru Ampu (Penugasan)
         // Budi Santoso (0) ajar Matematika (MAT-01) di X MIPA 1 & X MIPA 2

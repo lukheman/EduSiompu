@@ -630,6 +630,7 @@
 
         @if(Auth::guard('siswa')->check())
             <x-layout.sidebar-section title="Akademik">
+                <x-layout.sidebar-link href="{{ route('siswa.jadwal') }}" icon="fas fa-clock" :active="request()->routeIs('siswa.jadwal')">Jadwal Pelajaran</x-layout.sidebar-link>
                 <x-layout.sidebar-link href="{{ route('siswa.materi') }}" icon="fas fa-book-open" :active="request()->routeIs('siswa.materi')">Materi Belajar</x-layout.sidebar-link>
                 <x-layout.sidebar-link href="{{ route('siswa.absensi') }}" icon="fas fa-clipboard-user" :active="request()->routeIs('siswa.absensi')">Absensi Saya</x-layout.sidebar-link>
                 <x-layout.sidebar-link href="{{ route('siswa.tugas') }}" icon="fas fa-tasks" :active="request()->routeIs('siswa.tugas')">Tugas Kelas</x-layout.sidebar-link>
