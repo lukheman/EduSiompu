@@ -69,6 +69,64 @@ class InputNilai extends Component
         $this->loadSiswas();
     }
 
+    public function updatedNilaiData($value, $key)
+    {
+        $parts = explode('.', $key);
+        if (count($parts) !== 2 || end($parts) === 'raport') {
+            return;
+        }
+
+        $this->hitungNilaiRaport($parts[0]);
+    }
+
+    private function nilaiKosong(): array
+    {
+        $kosong = ['ulangan_semester' => '', 'raport' => ''];
+
+        foreach (NilaiRaport::ASPEK_SCORES as $koloms) {
+            foreach ($koloms as $kolom) {
+                $kosong[substr($kolom, 6)] = '';
+            }
+        }
+
+        return $kosong;
+    }
+
+    private function hitungNilaiRaport($idSiswa): void
+    {
+        $data = $this->nilaiData[$idSiswa] ?? [];
+        $rataAspek = [];
+
+        foreach (NilaiRaport::ASPEK_SCORES as $koloms) {
+            $scores = [];
+            foreach ($koloms as $kolom) {
+                $scores[] = $data[substr($kolom, 6)] ?? '';
+            }
+            $rata = NilaiRaport::rataAspek($scores);
+            if ($rata !== null) {
+                $rataAspek[] = $rata;
+            }
+        }
+
+        $us = $data['ulangan_semester'] ?? '';
+        if ($us !== '' && $us !== null && is_numeric($us)) {
+            $rataAspek[] = (float) $us;
+        }
+
+        $this->nilaiData[$idSiswa]['raport'] = count($rataAspek) > 0 ? (int) round(array_sum($rataAspek) / count($rataAspek)) : '';
+    }
+
+    public function rataAspekForm($idSiswa, array $fields): ?int
+    {
+        $data = $this->nilaiData[$idSiswa] ?? [];
+        $scores = [];
+        foreach ($fields as $field) {
+            $scores[] = $data[$field] ?? '';
+        }
+
+        return NilaiRaport::rataAspek($scores);
+    }
+
     private function kelasDiawalikan(): bool
     {
         return Kelas::where('id_kelas', $this->selectedKelasId)
@@ -103,15 +161,17 @@ class InputNilai extends Component
                     ->where('id_mata_pelajaran', $ampu->id_mata_pelajaran)
                     ->first();
 
-                $this->nilaiData[$siswa->id_siswa] = [
-                    'pengetahuan' => $nilai->nilai_pengetahuan ?? '',
-                    'keterampilan' => $nilai->nilai_keterampilan ?? '',
-                ];
+                $row = [];
+                foreach (NilaiRaport::ASPEK_SCORES as $koloms) {
+                    foreach ($koloms as $kolom) {
+                        $row[substr($kolom, 6)] = $nilai->{$kolom} ?? '';
+                    }
+                }
+                $row['ulangan_semester'] = $nilai->nilai_ulangan_semester ?? '';
+                $row['raport'] = $nilai->nilai_raport ?? '';
+                $this->nilaiData[$siswa->id_siswa] = $row;
             } else {
-                $this->nilaiData[$siswa->id_siswa] = [
-                    'pengetahuan' => '',
-                    'keterampilan' => '',
-                ];
+                $this->nilaiData[$siswa->id_siswa] = $this->nilaiKosong();
             }
         }
     }
@@ -146,26 +206,44 @@ class InputNilai extends Component
         }
 
         foreach ($this->siswas as $siswa) {
-            $p = $this->nilaiData[$siswa->id_siswa]['pengetahuan'] ?? null;
-            $k = $this->nilaiData[$siswa->id_siswa]['keterampilan'] ?? null;
+            $data = array_merge($this->nilaiKosong(), $this->nilaiData[$siswa->id_siswa] ?? []);
 
-            $p = ($p === '') ? null : $p;
-            $k = ($k === '') ? null : $k;
+            foreach ($data as $field => $nilai) {
+                $data[$field] = ($nilai === '') ? null : $nilai;
+            }
+            $this->nilaiData[$siswa->id_siswa] = $data;
 
-            if ($p !== null || $k !== null) {
+            if ($data['raport'] === null) {
+                $this->hitungNilaiRaport($siswa->id_siswa);
+                $otomatis = $this->nilaiData[$siswa->id_siswa]['raport'] ?? '';
+                $data['raport'] = ($otomatis === '') ? null : $otomatis;
+            }
+
+            if (count(array_filter($data, fn ($v) => $v !== null)) > 0) {
                 $raport = Raport::firstOrCreate(
                     ['id_siswa' => $siswa->id_siswa, 'id_tahun_ajaran' => $ampu->id_tahun_ajaran],
                     ['id_kelas' => $ampu->id_kelas]
                 );
 
+                $payload = [];
+                foreach (NilaiRaport::ASPEK_SCORES as $koloms) {
+                    foreach ($koloms as $kolom) {
+                        $payload[$kolom] = $data[substr($kolom, 6)];
+                    }
+                }
+
+                $rataAfektif = NilaiRaport::rataAspek([$payload['nilai_afektif_1'], $payload['nilai_afektif_2'], $payload['nilai_afektif_3']]);
+                $rataPsikomotor = NilaiRaport::rataAspek([$payload['nilai_psikomotor_1'], $payload['nilai_psikomotor_2'], $payload['nilai_psikomotor_3'], $payload['nilai_psikomotor_4']]);
+
+                $payload['predikat_afektif'] = $this->getPredikat($rataAfektif);
+                $payload['predikat_psikomotor'] = $this->getPredikat($rataPsikomotor);
+                $payload['nilai_ulangan_semester'] = $data['ulangan_semester'];
+                $payload['nilai_raport'] = $data['raport'];
+                $payload['predikat_raport'] = $this->getPredikat($data['raport']);
+
                 NilaiRaport::updateOrCreate(
                     ['id_raport' => $raport->id_raport, 'id_mata_pelajaran' => $ampu->id_mata_pelajaran],
-                    [
-                        'nilai_pengetahuan' => $p,
-                        'predikat_pengetahuan' => $this->getPredikat($p),
-                        'nilai_keterampilan' => $k,
-                        'predikat_keterampilan' => $this->getPredikat($k),
-                    ]
+                    $payload
                 );
             }
         }

@@ -39,10 +39,16 @@
                         <th rowspan="2" class="align-middle text-center" style="width: 5%">No</th>
                         <th rowspan="2" class="align-middle text-start">Mata Pelajaran</th>
                         <th rowspan="2" class="align-middle text-center" style="width: 10%">KKM</th>
-                        <th colspan="2" class="text-center" style="width: 25%">Pengetahuan</th>
-                        <th colspan="2" class="text-center" style="width: 25%">Keterampilan</th>
+                        <th colspan="2" class="text-center">Afektif</th>
+                        <th colspan="2" class="text-center">Psikomotor</th>
+                        <th rowspan="2" class="align-middle text-center">Tugas</th>
+                        <th rowspan="2" class="align-middle text-center">UH</th>
+                        <th rowspan="2" class="align-middle text-center">US</th>
+                        <th colspan="2" class="text-center">Nilai Raport</th>
                     </tr>
                     <tr>
+                        <th class="text-center">Nilai</th>
+                        <th class="text-center">Predikat</th>
                         <th class="text-center">Nilai</th>
                         <th class="text-center">Predikat</th>
                         <th class="text-center">Nilai</th>
@@ -55,30 +61,19 @@
                         <td>{{ $index + 1 }}</td>
                         <td class="text-start" style="font-weight: 500;">{{ $nilai->mataPelajaran->nama_mapel }}</td>
                         <td>{{ $nilai->mataPelajaran->kkm ?? 75 }}</td>
-                        <td>{{ $nilai->nilai_pengetahuan ?? '-' }}</td>
-                        <td>
-                            @if($nilai->predikat_pengetahuan)
-                                <x-ui.badge :variant="$nilai->predikat_pengetahuan === 'A' ? 'success' : ($nilai->predikat_pengetahuan === 'B' ? 'primary' : ($nilai->predikat_pengetahuan === 'C' ? 'warning' : 'danger'))">
-                                    {{ $nilai->predikat_pengetahuan }}
-                                </x-ui.badge>
-                            @else
-                                -
-                            @endif
-                        </td>
-                        <td>{{ $nilai->nilai_keterampilan ?? '-' }}</td>
-                        <td>
-                            @if($nilai->predikat_keterampilan)
-                                <x-ui.badge :variant="$nilai->predikat_keterampilan === 'A' ? 'success' : ($nilai->predikat_keterampilan === 'B' ? 'primary' : ($nilai->predikat_keterampilan === 'C' ? 'warning' : 'danger'))">
-                                    {{ $nilai->predikat_keterampilan }}
-                                </x-ui.badge>
-                            @else
-                                -
-                            @endif
-                        </td>
+                        <td>{{ $nilai->rata_afektif ?? '-' }}</td>
+                        <td><x-ui.predikat-badge :nilai="$nilai->predikat_afektif" /></td>
+                        <td>{{ $nilai->rata_psikomotor ?? '-' }}</td>
+                        <td><x-ui.predikat-badge :nilai="$nilai->predikat_psikomotor" /></td>
+                        <td>{{ $nilai->rata_tugas ?? '-' }}</td>
+                        <td>{{ $nilai->rata_ulangan_harian ?? '-' }}</td>
+                        <td>{{ $nilai->nilai_ulangan_semester ?? '-' }}</td>
+                        <td class="fw-bold">{{ $nilai->nilai_raport ?? '-' }}</td>
+                        <td><x-ui.predikat-badge :nilai="$nilai->predikat_raport" /></td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7">
+                        <td colspan="12">
                             <x-ui.empty-state icon="fas fa-clipboard-list" title="Belum ada nilai" description="Nilai untuk semester ini belum diinput oleh guru." size="sm" />
                         </td>
                     </tr>

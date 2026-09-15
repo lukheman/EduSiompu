@@ -35,8 +35,23 @@ it('wali kelas can input nilai for students in their class', function () {
         ->assertSee($ampu->mataPelajaran->nama_mapel)
         ->set('selectedAmpuId', $ampu->id_guru_ampu)
         ->assertSee($siswa->nama_siswa)
-        ->set("nilaiData.{$siswa->id_siswa}.pengetahuan", 85)
-        ->set("nilaiData.{$siswa->id_siswa}.keterampilan", 90)
+        ->assertSee('Rata2')
+        ->set("nilaiData.{$siswa->id_siswa}.afektif_1", 90)
+        ->set("nilaiData.{$siswa->id_siswa}.afektif_2", 90)
+        ->set("nilaiData.{$siswa->id_siswa}.afektif_3", 90)
+        ->set("nilaiData.{$siswa->id_siswa}.psikomotor_1", 80)
+        ->set("nilaiData.{$siswa->id_siswa}.psikomotor_2", 80)
+        ->set("nilaiData.{$siswa->id_siswa}.psikomotor_3", 80)
+        ->set("nilaiData.{$siswa->id_siswa}.psikomotor_4", 80)
+        ->set("nilaiData.{$siswa->id_siswa}.tugas_1", 70)
+        ->set("nilaiData.{$siswa->id_siswa}.tugas_2", 70)
+        ->set("nilaiData.{$siswa->id_siswa}.tugas_3", 70)
+        ->set("nilaiData.{$siswa->id_siswa}.tugas_4", 70)
+        ->set("nilaiData.{$siswa->id_siswa}.ulangan_harian_1", 80)
+        ->set("nilaiData.{$siswa->id_siswa}.ulangan_harian_2", 80)
+        ->set("nilaiData.{$siswa->id_siswa}.ulangan_harian_3", 80)
+        ->set("nilaiData.{$siswa->id_siswa}.ulangan_semester", 90)
+        ->assertSet("nilaiData.{$siswa->id_siswa}.raport", 82)
         ->call('simpan')
         ->assertHasNoErrors();
 
@@ -45,10 +60,40 @@ it('wali kelas can input nilai for students in their class', function () {
         ->first();
 
     expect($nilai)->not->toBeNull()
-        ->and($nilai->nilai_pengetahuan)->toEqual(85)
-        ->and($nilai->predikat_pengetahuan)->toBe('B')
-        ->and($nilai->nilai_keterampilan)->toEqual(90)
-        ->and($nilai->predikat_keterampilan)->toBe('A');
+        ->and($nilai->nilai_afektif_1)->toEqual(90)
+        ->and($nilai->nilai_afektif_3)->toEqual(90)
+        ->and($nilai->predikat_afektif)->toBe('A')
+        ->and($nilai->rata_afektif)->toEqual(90)
+        ->and($nilai->nilai_psikomotor_4)->toEqual(80)
+        ->and($nilai->predikat_psikomotor)->toBe('B')
+        ->and($nilai->rata_psikomotor)->toEqual(80)
+        ->and($nilai->rata_tugas)->toEqual(70)
+        ->and($nilai->rata_ulangan_harian)->toEqual(80)
+        ->and($nilai->nilai_ulangan_semester)->toEqual(90)
+        ->and($nilai->nilai_raport)->toEqual(82)
+        ->and($nilai->predikat_raport)->toBe('B');
+});
+
+it('wali can manually override nilai raport', function () {
+    ['wali' => $wali, 'kelas' => $kelas, 'ampu' => $ampu, 'siswa' => $siswa] = buatKelasPerwalian();
+
+    Livewire::actingAs($wali, 'guru')
+        ->test(InputNilai::class)
+        ->set('selectedKelasId', $kelas->id_kelas)
+        ->set('selectedAmpuId', $ampu->id_guru_ampu)
+        ->set("nilaiData.{$siswa->id_siswa}.tugas_1", 70)
+        ->set("nilaiData.{$siswa->id_siswa}.tugas_2", 80)
+        ->assertSet("nilaiData.{$siswa->id_siswa}.raport", 75)
+        ->set("nilaiData.{$siswa->id_siswa}.raport", 95)
+        ->call('simpan')
+        ->assertHasNoErrors();
+
+    $nilai = NilaiRaport::whereHas('raport', fn ($q) => $q->where('id_siswa', $siswa->id_siswa))
+        ->where('id_mata_pelajaran', $ampu->id_mata_pelajaran)
+        ->first();
+
+    expect($nilai->nilai_raport)->toEqual(95)
+        ->and($nilai->predikat_raport)->toBe('A');
 });
 
 it('guru who is not wali cannot input nilai', function () {
