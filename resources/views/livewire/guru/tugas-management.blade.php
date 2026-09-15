@@ -136,7 +136,7 @@
                                 <tr>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <x-ui.avatar :name="$p->siswa->nama_siswa" size="sm" class="me-2" />
+                                            <x-ui.avatar :src="$p->siswa?->avatar_url" :name="$p->siswa->nama_siswa" size="sm" class="me-2" />
                                             <span class="fw-medium text-dark">{{ $p->siswa->nama_siswa }}</span>
                                         </div>
                                     </td>

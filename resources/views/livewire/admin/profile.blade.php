@@ -26,9 +26,8 @@
                         <img src="{{ Storage::url($currentAvatar) }}" alt="Avatar" class="rounded-circle"
                             style="width: 120px; height: 120px; object-fit: cover; border: 4px solid var(--primary-color);">
                     @else
-                        <div class="user-avatar mx-auto" style="width: 120px; height: 120px; font-size: 3rem;">
-                            {{ strtoupper(substr($name ?? 'A', 0, 2)) }}
-                        </div>
+                        <img src="{{ asset('images/default-avatar.svg') }}" alt="Avatar" class="rounded-circle"
+                            style="width: 120px; height: 120px; object-fit: cover; border: 4px solid var(--primary-color);">
                     @endif
                 </div>
 
@@ -58,9 +57,8 @@
                             <img src="{{ Storage::url($currentAvatar) }}" alt="Avatar" class="rounded-circle"
                                 style="width: 80px; height: 80px; object-fit: cover; border: 3px solid var(--border-color);">
                         @else
-                            <div class="user-avatar" style="width: 80px; height: 80px; font-size: 2rem;">
-                                {{ strtoupper(substr($name ?? 'A', 0, 2)) }}
-                            </div>
+                            <img src="{{ asset('images/default-avatar.svg') }}" alt="Avatar" class="rounded-circle"
+                                style="width: 80px; height: 80px; object-fit: cover; border: 3px solid var(--border-color);">
                         @endif
                     </div>
 

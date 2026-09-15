@@ -12,9 +12,7 @@
                 @if($guru && $guru->avatar)
                     <img src="{{ Storage::url($guru->avatar) }}" alt="Avatar" class="rounded-circle mb-3 border border-4 border-primary" style="width: 150px; height: 150px; object-fit: cover;">
                 @else
-                    <div class="user-avatar bg-primary-subtle text-primary mx-auto mb-3 border border-primary-subtle rounded-circle d-flex align-items-center justify-content-center" style="width: 150px; height: 150px; font-size: 4rem;">
-                        {{ strtoupper(substr($nama_guru ?? 'G', 0, 1)) }}
-                    </div>
+                    <img src="{{ asset('images/default-avatar.svg') }}" alt="Avatar" class="rounded-circle mb-3 border border-4 border-primary" style="width: 150px; height: 150px; object-fit: cover;">
                 @endif
                 <h4 class="fw-bold text-primary mb-1">{{ $nama_guru }}</h4>
                 <div class="text-muted mb-3"><i class="fas fa-id-card me-2"></i>NIP: {{ $nip }}</div>

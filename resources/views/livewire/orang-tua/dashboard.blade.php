@@ -21,13 +21,7 @@
                             <tr>
                                 <td>
                                     <div class="d-flex align-items-center">
-                                        @if($anak->avatar)
-                                            <img src="{{ Storage::url($anak->avatar) }}" alt="Avatar" class="me-3 rounded-circle" style="width: 45px; height: 45px; object-fit: cover;">
-                                        @else
-                                            <div class="user-avatar bg-info-subtle text-info me-3 border border-info-subtle rounded-circle d-flex align-items-center justify-content-center fs-4" style="width: 45px; height: 45px;">
-                                                {{ strtoupper(substr($anak->nama_siswa ?? '?', 0, 1)) }}
-                                            </div>
-                                        @endif
+                                        <img src="{{ $anak->avatar_url }}" alt="Avatar" class="me-3 rounded-circle" style="width: 45px; height: 45px; object-fit: cover;">
                                         <div class="fw-bold text-primary">{{ $anak->nama_siswa }}</div>
                                     </div>
                                 </td>

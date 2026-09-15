@@ -8,9 +8,7 @@
                     @if($siswa->avatar)
                         <img src="{{ Storage::url($siswa->avatar) }}" alt="Avatar" class="rounded-circle mb-3 border border-4 border-primary" style="width: 150px; height: 150px; object-fit: cover;">
                     @else
-                        <div class="rounded-circle mb-3 d-flex align-items-center justify-content-center bg-light text-primary border border-4 border-primary" style="width: 150px; height: 150px; font-size: 4rem;">
-                            {{ strtoupper(substr($siswa->nama_siswa, 0, 1)) }}
-                        </div>
+                        <img src="{{ asset('images/default-avatar.svg') }}" alt="Avatar" class="rounded-circle mb-3 border border-4 border-primary" style="width: 150px; height: 150px; object-fit: cover;">
                     @endif
                     <h3 class="fw-bold text-primary mb-1">{{ $siswa->nama_siswa }}</h3>
                     <div class="text-muted mb-3"><i class="fas fa-id-card me-2"></i>NISN: {{ $siswa->nisn }}</div>

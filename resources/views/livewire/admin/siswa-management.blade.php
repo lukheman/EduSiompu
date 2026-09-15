@@ -57,13 +57,7 @@
                         <tr wire:key="siswa-{{ $siswa->id_siswa }}">
                             <td>
                                 <div class="d-flex align-items-center">
-                                    @if($siswa->avatar)
-                                        <img src="{{ Storage::url($siswa->avatar) }}" alt="Avatar" class="me-3 rounded-circle" style="width: 45px; height: 45px; object-fit: cover;">
-                                    @else
-                                        <div class="user-avatar bg-info-subtle text-info me-3 border border-info-subtle rounded-circle d-flex align-items-center justify-content-center fs-4" style="width: 45px; height: 45px;">
-                                            {{ strtoupper(substr($siswa->nama_siswa ?? '?', 0, 1)) }}
-                                        </div>
-                                    @endif
+                                    <img src="{{ $siswa->avatar_url }}" alt="Avatar" class="me-3 rounded-circle" style="width: 45px; height: 45px; object-fit: cover;">
                                     <div>
                                         <div class="fw-bold text-primary">{{ $siswa->nama_siswa }}</div>
                                     </div>
@@ -256,13 +250,7 @@
                 </div>
 
                 <div class="text-center mb-4">
-                    @if($viewingSiswa && $viewingSiswa->avatar)
-                        <img src="{{ Storage::url($viewingSiswa->avatar) }}" alt="Avatar" class="mx-auto mb-3 shadow-sm rounded-circle d-flex align-items-center justify-content-center border border-4 border-info" style="width: 100px; height: 100px; object-fit: cover;">
-                    @else
-                        <div class="user-avatar bg-info text-white mx-auto mb-3 shadow-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; font-size: 2.5rem;">
-                            {{ strtoupper(substr($viewingSiswa->nama_siswa ?? '?', 0, 1)) }}
-                        </div>
-                    @endif
+                    <img src="{{ $viewingSiswa?->avatar_url ?? asset('images/default-avatar.svg') }}" alt="Avatar" class="mx-auto mb-3 shadow-sm rounded-circle d-flex align-items-center justify-content-center border border-4 border-info" style="width: 100px; height: 100px; object-fit: cover;">
                     <h4 class="mb-1 text-primary fw-bold">{{ $viewingSiswa->nama_siswa ?? '-' }}</h4>
                     <x-ui.badge variant="secondary" icon="fas fa-id-badge" class="mt-2">{{ $viewingSiswa->nisn ?? '-' }}</x-ui.badge>
                 </div>

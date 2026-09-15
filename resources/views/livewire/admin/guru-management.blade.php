@@ -49,19 +49,7 @@
                         <tr wire:key="guru-{{ $guru->id_guru }}">
                             <td>
                                 <div class="d-flex align-items-center gap-3">
-                                    @if($guru->avatar)
-                                        <img src="{{ Storage::url($guru->avatar) }}" alt="Avatar" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
-                                    @else
-                                        @php
-                                            $words = explode(' ', $guru->nama_guru);
-                                            $initials = '';
-                                            foreach ($words as $word) {
-                                                $initials .= strtoupper(substr($word, 0, 1));
-                                            }
-                                            $initials = substr($initials, 0, 2);
-                                        @endphp
-                                        <div class="user-avatar">{{ $initials }}</div>
-                                    @endif
+                                    <img src="{{ $guru->avatar_url }}" alt="Avatar" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
                                     <div>
                                         <div class="fw-semibold" style="color: var(--text-primary);">{{ $guru->nama_guru }}</div>
                                     </div>
@@ -205,21 +193,7 @@
                 </div>
 
                 <div class="text-center mb-4">
-                    @if($viewingGuru && $viewingGuru->avatar)
-                        <img src="{{ Storage::url($viewingGuru->avatar) }}" alt="Avatar" class="mx-auto mb-3 shadow-sm rounded-circle d-flex align-items-center justify-content-center border border-4 border-info" style="width: 100px; height: 100px; object-fit: cover;">
-                    @else
-                        @php
-                            $words = explode(' ', $viewingGuru->nama_guru ?? '?');
-                            $initials = '';
-                            foreach ($words as $word) {
-                                $initials .= strtoupper(substr($word, 0, 1));
-                            }
-                            $initials = substr($initials, 0, 2);
-                        @endphp
-                        <div class="user-avatar bg-info text-white mx-auto mb-3 shadow-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; font-size: 2.5rem;">
-                            {{ $initials }}
-                        </div>
-                    @endif
+                    <img src="{{ $viewingGuru?->avatar_url ?? asset('images/default-avatar.svg') }}" alt="Avatar" class="mx-auto mb-3 shadow-sm rounded-circle d-flex align-items-center justify-content-center border border-4 border-info" style="width: 100px; height: 100px; object-fit: cover;">
                     <h4 class="mb-1 text-primary fw-bold">{{ $viewingGuru->nama_guru ?? '-' }}</h4>
                     <x-ui.badge variant="secondary" icon="fas fa-id-card" class="mt-2">{{ $viewingGuru->nip ?? '-' }}</x-ui.badge>
                 </div>

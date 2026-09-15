@@ -694,7 +694,7 @@
         <x-layout.topbar
             :user-name="$user?->nama ?? $user?->nama_guru ?? $user?->nama_siswa ?? $user?->nama_orang_tua ?? 'Guest'"
             :user-role="$roleName"
-            :user-avatar="$user?->avatar"
+            :user-avatar="$user?->avatar_url ?? asset('images/default-avatar.svg')"
             :profile-route="$profileRoute"
             :notification-count="0"
             :show-logout="true"

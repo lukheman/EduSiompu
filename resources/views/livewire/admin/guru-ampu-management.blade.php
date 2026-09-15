@@ -44,7 +44,7 @@
                             </td>
                             <td>
                                 <div class="d-flex align-items-center">
-                                    <x-ui.avatar :name="$guruAmpu->guru->nama_guru ?? 'N/A'" size="sm" class="me-2" />
+                                    <x-ui.avatar :src="$guruAmpu->guru?->avatar_url" :name="$guruAmpu->guru->nama_guru ?? 'N/A'" size="sm" class="me-2" />
                                     <div>
                                         <h6 class="mb-0 text-dark fw-bold">{{ $guruAmpu->guru->nama_guru ?? 'N/A' }}</h6>
                                         <small class="text-muted">{{ $guruAmpu->guru->nip ?? 'N/A' }}</small>
@@ -89,7 +89,7 @@
                 </div>
 
                 <div class="mb-4 text-center">
-                    <x-ui.avatar :name="$guruInfo->nama_guru" size="lg" class="mb-3 mx-auto" />
+                    <x-ui.avatar :src="$guruInfo?->avatar_url" :name="$guruInfo->nama_guru" size="lg" class="mb-3 mx-auto" />
                     <h5 class="fw-bold text-dark mb-0">{{ $guruInfo->nama_guru }}</h5>
                     <p class="text-muted">{{ $guruInfo->nip }}</p>
                     <x-ui.badge variant="primary">

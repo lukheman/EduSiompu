@@ -49,9 +49,9 @@
         <!-- </button> -->
         <a href="{{ $profileRoute }}" class="d-flex align-items-center gap-2 text-decoration-none" title="Menuju Profil">
             @if($userAvatar)
-                <img src="{{ Storage::url($userAvatar) }}" alt="Avatar" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover; border: 2px solid var(--border-color);">
+                <img src="{{ $userAvatar }}" alt="Avatar" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover; border: 2px solid var(--border-color);">
             @else
-                <div class="user-avatar">{{ $initials }}</div>
+                <img src="{{ asset('images/default-avatar.svg') }}" alt="Avatar" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover; border: 2px solid var(--border-color);">
             @endif
             <div class="d-none d-md-block">
                 <div class="fw-semibold user-name">{{ $userName }}</div>
