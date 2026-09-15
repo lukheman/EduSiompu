@@ -34,6 +34,7 @@
                     <tr>
                         <th>Tahun Ajaran</th>
                         <th>Semester</th>
+                        <th>Periode</th>
                         <th>Status</th>
                         <th style="width: 150px;">Tindakan</th>
                     </tr>
@@ -47,6 +48,14 @@
                                     <x-ui.badge variant="info" icon="fas fa-sun">Ganjil</x-ui.badge>
                                 @else
                                     <x-ui.badge variant="warning" icon="fas fa-snowflake">Genap</x-ui.badge>
+                                @endif
+                            </td>
+                            <td class="small">
+                                @if($tahun->tanggal_mulai || $tahun->tanggal_akhir)
+                                    <i class="fas fa-calendar-alt text-muted me-1"></i>
+                                    {{ $tahun->tanggal_mulai?->format('d M Y') ?? '?' }} - {{ $tahun->tanggal_akhir?->format('d M Y') ?? '?' }}
+                                @else
+                                    <span class="text-muted">-</span>
                                 @endif
                             </td>
                             <td>
@@ -67,7 +76,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="text-center py-4">
+                            <td colspan="5" class="text-center py-4">
                                 <div class="text-muted">
                                     <i class="fas fa-calendar-alt mb-2" style="font-size: 2rem;"></i>
                                     <p class="mb-0">Tidak ada data tahun ajaran ditemukan</p>
@@ -120,7 +129,26 @@
                         @enderror
                     </div>
 
-                    <div class="mb-3">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="tanggal_mulai" class="form-label">Tanggal Mulai</label>
+                            <input type="date" class="form-control @error('tanggal_mulai') is-invalid @enderror" id="tanggal_mulai"
+                                wire:model="tanggal_mulai">
+                            @error('tanggal_mulai')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="col-md-6">
+                            <label for="tanggal_akhir" class="form-label">Tanggal Akhir</label>
+                            <input type="date" class="form-control @error('tanggal_akhir') is-invalid @enderror" id="tanggal_akhir"
+                                wire:model="tanggal_akhir">
+                            @error('tanggal_akhir')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="mb-3 mt-3">
                         <div class="form-check form-switch">
                             <input class="form-check-input" type="checkbox" role="switch" id="status_aktif" wire:model="status_aktif">
                             <label class="form-check-label ms-2" for="status_aktif">Jadikan Tahun Ajaran Aktif</label>

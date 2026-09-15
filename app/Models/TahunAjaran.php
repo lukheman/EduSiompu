@@ -10,6 +10,17 @@ class TahunAjaran extends Model
     use HasFactory;
 
     protected $table = 'tahun_ajaran';
+
     protected $primaryKey = 'id_tahun_ajaran';
-    protected $fillable = ['nama_tahun', 'semester', 'status_aktif'];
+
+    protected $fillable = ['nama_tahun', 'semester', 'tanggal_mulai', 'tanggal_akhir', 'status_aktif'];
+
+    protected function casts(): array
+    {
+        return [
+            'tanggal_mulai' => 'date',
+            'tanggal_akhir' => 'date',
+            'status_aktif' => 'boolean',
+        ];
+    }
 }

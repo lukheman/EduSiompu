@@ -3,7 +3,6 @@
 namespace App\Livewire\Admin;
 
 use App\Models\TahunAjaran;
-use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
 use Livewire\Component;
@@ -20,13 +19,22 @@ class TahunAjaranManagement extends Component
 
     // Form
     public string $nama_tahun = '';
+
     public string $semester = 'ganjil';
+
+    public string $tanggal_mulai = '';
+
+    public string $tanggal_akhir = '';
+
     public bool $status_aktif = true;
 
     // State
     public ?int $editingId = null;
+
     public bool $showModal = false;
+
     public bool $showDeleteModal = false;
+
     public ?int $deletingId = null;
 
     protected function rules(): array
@@ -34,6 +42,8 @@ class TahunAjaranManagement extends Component
         return [
             'nama_tahun' => ['required', 'string', 'max:255'],
             'semester' => ['required', 'in:ganjil,genap'],
+            'tanggal_mulai' => ['nullable', 'date'],
+            'tanggal_akhir' => ['nullable', 'date', 'after_or_equal:tanggal_mulai'],
             'status_aktif' => ['boolean'],
         ];
     }
@@ -55,6 +65,8 @@ class TahunAjaranManagement extends Component
         $this->editingId = $id;
         $this->nama_tahun = $tahunAjaran->nama_tahun;
         $this->semester = $tahunAjaran->semester;
+        $this->tanggal_mulai = $tahunAjaran->tanggal_mulai?->format('Y-m-d') ?? '';
+        $this->tanggal_akhir = $tahunAjaran->tanggal_akhir?->format('Y-m-d') ?? '';
         $this->status_aktif = (bool) $tahunAjaran->status_aktif;
         $this->showModal = true;
     }
@@ -62,6 +74,8 @@ class TahunAjaranManagement extends Component
     public function save(): void
     {
         $validated = $this->validate();
+        $validated['tanggal_mulai'] = $validated['tanggal_mulai'] ?: null;
+        $validated['tanggal_akhir'] = $validated['tanggal_akhir'] ?: null;
 
         // If status is active, we should probably set all others to inactive?
         // Let's assume that logic is needed since usually only one academic year is active.
@@ -85,10 +99,10 @@ class TahunAjaranManagement extends Component
     {
         // Set all other to inactive and this one to active
         TahunAjaran::where('status_aktif', true)->update(['status_aktif' => false]);
-        
+
         $tahunAjaran = TahunAjaran::findOrFail($id);
         $tahunAjaran->update(['status_aktif' => true]);
-        
+
         session()->flash('success', 'Tahun ajaran aktif berhasil diubah.');
     }
 
@@ -113,7 +127,7 @@ class TahunAjaranManagement extends Component
                 // Check if it's the only active one
                 $wasActive = $tahun->status_aktif;
                 $tahun->delete();
-                
+
                 // If we deleted the active one, optionally activate the latest one
                 if ($wasActive) {
                     $latest = TahunAjaran::latest()->first();
@@ -121,7 +135,7 @@ class TahunAjaranManagement extends Component
                         $latest->update(['status_aktif' => true]);
                     }
                 }
-                
+
                 session()->flash('success', 'Tahun ajaran berhasil dihapus.');
             }
         }
@@ -140,6 +154,8 @@ class TahunAjaranManagement extends Component
     {
         $this->nama_tahun = '';
         $this->semester = 'ganjil';
+        $this->tanggal_mulai = '';
+        $this->tanggal_akhir = '';
         $this->status_aktif = true;
         $this->editingId = null;
     }
@@ -148,8 +164,8 @@ class TahunAjaranManagement extends Component
     {
         $tahunAjarans = TahunAjaran::query()
             ->when($this->search, function ($query) {
-                $query->where('nama_tahun', 'like', '%' . $this->search . '%')
-                    ->orWhere('semester', 'like', '%' . $this->search . '%');
+                $query->where('nama_tahun', 'like', '%'.$this->search.'%')
+                    ->orWhere('semester', 'like', '%'.$this->search.'%');
             })
             ->orderBy('created_at', 'desc')
             ->paginate(10);

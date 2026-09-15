@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\LogoutController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Guru\LaporanNilaiController;
 use App\Livewire\Admin\Dashboard;
 use App\Livewire\Admin\GuruAmpuManagement;
 use App\Livewire\Admin\GuruManagement;
@@ -16,6 +17,7 @@ use App\Livewire\Admin\TahunAjaranManagement;
 use App\Livewire\Auth\Register;
 use App\Livewire\Guru\InputNilai;
 use App\Livewire\Guru\JadwalAbsensi;
+use App\Livewire\Guru\LaporanNilai;
 use App\Livewire\Guru\Profile as GuruProfile;
 use App\Livewire\Guru\TugasManagement;
 use App\Livewire\OrangTua\AbsensiAnak;
@@ -65,6 +67,8 @@ Route::prefix('guru')->middleware('auth:guru,web')->group(function () {
     Route::get('/jadwal-absensi', JadwalAbsensi::class)->name('guru.jadwal-absensi');
     Route::get('/input-nilai', InputNilai::class)->name('guru.input-nilai');
     Route::get('/tugas', TugasManagement::class)->name('guru.tugas');
+    Route::get('/laporan-nilai', LaporanNilai::class)->name('guru.laporan-nilai');
+    Route::get('/laporan-nilai/cetak-mapel/{kelas}/{mapel}/{tahun}', [LaporanNilaiController::class, 'cetakMapel'])->name('guru.laporan-nilai.cetak-mapel');
     Route::get('/profil', GuruProfile::class)->name('guru.profile');
 });
 

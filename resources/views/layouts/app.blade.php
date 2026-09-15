@@ -625,6 +625,7 @@
                 <x-layout.sidebar-link href="{{ route('guru.jadwal-absensi') }}" icon="fas fa-calendar-check" :active="request()->routeIs('guru.jadwal-absensi')">Jadwal & Absensi</x-layout.sidebar-link>
                 <x-layout.sidebar-link href="{{ route('guru.tugas') }}" icon="fas fa-tasks" :active="request()->routeIs('guru.tugas')">Tugas Pembelajaran</x-layout.sidebar-link>
                 <x-layout.sidebar-link href="{{ route('guru.input-nilai') }}" icon="fas fa-edit" :active="request()->routeIs('guru.input-nilai')">Input Nilai Raport</x-layout.sidebar-link>
+                <x-layout.sidebar-link href="{{ route('guru.laporan-nilai') }}" icon="fas fa-file-pdf" :active="request()->routeIs('guru.laporan-nilai*')">Laporan Nilai</x-layout.sidebar-link>
             </x-layout.sidebar-section>
         @endif
 

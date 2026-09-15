@@ -20,6 +20,8 @@ class DatabaseSeeder extends Seeder
         $idTahunAjaranGanjil = DB::table('tahun_ajaran')->insertGetId([
             'nama_tahun' => '2026/2027',
             'semester' => 'ganjil',
+            'tanggal_mulai' => '2026-07-01',
+            'tanggal_akhir' => '2026-12-31',
             'status_aktif' => true,
             'created_at' => $now,
             'updated_at' => $now,
@@ -28,6 +30,8 @@ class DatabaseSeeder extends Seeder
         $idTahunAjaranGenap = DB::table('tahun_ajaran')->insertGetId([
             'nama_tahun' => '2026/2027',
             'semester' => 'genap',
+            'tanggal_mulai' => '2027-01-01',
+            'tanggal_akhir' => '2027-06-30',
             'status_aktif' => false,
             'created_at' => $now,
             'updated_at' => $now,
@@ -263,5 +267,9 @@ class DatabaseSeeder extends Seeder
 
         // Output info
         $this->command->info('Data EduSiompu berhasil di-seed (tanpa factory) secara alami!');
+
+        $this->call([
+            NilaiRaportSeeder::class,
+        ]);
     }
 }

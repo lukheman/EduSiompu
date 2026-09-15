@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\TahunAjaran;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 class TahunAjaranFactory extends Factory
 {
@@ -11,12 +11,14 @@ class TahunAjaranFactory extends Factory
 
     public function definition(): array
     {
-        
-            return [
-                'nama_tahun' => '202' . $this->faker->numberBetween(0, 5) . '/202' . $this->faker->numberBetween(1, 6),
-                'semester' => $this->faker->randomElement(['ganjil', 'genap']),
-                'status_aktif' => $this->faker->boolean(),
-            ];
-        
+
+        return [
+            'nama_tahun' => '202'.$this->faker->numberBetween(0, 5).'/202'.$this->faker->numberBetween(1, 6),
+            'semester' => $this->faker->randomElement(['ganjil', 'genap']),
+            'tanggal_mulai' => $this->faker->date(),
+            'tanggal_akhir' => $this->faker->date(),
+            'status_aktif' => $this->faker->boolean(),
+        ];
+
     }
 }

@@ -11,7 +11,9 @@ class Siswa extends Authenticatable
     use HasFactory, Notifiable;
 
     protected $table = 'siswa';
+
     protected $primaryKey = 'id_siswa';
+
     protected $fillable = ['id_kelas', 'nisn', 'nama_siswa', 'password', 'id_orang_tua'];
 
     protected $hidden = [
@@ -26,5 +28,10 @@ class Siswa extends Authenticatable
     public function orangTua()
     {
         return $this->belongsTo(OrangTua::class, 'id_orang_tua', 'id_orang_tua');
+    }
+
+    public function raport()
+    {
+        return $this->hasMany(Raport::class, 'id_siswa', 'id_siswa');
     }
 }
