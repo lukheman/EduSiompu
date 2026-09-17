@@ -18,6 +18,7 @@
         table.nilai th, table.nilai td { border: 1px solid #333; padding: 5px 6px; text-align: center; }
         table.nilai th { background: #e5e5e5; }
         table.nilai td.nama { text-align: left; }
+        .tgl { font-size: 7px; font-weight: normal; }
         .ttd { margin-top: 24px; width: 100%; }
         .ttd td { width: 50%; text-align: center; vertical-align: top; }
     </style>
@@ -27,16 +28,18 @@
         <tr>
             <td class="kop-logo">@if($logoKiri)<img src="{{ $logoKiri }}" alt="Logo">@endif</td>
             <td class="kop-teks">
-                <h2>SMAN 1 SIOMPU</h2>
-                <p>EduSiompu &mdash; Sistem Informasi Akademik</p>
+                <h2>PEMERINTAH PROVINSI SULAWESI TENGGARA</h2>
+                <h2>DINAS PENDIDIKAN DAN KEBUDAYAAN</h2>
+                <h2>SMA NEGERI 1 SIOMPU</h2>
+                <p> <b>Alamat: Jln. Poros Siompu Desa Batuwu Kecamatan Siompu</b> </p>
             </td>
             <td class="kop-logo">@if($logoKanan)<img src="{{ $logoKanan }}" alt="Logo">@endif</td>
         </tr>
     </table>
 
     <div class="judul">
-        <h3>LAPORAN NILAI MATA PELAJARAN</h3>
-        <p>Tahun Ajaran {{ $tahunAjaran->nama_tahun }} Semester {{ ucfirst($tahunAjaran->semester) }}</p>
+        <h3>DAFTAR HADIR SEMESTER GANJIL</h3>
+        <p>TAHUN PELAJARAN 2026/2027</p>
     </div>
 
     <table class="biodata">
@@ -54,25 +57,39 @@
     <table class="nilai">
         <thead>
             <tr>
-                <th width="25">No</th>
-                <th>Nama Siswa</th>
-                <th>NISN</th>
-                <th>Afektif</th>
-                <th>Psikomotor</th>
-                <th>Tugas</th>
-                <th>UH</th>
-                <th>US</th>
-                <th>Nilai Akhir</th>
-                <th>Predikat</th>
+                <th width="25" rowspan="2">No</th>
+                <th rowspan="2">Nama Siswa</th>
+                @if(count($pertemuans) > 0)
+                    <th colspan="{{ count($pertemuans) }}">Pertemuan Ke-</th>
+                @endif
+                <th rowspan="2">Afektif</th>
+                <th rowspan="2">Psikomotor</th>
+                <th rowspan="2">Tugas</th>
+                <th rowspan="2">UH</th>
+                <th rowspan="2">US</th>
+                <th rowspan="2">Nilai Akhir</th>
+                <th rowspan="2">Predikat</th>
             </tr>
+            @if(count($pertemuans) > 0)
+                <tr>
+                    @foreach($pertemuans as $index => $tanggal)
+                        <th>{{ $index + 1 }}<br><span class="tgl">{{ $tanggal->format('d/m') }}</span></th>
+                    @endforeach
+                </tr>
+            @endif
         </thead>
         <tbody>
             @foreach($siswas as $index => $siswa)
-                @php $nilai = $siswa->raport->first()?->nilaiRaport->first(); @endphp
+                @php
+                    $nilai = $siswa->raport->first()?->nilaiRaport->first();
+                @endphp
                 <tr>
                     <td>{{ $index + 1 }}</td>
                     <td class="nama">{{ $siswa->nama_siswa }}</td>
-                    <td>{{ $siswa->nisn }}</td>
+                    @foreach($pertemuans as $tanggal)
+                        @php $st = $kehadiran[$siswa->id_siswa][$tanggal->format('Y-m-d')] ?? null; @endphp
+                        <td><strong>{{ $st === 'hadir' ? '✓' : ($st === 'sakit' ? 'S' : ($st === 'izin' ? 'I' : ($st === 'alpa' ? 'A' : '-'))) }}</strong></td>
+                    @endforeach
                     <td>{{ $nilai?->rata_afektif ?? '-' }}</td>
                     <td>{{ $nilai?->rata_psikomotor ?? '-' }}</td>
                     <td>{{ $nilai?->rata_tugas ?? '-' }}</td>
@@ -84,6 +101,11 @@
             @endforeach
         </tbody>
     </table>
+    @if(count($pertemuans) > 0)
+        <p style="font-size: 9px;">Keterangan: ✓ = Hadir, S = Sakit, I = Izin, A = Alpa, - = Belum diisi</p>
+    @else
+        <p><em>Belum ada data absensi pada mata pelajaran ini.</em></p>
+    @endif
 
     <table class="ttd">
         <tr>
