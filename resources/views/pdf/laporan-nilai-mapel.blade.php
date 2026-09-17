@@ -5,9 +5,12 @@
     <title>Laporan Nilai {{ $mapel->nama_mapel }} - {{ $kelas->nama_kelas }}</title>
     <style>
         body { font-family: DejaVu Sans, sans-serif; font-size: 11px; color: #111; }
-        .kop { text-align: center; border-bottom: 3px double #111; padding-bottom: 10px; margin-bottom: 16px; }
+        .kop { border-bottom: 3px double #111; padding-bottom: 10px; margin-bottom: 16px; }
         .kop h2 { margin: 0; font-size: 18px; }
         .kop p { margin: 2px 0; font-size: 11px; }
+        .kop-logo { width: 90px; text-align: center; vertical-align: middle; }
+        .kop-logo img { width: 75px; height: 75px; }
+        .kop-teks { text-align: center; vertical-align: middle; }
         .judul { text-align: center; margin: 12px 0; }
         .judul h3 { margin: 0; font-size: 14px; text-decoration: underline; }
         table { border-collapse: collapse; width: 100%; }
@@ -20,10 +23,16 @@
     </style>
 </head>
 <body>
-    <div class="kop">
-        <h2>SMAN 1 SIOMPU</h2>
-        <p>EduSiompu &mdash; Sistem Informasi Akademik</p>
-    </div>
+    <table class="kop">
+        <tr>
+            <td class="kop-logo">@if($logoKiri)<img src="{{ $logoKiri }}" alt="Logo">@endif</td>
+            <td class="kop-teks">
+                <h2>SMAN 1 SIOMPU</h2>
+                <p>EduSiompu &mdash; Sistem Informasi Akademik</p>
+            </td>
+            <td class="kop-logo">@if($logoKanan)<img src="{{ $logoKanan }}" alt="Logo">@endif</td>
+        </tr>
+    </table>
 
     <div class="judul">
         <h3>LAPORAN NILAI MATA PELAJARAN</h3>

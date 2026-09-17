@@ -3,7 +3,6 @@
 namespace App\Livewire\Guru;
 
 use App\Models\GuruAmpu;
-use App\Models\Kelas;
 use App\Models\NilaiRaport;
 use App\Models\Raport;
 use App\Models\Siswa;
@@ -16,11 +15,7 @@ use Livewire\Component;
 #[Title('Input Nilai Raport')]
 class InputNilai extends Component
 {
-    public $kelasOptions = [];
-
-    public $selectedKelasId = '';
-
-    public $mapelOptions = [];
+    public $ampuOptions = [];
 
     public $selectedAmpuId = '';
 
@@ -31,35 +26,14 @@ class InputNilai extends Component
     public function mount()
     {
         $id_guru = Auth::guard('guru')->id();
-        $this->kelasOptions = Kelas::where('id_guru', $id_guru)
-            ->orderBy('nama_kelas')
-            ->pluck('nama_kelas', 'id_kelas')
-            ->toArray();
-    }
-
-    public function updatedSelectedKelasId()
-    {
-        $this->selectedAmpuId = '';
-        $this->mapelOptions = [];
-        $this->siswas = [];
-        $this->nilaiData = [];
-
-        if (! $this->selectedKelasId) {
-            return;
-        }
-
-        if (! $this->kelasDiawalikan()) {
-            return;
-        }
-
-        $this->mapelOptions = GuruAmpu::with(['mataPelajaran', 'tahunAjaran'])
-            ->where('id_kelas', $this->selectedKelasId)
+        $this->ampuOptions = GuruAmpu::with(['kelas', 'mataPelajaran', 'tahunAjaran'])
+            ->where('id_guru', $id_guru)
             ->whereHas('tahunAjaran', function ($q) {
                 $q->where('status_aktif', true);
             })
             ->get()
             ->mapWithKeys(function ($ampu) {
-                return [$ampu->id_guru_ampu => $ampu->mataPelajaran->nama_mapel.' ('.$ampu->tahunAjaran->nama_tahun.' '.ucfirst($ampu->tahunAjaran->semester).')'];
+                return [$ampu->id_guru_ampu => $ampu->kelas->nama_kelas.' - '.$ampu->mataPelajaran->nama_mapel.' ('.$ampu->tahunAjaran->nama_tahun.' '.ucfirst($ampu->tahunAjaran->semester).')'];
             })
             ->toArray();
     }
@@ -127,11 +101,23 @@ class InputNilai extends Component
         return NilaiRaport::rataAspek($scores);
     }
 
-    private function kelasDiawalikan(): bool
+    public function ampuValid(): bool
     {
-        return Kelas::where('id_kelas', $this->selectedKelasId)
+        return $this->ampuMilikGuru() !== null;
+    }
+
+    private function ampuMilikGuru(): ?GuruAmpu
+    {
+        if (! $this->selectedAmpuId) {
+            return null;
+        }
+
+        return GuruAmpu::where('id_guru_ampu', $this->selectedAmpuId)
             ->where('id_guru', Auth::guard('guru')->id())
-            ->exists();
+            ->whereHas('tahunAjaran', function ($q) {
+                $q->where('status_aktif', true);
+            })
+            ->first();
     }
 
     public function loadSiswas()
@@ -143,8 +129,11 @@ class InputNilai extends Component
             return;
         }
 
-        $ampu = GuruAmpu::find($this->selectedAmpuId);
-        if (! $ampu || $ampu->id_kelas != $this->selectedKelasId || ! $this->kelasDiawalikan()) {
+        $ampu = $this->ampuMilikGuru();
+        if (! $ampu) {
+            $this->siswas = [];
+            $this->nilaiData = [];
+
             return;
         }
 
@@ -200,8 +189,8 @@ class InputNilai extends Component
             return;
         }
 
-        $ampu = GuruAmpu::find($this->selectedAmpuId);
-        if (! $ampu || $ampu->id_kelas != $this->selectedKelasId || ! $this->kelasDiawalikan()) {
+        $ampu = $this->ampuMilikGuru();
+        if (! $ampu) {
             return;
         }
 

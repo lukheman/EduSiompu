@@ -47,10 +47,25 @@ class LaporanNilaiController extends Controller
             'pengampu' => $ampu->guru,
             'siswas' => $siswas,
             'wali' => $guru,
+            'logoKiri' => $this->logoBase64('logo-kiri.png'),
+            'logoKanan' => $this->logoBase64('logo-kanan.png'),
         ])->setPaper('a4', 'landscape');
 
         $mapelAman = str_replace(['/', '\\', ' '], '-', $mapel->nama_mapel);
 
         return $pdf->download("laporan-nilai-{$mapelAman}-{$kelas->nama_kelas}.pdf");
+    }
+
+    private function logoBase64(string $filename): ?string
+    {
+        $path = public_path('images/'.$filename);
+
+        if (! is_file($path)) {
+            return null;
+        }
+
+        $mime = mime_content_type($path) ?: 'image/png';
+
+        return 'data:'.$mime.';base64,'.base64_encode(file_get_contents($path));
     }
 }

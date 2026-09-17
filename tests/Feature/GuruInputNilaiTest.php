@@ -11,27 +11,27 @@ use App\Models\Siswa;
 use App\Models\TahunAjaran;
 use Livewire\Livewire;
 
-function buatKelasPerwalian(): array
+function buatPenugasanMapel(): array
 {
     $tahunAjaran = TahunAjaran::factory()->create(['status_aktif' => true]);
-    $wali = Guru::factory()->create();
-    $kelas = Kelas::factory()->create(['id_guru' => $wali->id_guru]);
+    $guru = Guru::factory()->create();
+    $kelas = Kelas::factory()->create();
     $ampu = GuruAmpu::factory()->create([
+        'id_guru' => $guru->id_guru,
         'id_kelas' => $kelas->id_kelas,
         'id_tahun_ajaran' => $tahunAjaran->id_tahun_ajaran,
     ]);
     $siswa = Siswa::factory()->create(['id_kelas' => $kelas->id_kelas]);
 
-    return compact('tahunAjaran', 'wali', 'kelas', 'ampu', 'siswa');
+    return compact('tahunAjaran', 'guru', 'kelas', 'ampu', 'siswa');
 }
 
-it('wali kelas can input nilai for students in their class', function () {
-    ['wali' => $wali, 'kelas' => $kelas, 'ampu' => $ampu, 'siswa' => $siswa] = buatKelasPerwalian();
+it('guru mapel can input nilai for students in their assigned class', function () {
+    ['guru' => $guru, 'kelas' => $kelas, 'ampu' => $ampu, 'siswa' => $siswa] = buatPenugasanMapel();
 
-    Livewire::actingAs($wali, 'guru')
+    Livewire::actingAs($guru, 'guru')
         ->test(InputNilai::class)
         ->assertSee($kelas->nama_kelas)
-        ->set('selectedKelasId', $kelas->id_kelas)
         ->assertSee($ampu->mataPelajaran->nama_mapel)
         ->set('selectedAmpuId', $ampu->id_guru_ampu)
         ->assertSee($siswa->nama_siswa)
@@ -74,12 +74,11 @@ it('wali kelas can input nilai for students in their class', function () {
         ->and($nilai->predikat_raport)->toBe('B');
 });
 
-it('wali can manually override nilai raport', function () {
-    ['wali' => $wali, 'kelas' => $kelas, 'ampu' => $ampu, 'siswa' => $siswa] = buatKelasPerwalian();
+it('guru can manually override nilai raport', function () {
+    ['guru' => $guru, 'ampu' => $ampu, 'siswa' => $siswa] = buatPenugasanMapel();
 
-    Livewire::actingAs($wali, 'guru')
+    Livewire::actingAs($guru, 'guru')
         ->test(InputNilai::class)
-        ->set('selectedKelasId', $kelas->id_kelas)
         ->set('selectedAmpuId', $ampu->id_guru_ampu)
         ->set("nilaiData.{$siswa->id_siswa}.tugas_1", 70)
         ->set("nilaiData.{$siswa->id_siswa}.tugas_2", 80)
@@ -96,16 +95,50 @@ it('wali can manually override nilai raport', function () {
         ->and($nilai->predikat_raport)->toBe('A');
 });
 
-it('guru who is not wali cannot input nilai', function () {
-    ['kelas' => $kelas, 'ampu' => $ampu] = buatKelasPerwalian();
+it('guru cannot input nilai for unassigned ampu', function () {
+    ['ampu' => $ampu] = buatPenugasanMapel();
     $guruLain = Guru::factory()->create();
 
     Livewire::actingAs($guruLain, 'guru')
         ->test(InputNilai::class)
-        ->assertSee('Bukan Wali Kelas')
-        ->assertDontSee($kelas->nama_kelas)
-        ->set('selectedKelasId', $kelas->id_kelas)
+        ->assertDontSee($ampu->mataPelajaran->nama_mapel)
         ->set('selectedAmpuId', $ampu->id_guru_ampu)
+        ->assertSee('Tidak Memiliki Akses')
+        ->call('simpan');
+
+    expect(NilaiRaport::count())->toBe(0);
+});
+
+it('tampered ampu id clears loaded students and saves nothing', function () {
+    ['guru' => $guru, 'ampu' => $ampu, 'siswa' => $siswa] = buatPenugasanMapel();
+    $ampuLain = GuruAmpu::factory()->create();
+
+    Livewire::actingAs($guru, 'guru')
+        ->test(InputNilai::class)
+        ->set('selectedAmpuId', $ampu->id_guru_ampu)
+        ->assertSee($siswa->nama_siswa)
+        ->set('selectedAmpuId', $ampuLain->id_guru_ampu)
+        ->assertDontSee($siswa->nama_siswa)
+        ->set("nilaiData.{$siswa->id_siswa}.tugas_1", 90)
+        ->call('simpan');
+
+    expect(NilaiRaport::count())->toBe(0);
+});
+
+it('guru cannot input nilai for inactive tahun ajaran', function () {
+    ['guru' => $guru, 'kelas' => $kelas, 'siswa' => $siswa] = buatPenugasanMapel();
+    $tahunLama = TahunAjaran::factory()->create(['status_aktif' => false]);
+    $ampuLama = GuruAmpu::factory()->create([
+        'id_guru' => $guru->id_guru,
+        'id_kelas' => $kelas->id_kelas,
+        'id_tahun_ajaran' => $tahunLama->id_tahun_ajaran,
+    ]);
+
+    Livewire::actingAs($guru, 'guru')
+        ->test(InputNilai::class)
+        ->assertDontSee($ampuLama->mataPelajaran->nama_mapel)
+        ->set('selectedAmpuId', $ampuLama->id_guru_ampu)
+        ->assertDontSee($siswa->nama_siswa)
         ->call('simpan');
 
     expect(NilaiRaport::count())->toBe(0);
