@@ -12,7 +12,7 @@
         .kop-logo img { width: 75px; height: 75px; }
         .kop-teks { text-align: center; vertical-align: middle; }
         .judul { text-align: center; margin: 12px 0; }
-        .judul h3 { margin: 0; font-size: 14px; text-decoration: underline; }
+        .judul h3 { margin: 0; font-size: 14px; }
         table { border-collapse: collapse; width: 100%; }
         table.biodata td { padding: 3px 6px; vertical-align: top; }
         table.nilai th, table.nilai td { border: 1px solid #333; padding: 5px 6px; text-align: center; }
@@ -38,8 +38,8 @@
     </table>
 
     <div class="judul">
-        <h3>DAFTAR HADIR SEMESTER GANJIL</h3>
-        <p>TAHUN PELAJARAN 2026/2027</p>
+        <h3>DAFTAR HADIR SEMESTER {{ strtoupper($tahunAjaran->semester) }}</h3>
+        <h3>TAHUN PELAJARAN {{ $tahunAjaran->nama_tahun }}</h3>
     </div>
 
     <table class="biodata">
