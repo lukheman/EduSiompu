@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Laporan Nilai {{ $mapel->nama_mapel }} - {{ $kelas->nama_kelas }}</title>
     <style>
-        body { font-family: DejaVu Sans, sans-serif; font-size: 11px; color: #111; }
+        body { font-family: "Times New Roman", Times, serif; font-size: 11px; color: #111; }
         .kop { border-bottom: 3px double #111; padding-bottom: 10px; margin-bottom: 16px; }
         .kop h2 { margin: 0; font-size: 18px; }
         .kop p { margin: 2px 0; font-size: 11px; }
@@ -45,11 +45,12 @@
     <table class="biodata">
         <tr>
             <td width="150">Mata Pelajaran</td><td width="10">:</td><td><strong>{{ $mapel->nama_mapel }}</strong></td>
+        </tr>
+        <tr>
             <td width="120">Kelas</td><td width="10">:</td><td>{{ $kelas->nama_kelas }}</td>
         </tr>
         <tr>
-            <td>Guru Pengampu</td><td>:</td><td>{{ $pengampu->nama_guru ?? '-' }}</td>
-            <td>Wali Kelas</td><td>:</td><td>{{ $wali->nama_guru }}</td>
+            <td>Semester</td><td>:</td><td>{{ ucfirst($tahunAjaran->semester) }}</td>
         </tr>
     </table>
 
@@ -64,11 +65,9 @@
                 @endif
                 <th rowspan="2">Afektif</th>
                 <th rowspan="2">Psikomotor</th>
-                <th rowspan="2">Tugas</th>
-                <th rowspan="2">UH</th>
-                <th rowspan="2">US</th>
-                <th rowspan="2">Nilai Akhir</th>
-                <th rowspan="2">Predikat</th>
+                <th rowspan="2">NTS</th>
+                <th rowspan="2">NUH</th>
+                <th rowspan="2">NR</th>
             </tr>
             @if(count($pertemuans) > 0)
                 <tr>
@@ -95,8 +94,6 @@
                     <td>{{ $nilai?->rata_tugas ?? '-' }}</td>
                     <td>{{ $nilai?->rata_ulangan_harian ?? '-' }}</td>
                     <td>{{ $nilai?->nilai_ulangan_semester ?? '-' }}</td>
-                    <td><strong>{{ $nilai?->nilai_raport ?? '-' }}</strong></td>
-                    <td><strong>{{ $nilai?->predikat_raport ?? '-' }}</strong></td>
                 </tr>
             @endforeach
         </tbody>

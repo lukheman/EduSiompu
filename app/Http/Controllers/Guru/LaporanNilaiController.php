@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers\Guru;
 
+use App\Enums\StatusKehadiran;
 use App\Http\Controllers\Controller;
+use App\Models\Absensi;
 use App\Models\GuruAmpu;
+use App\Models\JadwalPelajaran;
 use App\Models\Kelas;
 use App\Models\MataPelajaran;
 use App\Models\Siswa;
@@ -40,6 +43,27 @@ class LaporanNilaiController extends Controller
             ->orderBy('nama_siswa')
             ->get();
 
+        $jadwalIds = JadwalPelajaran::where('id_guru_ampu', $ampu->id_guru_ampu)->pluck('id_jadwal_pelajaran');
+
+        $pertemuans = Absensi::whereIn('id_jadwal_pelajaran', $jadwalIds)
+            ->select('tanggal')
+            ->distinct()
+            ->orderBy('tanggal')
+            ->limit(20)
+            ->pluck('tanggal');
+
+        $absensiList = Absensi::whereIn('id_jadwal_pelajaran', $jadwalIds)
+            ->whereIn('tanggal', $pertemuans)
+            ->get();
+
+        $kehadiran = [];
+        foreach ($absensiList as $absen) {
+            $status = $absen->status_kehadiran instanceof StatusKehadiran
+                ? $absen->status_kehadiran->value
+                : $absen->status_kehadiran;
+            $kehadiran[$absen->id_siswa][$absen->tanggal->format('Y-m-d')] = $status;
+        }
+
         $pdf = Pdf::loadView('pdf.laporan-nilai-mapel', [
             'kelas' => $kelas,
             'mapel' => $mapel,
@@ -47,6 +71,8 @@ class LaporanNilaiController extends Controller
             'pengampu' => $ampu->guru,
             'siswas' => $siswas,
             'wali' => $guru,
+            'pertemuans' => $pertemuans,
+            'kehadiran' => $kehadiran,
             'logoKiri' => $this->logoBase64('logo-kiri.png'),
             'logoKanan' => $this->logoBase64('logo-kanan.png'),
         ])->setPaper('a4', 'landscape');
