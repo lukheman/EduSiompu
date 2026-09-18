@@ -58,24 +58,40 @@
     <table class="nilai">
         <thead>
             <tr>
-                <th width="25" rowspan="2">No</th>
-                <th rowspan="2">Nama Siswa</th>
+                <th width="25" rowspan="3">No</th>
+                <th rowspan="3">NAMA</th>
                 @if(count($pertemuans) > 0)
-                    <th colspan="{{ count($pertemuans) }}">Pertemuan Ke-</th>
+                    <th colspan="{{ count($pertemuans) }}">PERTEMUAN KE</th>
                 @endif
-                <th rowspan="2">Afektif</th>
-                <th rowspan="2">Psikomotor</th>
-                <th rowspan="2">NTS</th>
-                <th rowspan="2">NUH</th>
-                <th rowspan="2">NR</th>
+                <th colspan="18">PENILAIAN</th>
             </tr>
-            @if(count($pertemuans) > 0)
-                <tr>
-                    @foreach($pertemuans as $index => $tanggal)
-                        <th>{{ $index + 1 }}<br><span class="tgl">{{ $tanggal->format('d/m') }}</span></th>
-                    @endforeach
-                </tr>
-            @endif
+            <tr>
+                @foreach($pertemuans as $index => $tanggal)
+                    <th rowspan="2">{{ $index + 1 }}</th>
+                @endforeach
+                <th colspan="4">AFEKTIF</th>
+                <th colspan="5">PSIKOMOTOR</th>
+                <th colspan="5">NILAI TUGAS</th>
+                <th colspan="4">UL. HARIAN</th>
+            </tr>
+            <tr>
+                @for($i = 1; $i <= 3; $i++)
+                    <th>{{ $i }}</th>
+                @endfor
+                <th>RT</th>
+                @for($i = 1; $i <= 4; $i++)
+                    <th>{{ $i }}</th>
+                @endfor
+                <th>RT</th>
+                @for($i = 1; $i <= 4; $i++)
+                    <th>{{ $i }}</th>
+                @endfor
+                <th>RT</th>
+                @for($i = 1; $i <= 3; $i++)
+                    <th>{{ $i }}</th>
+                @endfor
+                <th>RT</th>
+            </tr>
         </thead>
         <tbody>
             @foreach($siswas as $index => $siswa)
@@ -89,11 +105,22 @@
                         @php $st = $kehadiran[$siswa->id_siswa][$tanggal->format('Y-m-d')] ?? null; @endphp
                         <td><strong>{{ $st === 'hadir' ? '✓' : ($st === 'sakit' ? 'S' : ($st === 'izin' ? 'I' : ($st === 'alpa' ? 'A' : '-'))) }}</strong></td>
                     @endforeach
-                    <td>{{ $nilai?->rata_afektif ?? '-' }}</td>
-                    <td>{{ $nilai?->rata_psikomotor ?? '-' }}</td>
-                    <td>{{ $nilai?->rata_tugas ?? '-' }}</td>
-                    <td>{{ $nilai?->rata_ulangan_harian ?? '-' }}</td>
-                    <td>{{ $nilai?->nilai_ulangan_semester ?? '-' }}</td>
+                    @for($i = 1; $i <= 3; $i++)
+                        <td>{{ $nilai?->{'nilai_afektif_'.$i} ?? '-' }}</td>
+                    @endfor
+                    <td><strong>{{ $nilai?->rata_afektif ?? '-' }}</strong></td>
+                    @for($i = 1; $i <= 4; $i++)
+                        <td>{{ $nilai?->{'nilai_psikomotor_'.$i} ?? '-' }}</td>
+                    @endfor
+                    <td><strong>{{ $nilai?->rata_psikomotor ?? '-' }}</strong></td>
+                    @for($i = 1; $i <= 4; $i++)
+                        <td>{{ $nilai?->{'nilai_tugas_'.$i} ?? '-' }}</td>
+                    @endfor
+                    <td><strong>{{ $nilai?->rata_tugas ?? '-' }}</strong></td>
+                    @for($i = 1; $i <= 3; $i++)
+                        <td>{{ $nilai?->{'nilai_ulangan_harian_'.$i} ?? '-' }}</td>
+                    @endfor
+                    <td><strong>{{ $nilai?->rata_ulangan_harian ?? '-' }}</strong></td>
                 </tr>
             @endforeach
         </tbody>
