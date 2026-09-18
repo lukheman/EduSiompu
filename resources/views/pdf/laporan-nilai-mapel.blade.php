@@ -17,6 +17,7 @@
         table.biodata td { padding: 3px 6px; vertical-align: top; }
         table.nilai th, table.nilai td { border: 1px solid #333; padding: 5px 6px; text-align: center; }
         table.nilai th { background: #fdba74; color: #000000; }
+        table.nilai th.angka { background: #ffffff; }
         table.nilai td.nama { text-align: left; }
         .tgl { font-size: 7px; font-weight: normal; }
         .ttd { margin-top: 24px; width: 100%; }
@@ -71,7 +72,7 @@
             </tr>
             <tr>
                 @foreach($pertemuans as $index => $tanggal)
-                    <th rowspan="2">{{ $index + 1 }}</th>
+                    <th rowspan="2" class="angka">{{ $index + 1 }}</th>
                 @endforeach
                 <th colspan="4">AFEKTIF</th>
                 <th colspan="5">PSIKOMOTOR</th>
@@ -80,19 +81,19 @@
             </tr>
             <tr>
                 @for($i = 1; $i <= 3; $i++)
-                    <th>{{ $i }}</th>
+                    <th class="angka">{{ $i }}</th>
                 @endfor
                 <th>RT</th>
                 @for($i = 1; $i <= 4; $i++)
-                    <th>{{ $i }}</th>
+                    <th class="angka">{{ $i }}</th>
                 @endfor
                 <th>RT</th>
                 @for($i = 1; $i <= 4; $i++)
-                    <th>{{ $i }}</th>
+                    <th class="angka">{{ $i }}</th>
                 @endfor
                 <th>RT</th>
                 @for($i = 1; $i <= 3; $i++)
-                    <th>{{ $i }}</th>
+                    <th class="angka">{{ $i }}</th>
                 @endfor
                 <th>RT</th>
             </tr>
@@ -102,7 +103,7 @@
                 @php
                     $nilai = $siswa->raport->first()?->nilaiRaport->first();
                 @endphp
-                <tr>
+                <tr @if($index % 2 === 1) style="background: #e5e7eb;" @endif>
                     <td>{{ $index + 1 }}</td>
                     <td class="nama">{{ $siswa->nama_siswa }}</td>
                     <td>{{ $siswa->jenis_kelamin ?? '-' }}</td>
