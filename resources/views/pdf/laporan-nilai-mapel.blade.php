@@ -16,7 +16,7 @@
         table { border-collapse: collapse; width: 100%; }
         table.biodata td { padding: 3px 6px; vertical-align: top; }
         table.nilai th, table.nilai td { border: 1px solid #333; padding: 5px 6px; text-align: center; }
-        table.nilai th { background: #e5e5e5; }
+        table.nilai th { background: #fdba74; color: #000000; }
         table.nilai td.nama { text-align: left; }
         .tgl { font-size: 7px; font-weight: normal; }
         .ttd { margin-top: 24px; width: 100%; }
