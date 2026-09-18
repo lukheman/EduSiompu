@@ -143,7 +143,7 @@
     <table class="ttd">
         <tr>
             <td></td>
-            <td>Siompu, {{ \Carbon\Carbon::now()->format('d M Y') }}<br>Wali Kelas<br><br><br><br><br><strong>{{ $wali->nama_guru }}</strong></td>
+            <td>Siompu, {{ \Carbon\Carbon::now()->format('d M Y') }}<br>Wali Kelas<br><br><br><br><br><strong>{{ $wali?->nama_guru ?? '-' }}</strong></td>
         </tr>
     </table>
 </body>

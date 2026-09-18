@@ -20,6 +20,7 @@ use App\Livewire\Guru\JadwalAbsensi;
 use App\Livewire\Guru\LaporanNilai;
 use App\Livewire\Guru\Profile as GuruProfile;
 use App\Livewire\Guru\TugasManagement;
+use App\Livewire\KepalaSekolah\RaportSiswa;
 use App\Livewire\OrangTua\AbsensiAnak;
 use App\Livewire\OrangTua\RaportAnak;
 use App\Livewire\Siswa\AbsensiList;
@@ -41,7 +42,7 @@ Route::middleware('guest')->group(function () {
 });
 
 // Shared App Routes (Logout for all roles)
-Route::middleware('auth:admin,guru,siswa,orang_tua,web')->group(function () {
+Route::middleware('auth:admin,guru,siswa,orang_tua,kepala_sekolah,web')->group(function () {
     Route::post('/logout', [LogoutController::class, '__invoke'])->name('logout');
 });
 
@@ -88,4 +89,12 @@ Route::prefix('orang-tua')->middleware('auth:orang_tua,web')->group(function () 
     Route::get('/dashboard', App\Livewire\OrangTua\Dashboard::class)->name('orang-tua.dashboard');
     Route::get('/absensi-anak', AbsensiAnak::class)->name('orang-tua.absensi');
     Route::get('/raport-anak', RaportAnak::class)->name('orang-tua.raport');
+});
+
+// Kepala Sekolah-only Routes (monitoring)
+Route::prefix('kepala-sekolah')->middleware('auth:kepala_sekolah,web')->group(function () {
+    Route::get('/dashboard', App\Livewire\KepalaSekolah\Dashboard::class)->name('kepala-sekolah.dashboard');
+    Route::get('/laporan-nilai', App\Livewire\KepalaSekolah\LaporanNilai::class)->name('kepala-sekolah.laporan-nilai');
+    Route::get('/laporan-nilai/cetak-mapel/{kelas}/{mapel}/{tahun}', [App\Http\Controllers\KepalaSekolah\LaporanNilaiController::class, 'cetakMapel'])->name('kepala-sekolah.laporan-nilai.cetak-mapel');
+    Route::get('/raport-siswa', RaportSiswa::class)->name('kepala-sekolah.raport');
 });

@@ -1,5 +1,12 @@
 <?php
 
+use App\Models\Admin;
+use App\Models\Guru;
+use App\Models\KepalaSekolah;
+use App\Models\OrangTua;
+use App\Models\Siswa;
+use App\Models\User;
+
 return [
 
     /*
@@ -60,6 +67,11 @@ return [
             'driver' => 'session',
             'provider' => 'orang_tuas',
         ],
+
+        'kepala_sekolah' => [
+            'driver' => 'session',
+            'provider' => 'kepala_sekolahs',
+        ],
     ],
 
     /*
@@ -82,27 +94,32 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => env('AUTH_MODEL', App\Models\User::class),
+            'model' => env('AUTH_MODEL', User::class),
         ],
 
         'admins' => [
             'driver' => 'eloquent',
-            'model' => App\Models\Admin::class,
+            'model' => Admin::class,
         ],
 
         'gurus' => [
             'driver' => 'eloquent',
-            'model' => App\Models\Guru::class,
+            'model' => Guru::class,
         ],
 
         'siswas' => [
             'driver' => 'eloquent',
-            'model' => App\Models\Siswa::class,
+            'model' => Siswa::class,
         ],
 
         'orang_tuas' => [
             'driver' => 'eloquent',
-            'model' => App\Models\OrangTua::class,
+            'model' => OrangTua::class,
+        ],
+
+        'kepala_sekolahs' => [
+            'driver' => 'eloquent',
+            'model' => KepalaSekolah::class,
         ],
 
         // 'users' => [
@@ -157,6 +174,12 @@ return [
         ],
         'orang_tuas' => [
             'provider' => 'orang_tuas',
+            'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+        'kepala_sekolahs' => [
+            'provider' => 'kepala_sekolahs',
             'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
             'expire' => 60,
             'throttle' => 60,

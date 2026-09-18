@@ -23,6 +23,7 @@
                         <option value="guru" {{ old('role') == 'guru' ? 'selected' : '' }}>Guru</option>
                         <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
                         <option value="orang_tua" {{ old('role') == 'orang_tua' ? 'selected' : '' }}>Orang Tua</option>
+                        <option value="kepala_sekolah" {{ old('role') == 'kepala_sekolah' ? 'selected' : '' }}>Kepala Sekolah</option>
                     </select>
                     <label for="role" style="padding-left: 2.5rem;">Login Sebagai</label>
                     @error('role')
@@ -88,6 +89,9 @@
                         } else if (role === 'orang_tua') { 
                             placeholder = 'NIK Orang Tua'; 
                             iconClass = 'fas fa-id-badge'; 
+                        } else if (role === 'kepala_sekolah') { 
+                            placeholder = 'Email Kepala Sekolah'; 
+                            iconClass = 'fas fa-envelope'; 
                         }
                         
                         label.textContent = placeholder;

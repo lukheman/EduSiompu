@@ -77,6 +77,16 @@ class DatabaseSeeder extends Seeder
             'updated_at' => $now,
         ]);
 
+        // 4b. Kepala Sekolah
+        DB::table('kepala_sekolah')->insert([
+            'nip' => '197001012000011001',
+            'nama_kepala_sekolah' => 'Drs. Kepala Sekolah',
+            'email' => 'kepalasekolah@gmail.com',
+            'password' => Hash::make('password123'),
+            'created_at' => $now,
+            'updated_at' => $now,
+        ]);
+
         // 5. Guru
         $guruData = [
             ['198001012005011001', 'Drs. Budi Santoso, M.Pd.'],

@@ -16,7 +16,7 @@ class LoginController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'role' => ['required', 'in:siswa,guru,admin,orang_tua'],
+            'role' => ['required', 'in:siswa,guru,admin,orang_tua,kepala_sekolah'],
             'identifier' => ['required'],
             'password' => ['required'],
         ], [
@@ -32,22 +32,32 @@ class LoginController extends Controller
         if ($role === 'admin') {
             if (Auth::guard('admin')->attempt(['email' => $identifier, 'password' => $password])) {
                 $request->session()->regenerate();
+
                 return redirect()->intended(route('admin.dashboard'));
             }
         } elseif ($role === 'guru') {
             if (Auth::guard('guru')->attempt(['nip' => $identifier, 'password' => $password])) {
                 $request->session()->regenerate();
+
                 return redirect()->intended(route('guru.dashboard'));
             }
         } elseif ($role === 'siswa') {
             if (Auth::guard('siswa')->attempt(['nisn' => $identifier, 'password' => $password])) {
                 $request->session()->regenerate();
+
                 return redirect()->intended(route('siswa.dashboard'));
             }
         } elseif ($role === 'orang_tua') {
             if (Auth::guard('orang_tua')->attempt(['nik' => $identifier, 'password' => $password])) {
                 $request->session()->regenerate();
+
                 return redirect()->intended(route('orang-tua.dashboard'));
+            }
+        } elseif ($role === 'kepala_sekolah') {
+            if (Auth::guard('kepala_sekolah')->attempt(['email' => $identifier, 'password' => $password])) {
+                $request->session()->regenerate();
+
+                return redirect()->intended(route('kepala-sekolah.dashboard'));
             }
         }
 

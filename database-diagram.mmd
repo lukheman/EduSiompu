@@ -1,0 +1,185 @@
+erDiagram
+    admin {
+        bigint id_admin PK
+        string nama
+        string email UK
+        string password
+        string avatar
+        string remember_token
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    tahun_ajaran {
+        bigint id_tahun_ajaran PK
+        string nama_tahun
+        enum semester "ganjil | genap"
+        boolean status_aktif
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    kelas {
+        bigint id_kelas PK
+        string nama_kelas
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    mata_pelajaran {
+        bigint id_mata_pelajaran PK
+        string kode_mapel UK
+        string nama_mapel
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    guru {
+        bigint id_guru PK
+        string nip UK
+        string nama_guru
+        string password
+        string avatar
+        string remember_token
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    orang_tua {
+        bigint id_orang_tua PK
+        string nik UK
+        string nama_orang_tua
+        string password
+        string no_hp UK
+        string avatar
+        string remember_token
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    siswa {
+        bigint id_siswa PK
+        bigint id_kelas FK
+        bigint id_orang_tua FK "nullable"
+        string nisn UK
+        string nama_siswa
+        string password
+        string avatar
+        string remember_token
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    guru_ampu {
+        bigint id_guru_ampu PK
+        bigint id_guru FK
+        bigint id_mata_pelajaran FK
+        bigint id_kelas FK
+        bigint id_tahun_ajaran FK
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    materi {
+        bigint id_materi PK
+        bigint id_guru_ampu FK
+        string judul_materi
+        string file_path
+        string jenis_file
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    jadwal_pelajaran {
+        bigint id_jadwal_pelajaran PK
+        bigint id_guru_ampu FK
+        string hari
+        time jam_mulai
+        time jam_selesai
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    absensi {
+        bigint id_absensi PK
+        bigint id_jadwal_pelajaran FK
+        bigint id_siswa FK
+        date tanggal
+        enum status_kehadiran "hadir | sakit | izin | alpa"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    tugas {
+        bigint id_tugas PK
+        bigint id_jadwal_pelajaran FK
+        string judul
+        text deskripsi
+        string file_lampiran
+        datetime tenggat_waktu
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    pengumpulan_tugas {
+        bigint id_pengumpulan PK
+        bigint id_tugas FK
+        bigint id_siswa FK
+        string file_tugas
+        text catatan
+        integer nilai
+        datetime waktu_pengumpulan
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    raport {
+        bigint id_raport PK
+        bigint id_siswa FK
+        bigint id_tahun_ajaran FK
+        bigint id_kelas FK
+        integer sakit
+        integer izin
+        integer alpa
+        text catatan
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    nilai_raport {
+        bigint id_nilai_raport PK
+        bigint id_raport FK
+        bigint id_mata_pelajaran FK
+        integer nilai_pengetahuan
+        char predikat_pengetahuan
+        integer nilai_keterampilan
+        char predikat_keterampilan
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    %% Relationships
+    kelas ||--o{ siswa : "has many"
+    orang_tua ||--o{ siswa : "has many"
+
+    guru ||--o{ guru_ampu : "has many"
+    mata_pelajaran ||--o{ guru_ampu : "has many"
+    kelas ||--o{ guru_ampu : "has many"
+    tahun_ajaran ||--o{ guru_ampu : "has many"
+
+    guru_ampu ||--o{ materi : "has many"
+    guru_ampu ||--o{ jadwal_pelajaran : "has many"
+
+    jadwal_pelajaran ||--o{ absensi : "has many"
+    siswa ||--o{ absensi : "has many"
+
+    jadwal_pelajaran ||--o{ tugas : "has many"
+    tugas ||--o{ pengumpulan_tugas : "has many"
+    siswa ||--o{ pengumpulan_tugas : "has many"
+
+    siswa ||--o{ raport : "has many"
+    tahun_ajaran ||--o{ raport : "has many"
+    kelas ||--o{ raport : "has many"
+
+    raport ||--o{ nilai_raport : "has many"
+    mata_pelajaran ||--o{ nilai_raport : "has many"
