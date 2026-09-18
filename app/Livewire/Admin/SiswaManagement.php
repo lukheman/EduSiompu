@@ -2,60 +2,74 @@
 
 namespace App\Livewire\Admin;
 
-use App\Models\Siswa;
 use App\Models\Kelas;
 use App\Models\OrangTua;
+use App\Models\Siswa;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
-use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
 use Livewire\Component;
-use Livewire\WithPagination;
 use Livewire\WithFileUploads;
-use Illuminate\Support\Facades\Storage;
+use Livewire\WithPagination;
 
 #[Title('Manajemen Siswa')]
 class SiswaManagement extends Component
 {
-    use WithPagination, WithFileUploads;
+    use WithFileUploads, WithPagination;
 
     // Search and Filter
     #[Url(as: 'q')]
     public string $search = '';
-    
+
     #[Url]
     public ?int $filter_kelas = null;
 
     // Form fields
     public string $nama_siswa = '';
+
     public string $nisn = '';
+
+    public string $jenis_kelamin = '';
+
     public ?int $id_kelas = null;
+
     public ?int $id_orang_tua = null;
+
     public string $password = '';
+
     public string $password_confirmation = '';
+
     public $avatar;
+
     public ?string $currentAvatar = null;
 
     // State
     public ?int $editingSiswaId = null;
+
     public ?int $viewingSiswaId = null;
+
     public bool $showModal = false;
+
     public bool $showViewModal = false;
+
     public bool $showDeleteModal = false;
+
     public ?int $deletingSiswaId = null;
 
     protected function rules(): array
     {
         $rules = [
             'nama_siswa' => ['required', 'string', 'max:255'],
+            'jenis_kelamin' => ['nullable', 'in:L,P'],
             'id_kelas' => ['required', 'exists:kelas,id_kelas'],
             'id_orang_tua' => ['nullable', 'exists:orang_tua,id_orang_tua'],
             'avatar' => ['nullable', 'image', 'max:2048'],
         ];
 
         if ($this->editingSiswaId) {
-            $rules['nisn'] = ['required', 'string', 'max:20', 'unique:siswa,nisn,' . $this->editingSiswaId . ',id_siswa'];
+            $rules['nisn'] = ['required', 'string', 'max:20', 'unique:siswa,nisn,'.$this->editingSiswaId.',id_siswa'];
             // Tidak ada validasi password saat edit
         } else {
             $rules['nisn'] = ['required', 'string', 'max:20', 'unique:siswa,nisn'];
@@ -91,6 +105,7 @@ class SiswaManagement extends Component
         $this->editingSiswaId = $siswaId;
         $this->nama_siswa = $siswa->nama_siswa;
         $this->nisn = $siswa->nisn;
+        $this->jenis_kelamin = $siswa->jenis_kelamin ?? '';
         $this->id_kelas = $siswa->id_kelas;
         $this->id_orang_tua = $siswa->id_orang_tua;
         $this->password = '';
@@ -119,6 +134,7 @@ class SiswaManagement extends Component
             $siswa = Siswa::findOrFail($this->editingSiswaId);
             $siswa->nama_siswa = $validated['nama_siswa'];
             $siswa->nisn = $validated['nisn'];
+            $siswa->jenis_kelamin = $validated['jenis_kelamin'] ?: null;
             $siswa->id_kelas = $validated['id_kelas'];
             $siswa->id_orang_tua = $validated['id_orang_tua'] ?? null;
 
@@ -129,7 +145,7 @@ class SiswaManagement extends Component
                 $siswa->avatar = $this->avatar->store('avatars', 'public');
             }
 
-            if (!empty($this->password)) {
+            if (! empty($this->password)) {
                 $siswa->password = Hash::make($this->password);
             }
 
@@ -144,6 +160,7 @@ class SiswaManagement extends Component
             Siswa::create([
                 'nama_siswa' => $validated['nama_siswa'],
                 'nisn' => $validated['nisn'],
+                'jenis_kelamin' => $validated['jenis_kelamin'] ?: null,
                 'id_kelas' => $validated['id_kelas'],
                 'id_orang_tua' => $validated['id_orang_tua'] ?? null,
                 'password' => Hash::make($validated['password']),
@@ -195,6 +212,7 @@ class SiswaManagement extends Component
     {
         $this->nama_siswa = '';
         $this->nisn = '';
+        $this->jenis_kelamin = '';
         $this->id_kelas = null;
         $this->id_orang_tua = null;
         $this->password = '';
@@ -208,11 +226,11 @@ class SiswaManagement extends Component
     {
         $siswas = Siswa::query()
             ->with(['kelas', 'orangTua'])
-            ->when($this->filter_kelas, fn($q) => $q->where('id_kelas', $this->filter_kelas))
+            ->when($this->filter_kelas, fn ($q) => $q->where('id_kelas', $this->filter_kelas))
             ->when($this->search, function ($query) {
-                $query->where(function($q) {
-                    $q->where('nama_siswa', 'like', '%' . $this->search . '%')
-                      ->orWhere('nisn', 'like', '%' . $this->search . '%');
+                $query->where(function ($q) {
+                    $q->where('nama_siswa', 'like', '%'.$this->search.'%')
+                        ->orWhere('nisn', 'like', '%'.$this->search.'%');
                 });
             })
             ->orderBy('created_at', 'desc')
@@ -221,8 +239,8 @@ class SiswaManagement extends Component
         $kelasList = Kelas::orderBy('nama_kelas', 'asc')->get();
         $orangTuaList = OrangTua::orderBy('nama_orang_tua', 'asc')->get();
 
-        $viewingSiswa = $this->viewingSiswaId 
-            ? Siswa::with(['kelas', 'orangTua'])->find($this->viewingSiswaId) 
+        $viewingSiswa = $this->viewingSiswaId
+            ? Siswa::with(['kelas', 'orangTua'])->find($this->viewingSiswaId)
             : null;
 
         return view('livewire.admin.siswa-management', [

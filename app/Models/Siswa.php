@@ -15,7 +15,7 @@ class Siswa extends Authenticatable
 
     protected $primaryKey = 'id_siswa';
 
-    protected $fillable = ['id_kelas', 'nisn', 'nama_siswa', 'password', 'id_orang_tua'];
+    protected $fillable = ['id_kelas', 'nisn', 'nama_siswa', 'jenis_kelamin', 'password', 'id_orang_tua'];
 
     protected $hidden = [
         'password',

@@ -180,6 +180,19 @@
                             @enderror
                         </div>
 
+                        {{-- Jenis Kelamin --}}
+                        <div class="col-md-6">
+                            <label for="jenis_kelamin" class="form-label text-muted fw-bold small">Jenis Kelamin</label>
+                            <select class="form-select @error('jenis_kelamin') is-invalid @enderror" id="jenis_kelamin" wire:model="jenis_kelamin">
+                                <option value="">-- Pilih --</option>
+                                <option value="L">Laki-laki (L)</option>
+                                <option value="P">Perempuan (P)</option>
+                            </select>
+                            @error('jenis_kelamin')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
                         {{-- Orang Tua --}}
                         <div class="col-md-12">
                             <label for="id_orang_tua" class="form-label text-muted fw-bold small">Pilih Orang Tua (Opsional)</label>

@@ -151,6 +151,7 @@ class DatabaseSeeder extends Seeder
                     'id_orang_tua' => $orangTuaIds[$idx % count($orangTuaIds)],
                     'nisn' => (string) ($nisnBase++),
                     'nama_siswa' => $siswaNames[$idx++],
+                    'jenis_kelamin' => ['L', 'P'][mt_rand(0, 1)],
                     'password' => Hash::make('password123'),
                     'avatar' => 'avatars/siswa.png',
                     'created_at' => $now,

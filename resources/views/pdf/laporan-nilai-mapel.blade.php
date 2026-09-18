@@ -60,6 +60,7 @@
             <tr>
                 <th width="25" rowspan="3">No</th>
                 <th rowspan="3">NAMA</th>
+                <th rowspan="3">JK</th>
                 @if(count($pertemuans) > 0)
                     <th colspan="{{ count($pertemuans) }}">PERTEMUAN KE</th>
                 @endif
@@ -104,6 +105,7 @@
                 <tr>
                     <td>{{ $index + 1 }}</td>
                     <td class="nama">{{ $siswa->nama_siswa }}</td>
+                    <td>{{ $siswa->jenis_kelamin ?? '-' }}</td>
                     @foreach($pertemuans as $tanggal)
                         @php $st = $kehadiran[$siswa->id_siswa][$tanggal->format('Y-m-d')] ?? null; @endphp
                         <td><strong>{{ $st === 'hadir' ? '✓' : ($st === 'sakit' ? 'S' : ($st === 'izin' ? 'I' : ($st === 'alpa' ? 'A' : '-'))) }}</strong></td>
