@@ -101,7 +101,7 @@ it('per-mapel pdf includes attendance meetings', function () {
         'logoKanan' => null,
     ])->render();
 
-    expect($view)->toContain('Pertemuan Ke-')
+    expect($view)->toContain('PERTEMUAN KE')
         ->and($view)->toContain('Keterangan');
 });
 

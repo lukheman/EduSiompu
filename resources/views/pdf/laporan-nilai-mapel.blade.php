@@ -64,6 +64,9 @@
                     <th colspan="{{ count($pertemuans) }}">PERTEMUAN KE</th>
                 @endif
                 <th colspan="18">PENILAIAN</th>
+                <th rowspan="3">NTS</th>
+                <th rowspan="3">NUS</th>
+                <th rowspan="3">NR</th>
             </tr>
             <tr>
                 @foreach($pertemuans as $index => $tanggal)
@@ -121,6 +124,9 @@
                         <td>{{ $nilai?->{'nilai_ulangan_harian_'.$i} ?? '-' }}</td>
                     @endfor
                     <td><strong>{{ $nilai?->rata_ulangan_harian ?? '-' }}</strong></td>
+                    <td><strong>{{ $nilai?->rata_tugas ?? '-' }}</strong></td>
+                    <td>{{ $nilai?->nilai_ulangan_semester ?? '-' }}</td>
+                    <td><strong>{{ $nilai?->nilai_raport ?? '-' }}</strong></td>
                 </tr>
             @endforeach
         </tbody>
