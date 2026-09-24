@@ -6,6 +6,7 @@ use App\Models\Guru;
 use App\Models\GuruAmpu;
 use App\Models\JadwalPelajaran;
 use App\Models\Kelas;
+use App\Models\NilaiRaport;
 use App\Models\Siswa;
 use App\Models\TahunAjaran;
 use Livewire\Livewire;
@@ -41,7 +42,7 @@ it('guru sees meeting matrix after selecting jadwal', function () {
         ->call('selectJadwal', $jadwal->id_jadwal_pelajaran)
         ->assertSee($siswa->nama_siswa)
         ->assertSee('Pertemuan Ke-')
-        ->assertSee('Nilai (Read-Only)');
+        ->assertSee('Nilai');
 });
 
 it('clicking a cell cycles status and auto-saves', function () {
@@ -82,6 +83,28 @@ it('cannot add duplicate or more than 20 meetings', function () {
         ->assertSee('sudah ada di daftar pertemuan');
 
     expect($test->get('pertemuans'))->toHaveCount(1);
+});
+
+it('guru can edit nilai directly from absensi matrix', function () {
+    ['guru' => $guru, 'jadwal' => $jadwal, 'ampu' => $ampu, 'siswa' => $siswa] = buatJadwalGuru();
+
+    Livewire::actingAs($guru, 'guru')
+        ->test(JadwalAbsensi::class)
+        ->call('selectJadwal', $jadwal->id_jadwal_pelajaran)
+        ->set("nilaiEdit.{$siswa->id_siswa}.tugas_1", 80)
+        ->set("nilaiEdit.{$siswa->id_siswa}.tugas_2", 90)
+        ->set("nilaiEdit.{$siswa->id_siswa}.ulangan_semester", 85)
+        ->assertSet("nilaiEdit.{$siswa->id_siswa}.raport", 85);
+
+    $nilai = NilaiRaport::whereHas('raport', fn ($q) => $q->where('id_siswa', $siswa->id_siswa))
+        ->where('id_mata_pelajaran', $ampu->id_mata_pelajaran)
+        ->first();
+
+    expect($nilai)->not->toBeNull()
+        ->and($nilai->nilai_tugas_1)->toEqual(80)
+        ->and($nilai->nilai_tugas_2)->toEqual(90)
+        ->and($nilai->rata_tugas)->toEqual(85)
+        ->and($nilai->nilai_raport)->toEqual(85);
 });
 
 it('guru cannot open another teacher jadwal', function () {

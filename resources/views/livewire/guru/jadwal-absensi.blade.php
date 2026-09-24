@@ -1,4 +1,15 @@
 <div>
+    <style>
+        .nilai-input::-webkit-outer-spin-button,
+        .nilai-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .nilai-input {
+            -moz-appearance: textfield;
+            appearance: textfield;
+        }
+    </style>
     <x-layout.page-header title="Jadwal & Absensi" subtitle="Pilih jadwal pelajaran, klik sel pertemuan untuk mengisi kehadiran">
     </x-layout.page-header>
 
@@ -68,28 +79,53 @@
                         <x-layout.table>
                             <x-slot:head>
                                 <tr>
-                                    <th rowspan="2" class="align-middle" style="width: 40px;">No</th>
-                                    <th rowspan="2" class="align-middle">Nama Siswa</th>
-                                    <th rowspan="2" class="align-middle text-center">JK</th>
+                                    <th rowspan="3" class="align-middle" style="width: 40px;">No</th>
+                                    <th rowspan="3" class="align-middle">Nama Siswa</th>
+                                    <th rowspan="3" class="align-middle text-center">JK</th>
                                     @if(count($pertemuans) > 0)
                                         <th colspan="{{ count($pertemuans) }}" class="text-center">Pertemuan Ke-</th>
                                     @endif
-                                    <th colspan="7" class="text-center">Nilai (Read-Only)</th>
+                                    <th colspan="20" class="text-center">Nilai</th>
                                 </tr>
                                 <tr>
                                     @foreach($pertemuans as $index => $tanggal)
-                                        <th class="text-center" title="{{ \Carbon\Carbon::parse($tanggal)->format('d M Y') }}">{{ $index + 1 }}</th>
+                                        <th rowspan="2" class="text-center" title="{{ \Carbon\Carbon::parse($tanggal)->format('d M Y') }}">{{ $index + 1 }}</th>
                                     @endforeach
-                                    <th class="text-center">Afektif</th>
-                                    <th class="text-center">Psikomotor</th>
-                                    <th class="text-center">Tugas</th>
-                                    <th class="text-center">UH</th>
-                                    <th class="text-center">NTS</th>
-                                    <th class="text-center">NUS</th>
-                                    <th class="text-center">NR</th>
+                                    <th colspan="4" class="text-center">Afektif</th>
+                                    <th colspan="5" class="text-center">Psikomotor</th>
+                                    <th colspan="5" class="text-center">Tugas</th>
+                                    <th colspan="4" class="text-center">UH</th>
+                                    <th rowspan="2" class="align-middle text-center">US</th>
+                                    <th rowspan="2" class="align-middle text-center">Raport</th>
+                                </tr>
+                                <tr>
+                                    @for($i = 1; $i <= 3; $i++)
+                                        <th class="text-center">{{ $i }}</th>
+                                    @endfor
+                                    <th class="text-center">RT</th>
+                                    @for($i = 1; $i <= 4; $i++)
+                                        <th class="text-center">{{ $i }}</th>
+                                    @endfor
+                                    <th class="text-center">RT</th>
+                                    @for($i = 1; $i <= 4; $i++)
+                                        <th class="text-center">{{ $i }}</th>
+                                    @endfor
+                                    <th class="text-center">RT</th>
+                                    @for($i = 1; $i <= 3; $i++)
+                                        <th class="text-center">{{ $i }}</th>
+                                    @endfor
+                                    <th class="text-center">RT</th>
                                 </tr>
                             </x-slot:head>
 
+                            @php
+                                $grupAspek = [
+                                    ['afektif_1', 'afektif_2', 'afektif_3'],
+                                    ['psikomotor_1', 'psikomotor_2', 'psikomotor_3', 'psikomotor_4'],
+                                    ['tugas_1', 'tugas_2', 'tugas_3', 'tugas_4'],
+                                    ['ulangan_harian_1', 'ulangan_harian_2', 'ulangan_harian_3'],
+                                ];
+                            @endphp
                             @foreach($siswaList as $index => $siswa)
                                 <tr class="align-middle text-center" wire:key="siswa-{{ $siswa->id_siswa }}">
                                     <td>{{ $index + 1 }}</td>
@@ -106,18 +142,32 @@
                                             </x-ui.badge>
                                         </td>
                                     @endforeach
-                                    @php $nilai = $nilaiMap[$siswa->id_siswa] ?? null; @endphp
-                                    <td>{{ $nilai['afektif'] ?? '-' }}</td>
-                                    <td>{{ $nilai['psikomotor'] ?? '-' }}</td>
-                                    <td>{{ $nilai['tugas'] ?? '-' }}</td>
-                                    <td>{{ $nilai['uh'] ?? '-' }}</td>
-                                    <td>{{ $nilai['nts'] ?? '-' }}</td>
-                                    <td>{{ $nilai['nus'] ?? '-' }}</td>
-                                    <td class="fw-bold">{{ $nilai['nr'] ?? '-' }}</td>
+                                    @foreach($grupAspek as $grup)
+                                        @foreach($grup as $field)
+                                            <td style="min-width: 110px; border: 1px solid var(--border-color);">
+                                                <input type="number" min="0" max="100" class="form-control form-control-sm text-center nilai-input"
+                                                    style="border: 1px solid var(--border-color);"
+                                                    wire:model.live="nilaiEdit.{{ $siswa->id_siswa }}.{{ $field }}">
+                                            </td>
+                                        @endforeach
+                                        <td class="text-center fw-bold" style="min-width: 80px; border: 1px solid var(--border-color); background: var(--bg-tertiary);">
+                                            {{ $this->rataAspekForm($siswa->id_siswa, $grup) ?? '-' }}
+                                        </td>
+                                    @endforeach
+                                    <td style="min-width: 110px; border: 1px solid var(--border-color);">
+                                        <input type="number" min="0" max="100" class="form-control form-control-sm text-center nilai-input"
+                                            style="border: 1px solid var(--border-color);"
+                                            wire:model.live="nilaiEdit.{{ $siswa->id_siswa }}.ulangan_semester">
+                                    </td>
+                                    <td style="min-width: 110px; border: 1px solid var(--border-color);">
+                                        <input type="number" min="0" max="100" class="form-control form-control-sm text-center nilai-input"
+                                            style="border: 1px solid var(--border-color);"
+                                            wire:model.live="nilaiEdit.{{ $siswa->id_siswa }}.raport">
+                                    </td>
                                 </tr>
                             @endforeach
                         </x-layout.table>
-                        <p class="text-muted small mt-2 mb-0">Klik sel pertemuan untuk memutar status: - &rarr; ✓ Hadir &rarr; S Sakit &rarr; I Izin &rarr; A Alpa &rarr; - (tersimpan otomatis).</p>
+                        <p class="text-muted small mt-2 mb-0">Klik sel pertemuan untuk memutar status: - &rarr; ✓ Hadir &rarr; S Sakit &rarr; I Izin &rarr; A Alpa &rarr; - (tersimpan otomatis). Nilai per penilaian diketik langsung dan ikut tersimpan otomatis; kolom Raport terisi dari rata-rata namun dapat diubah manual.</p>
                     @else
                         <x-ui.empty-state icon="fas fa-users-slash" title="Tidak Ada Siswa" description="Belum ada data siswa di kelas ini." />
                     @endif
