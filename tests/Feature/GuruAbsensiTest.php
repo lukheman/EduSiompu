@@ -9,6 +9,7 @@ use App\Models\Kelas;
 use App\Models\NilaiRaport;
 use App\Models\Siswa;
 use App\Models\TahunAjaran;
+use Carbon\Carbon;
 use Livewire\Livewire;
 
 function buatJadwalGuru(): array
@@ -51,38 +52,48 @@ it('clicking a cell cycles status and auto-saves', function () {
     $test = Livewire::actingAs($guru, 'guru')
         ->test(JadwalAbsensi::class)
         ->call('selectJadwal', $jadwal->id_jadwal_pelajaran)
-        ->set('tanggalBaru', '2026-08-04')
-        ->call('tambahPertemuan')
-        ->assertSee('1/20 pertemuan');
+        ->assertSee('20/20 pertemuan');
 
-    $test->call('toggleKehadiran', $siswa->id_siswa, '2026-08-04');
+    $tanggal = $test->get('pertemuans')[0];
+
+    $test->call('toggleKehadiran', $siswa->id_siswa, $tanggal);
     expect(Absensi::where('id_siswa', $siswa->id_siswa)->first()->status_kehadiran->value)->toBe('hadir');
 
-    $test->call('toggleKehadiran', $siswa->id_siswa, '2026-08-04');
+    $test->call('toggleKehadiran', $siswa->id_siswa, $tanggal);
     expect(Absensi::where('id_siswa', $siswa->id_siswa)->first()->status_kehadiran->value)->toBe('sakit');
 
     foreach (['izin', 'alpa'] as $expected) {
-        $test->call('toggleKehadiran', $siswa->id_siswa, '2026-08-04');
+        $test->call('toggleKehadiran', $siswa->id_siswa, $tanggal);
         expect(Absensi::where('id_siswa', $siswa->id_siswa)->first()->status_kehadiran->value)->toBe($expected);
     }
 
-    $test->call('toggleKehadiran', $siswa->id_siswa, '2026-08-04');
+    $test->call('toggleKehadiran', $siswa->id_siswa, $tanggal);
     expect(Absensi::where('id_siswa', $siswa->id_siswa)->count())->toBe(0);
 });
 
-it('cannot add duplicate or more than 20 meetings', function () {
-    ['guru' => $guru, 'jadwal' => $jadwal] = buatJadwalGuru();
+it('meetings auto-fill to 20 following the jadwal weekday', function () {
+    ['guru' => $guru, 'jadwal' => $jadwal, 'siswa' => $siswa] = buatJadwalGuru();
+
+    Absensi::create([
+        'id_jadwal_pelajaran' => $jadwal->id_jadwal_pelajaran,
+        'id_siswa' => $siswa->id_siswa,
+        'tanggal' => '2026-08-04',
+        'status_kehadiran' => 'hadir',
+    ]);
 
     $test = Livewire::actingAs($guru, 'guru')
         ->test(JadwalAbsensi::class)
-        ->call('selectJadwal', $jadwal->id_jadwal_pelajaran)
-        ->set('tanggalBaru', '2026-08-04')
-        ->call('tambahPertemuan')
-        ->set('tanggalBaru', '2026-08-04')
-        ->call('tambahPertemuan')
-        ->assertSee('sudah ada di daftar pertemuan');
+        ->call('selectJadwal', $jadwal->id_jadwal_pelajaran);
 
-    expect($test->get('pertemuans'))->toHaveCount(1);
+    $pertemuans = $test->get('pertemuans');
+
+    expect($pertemuans)->toHaveCount(20)
+        ->and($pertemuans[0])->toBe('2026-08-04');
+
+    $mapHari = ['Senin' => 1, 'Selasa' => 2, 'Rabu' => 3, 'Kamis' => 4, 'Jumat' => 5, 'Sabtu' => 6, 'Minggu' => 0];
+    foreach (array_slice($pertemuans, 1) as $tanggal) {
+        expect(Carbon::parse($tanggal)->dayOfWeek)->toBe($mapHari[$jadwal->hari]);
+    }
 });
 
 it('guru can edit nilai directly from absensi matrix', function () {

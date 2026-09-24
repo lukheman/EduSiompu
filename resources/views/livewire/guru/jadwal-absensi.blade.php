@@ -65,14 +65,8 @@
         @if($selectedJadwalId)
             <div class="col-12">
                 <x-layout.table-card title="Absensi Kelas (klik sel untuk mengubah status)">
-                    <div class="d-flex flex-column flex-md-row gap-2 align-items-md-center mb-3">
-                        <div class="d-flex gap-2 align-items-center">
-                            <x-form.input type="date" wire:model="tanggalBaru" />
-                            <x-ui.button variant="outline" icon="fas fa-plus" wire:click="tambahPertemuan" wire:loading.attr="disabled">
-                                Tambah Pertemuan
-                            </x-ui.button>
-                        </div>
-                        <span class="text-muted small ms-md-auto">{{ count($pertemuans) }}/20 pertemuan</span>
+                    <div class="d-flex justify-content-end align-items-center mb-3">
+                        <span class="text-muted small">{{ count($pertemuans) }}/20 pertemuan (otomatis)</span>
                     </div>
 
                     @if(count($siswaList) > 0)

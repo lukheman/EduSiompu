@@ -105,6 +105,26 @@ it('per-mapel pdf includes attendance meetings', function () {
         ->and($view)->toContain('Keterangan');
 });
 
+it('wali can download per-siswa pdf', function () {
+    ['wali' => $wali, 'siswa' => $siswa, 'tahunAjaran' => $tahunAjaran] = buatRaportWali();
+
+    $response = $this->actingAs($wali, 'guru')
+        ->get(route('guru.laporan-nilai.cetak', ['siswa' => $siswa->id_siswa, 'tahun' => $tahunAjaran->id_tahun_ajaran]));
+
+    $response->assertSuccessful();
+    expect($response->headers->get('Content-Type'))->toContain('application/pdf');
+    expect(substr($response->getContent(), 0, 5))->toBe('%PDF-');
+});
+
+it('non-wali guru cannot download per-siswa pdf', function () {
+    ['siswa' => $siswa, 'tahunAjaran' => $tahunAjaran] = buatRaportWali();
+    $guruLain = Guru::factory()->create();
+
+    $this->actingAs($guruLain, 'guru')
+        ->get(route('guru.laporan-nilai.cetak', ['siswa' => $siswa->id_siswa, 'tahun' => $tahunAjaran->id_tahun_ajaran]))
+        ->assertForbidden();
+});
+
 it('non-wali guru cannot download per-mapel pdf', function () {
     ['kelas' => $kelas, 'tahunAjaran' => $tahunAjaran, 'ampu' => $ampu] = buatRaportWali();
     $guruLain = Guru::factory()->create();

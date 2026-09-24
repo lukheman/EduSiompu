@@ -77,6 +77,42 @@
                 <p class="text-muted small mb-0">Pilih mata pelajaran untuk melihat pratinjau nilai dan mencetak laporannya.</p>
             @endif
         </x-layout.table-card>
+
+        <x-layout.table-card title="Laporan per Siswa {{ $kelas ? '- ' . $kelas->nama_kelas : '' }}" class="mt-4">
+            <x-layout.table>
+                <x-slot:head>
+                    <tr>
+                        <th style="width: 50px;">No</th>
+                        <th>Nama Siswa</th>
+                        <th class="text-center">JK</th>
+                        <th class="text-center">Status Nilai</th>
+                        <th class="text-center" style="width: 160px;">Laporan PDF</th>
+                    </tr>
+                </x-slot:head>
+
+                @foreach($siswas as $index => $siswa)
+                    <tr class="align-middle" wire:key="laporan-{{ $siswa->id_siswa }}">
+                        <td>{{ $index + 1 }}</td>
+                        <td style="font-weight: 500;">{{ $siswa->nama_siswa }}</td>
+                        <td class="text-center">{{ $siswa->jenis_kelamin ?? '-' }}</td>
+                        <td class="text-center">
+                            @if($siswa->raport->isNotEmpty())
+                                <x-ui.badge variant="success" icon="fas fa-check-circle">Sudah Dinilai</x-ui.badge>
+                            @else
+                                <x-ui.badge variant="secondary">Belum Ada Nilai</x-ui.badge>
+                            @endif
+                        </td>
+                        <td class="text-center">
+                            <x-ui.button variant="danger" size="sm" icon="fas fa-file-pdf"
+                                href="{{ route('kepala-sekolah.laporan-nilai.cetak', ['siswa' => $siswa->id_siswa, 'tahun' => $selectedTahunId]) }}"
+                                target="_blank">
+                                Cetak PDF
+                            </x-ui.button>
+                        </td>
+                    </tr>
+                @endforeach
+            </x-layout.table>
+        </x-layout.table-card>
     @else
         <x-layout.modern-card>
             <x-ui.empty-state

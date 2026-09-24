@@ -24,10 +24,6 @@ class JadwalAbsensi extends Component
 
     public $pertemuans = [];
 
-    public $tanggalBaru = '';
-
-    public $tanggalBaruPending = [];
-
     public $kehadiran = [];
 
     public $nilaiEdit = [];
@@ -88,8 +84,6 @@ class JadwalAbsensi extends Component
     {
         $this->siswaList = [];
         $this->pertemuans = [];
-        $this->tanggalBaru = '';
-        $this->tanggalBaruPending = [];
         $this->kehadiran = [];
         $this->nilaiEdit = [];
         $this->konteksAmpu = [];
@@ -129,9 +123,7 @@ class JadwalAbsensi extends Component
             ->map(fn ($t) => $t->format('Y-m-d'))
             ->all();
 
-        $this->pertemuans = array_values(array_unique(array_merge($tercatat, $this->tanggalBaruPending)));
-        sort($this->pertemuans);
-        $this->pertemuans = array_slice($this->pertemuans, 0, self::MAX_PERTEMUAN);
+        $this->pertemuans = $this->lengkapiOtomatis($tercatat, $jadwal->hari);
 
         $records = Absensi::where('id_jadwal_pelajaran', $jadwal->id_jadwal_pelajaran)
             ->whereIn('tanggal', $this->pertemuans)
@@ -148,27 +140,34 @@ class JadwalAbsensi extends Component
         $this->loadNilai($jadwal);
     }
 
-    public function tambahPertemuan()
+    /**
+     * Lengkapi daftar pertemuan hingga 20 secara otomatis dengan tanggal
+     * mingguan mengikuti hari jadwal, dihitung setelah tanggal tercatat terakhir.
+     */
+    private function lengkapiOtomatis(array $tercatat, string $hari): array
     {
-        $this->validate([
-            'tanggalBaru' => ['required', 'date'],
-        ]);
+        $mapHari = ['Senin' => 1, 'Selasa' => 2, 'Rabu' => 3, 'Kamis' => 4, 'Jumat' => 5, 'Sabtu' => 6, 'Minggu' => 0];
+        $target = $mapHari[$hari] ?? 1;
 
-        if (count($this->pertemuans) >= self::MAX_PERTEMUAN) {
-            session()->flash('error', 'Maksimal '.self::MAX_PERTEMUAN.' pertemuan.');
+        $semua = array_values(array_unique($tercatat));
+        $kandidat = count($semua) > 0
+            ? Carbon::parse(max($semua))->addDay()
+            : Carbon::today();
 
-            return;
+        while (count($semua) < self::MAX_PERTEMUAN) {
+            while ($kandidat->dayOfWeek !== $target) {
+                $kandidat->addDay();
+            }
+            $tgl = $kandidat->format('Y-m-d');
+            if (! in_array($tgl, $semua)) {
+                $semua[] = $tgl;
+            }
+            $kandidat->addDay();
         }
 
-        if (in_array($this->tanggalBaru, $this->pertemuans)) {
-            session()->flash('error', 'Tanggal tersebut sudah ada di daftar pertemuan.');
+        sort($semua);
 
-            return;
-        }
-
-        $this->tanggalBaruPending[] = $this->tanggalBaru;
-        $this->tanggalBaru = '';
-        $this->loadAbsensi();
+        return array_slice($semua, 0, self::MAX_PERTEMUAN);
     }
 
     public function toggleKehadiran(int $idSiswa, string $tanggal)

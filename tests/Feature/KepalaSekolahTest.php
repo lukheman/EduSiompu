@@ -104,6 +104,34 @@ it('kepala sekolah can view a student raport', function () {
         ->assertSee('85');
 });
 
+it('kepala sekolah can download per-siswa pdf', function () {
+    $kepsek = KepalaSekolah::factory()->create();
+    $tahunAjaran = TahunAjaran::factory()->create(['status_aktif' => true]);
+    $kelas = Kelas::factory()->create();
+    $ampu = GuruAmpu::factory()->create([
+        'id_kelas' => $kelas->id_kelas,
+        'id_tahun_ajaran' => $tahunAjaran->id_tahun_ajaran,
+    ]);
+    $siswa = Siswa::factory()->create(['id_kelas' => $kelas->id_kelas]);
+    $raport = Raport::create([
+        'id_siswa' => $siswa->id_siswa,
+        'id_tahun_ajaran' => $tahunAjaran->id_tahun_ajaran,
+        'id_kelas' => $kelas->id_kelas,
+    ]);
+    NilaiRaport::create([
+        'id_raport' => $raport->id_raport,
+        'id_mata_pelajaran' => $ampu->id_mata_pelajaran,
+        'nilai_raport' => 85, 'predikat_raport' => 'B',
+    ]);
+
+    $response = $this->actingAs($kepsek, 'kepala_sekolah')
+        ->get(route('kepala-sekolah.laporan-nilai.cetak', ['siswa' => $siswa->id_siswa, 'tahun' => $tahunAjaran->id_tahun_ajaran]));
+
+    $response->assertSuccessful();
+    expect($response->headers->get('Content-Type'))->toContain('application/pdf');
+    expect(substr($response->getContent(), 0, 5))->toBe('%PDF-');
+});
+
 it('guest cannot access kepala sekolah pages', function () {
     $this->get(route('kepala-sekolah.dashboard'))->assertRedirect(route('login'));
     $this->get(route('kepala-sekolah.laporan-nilai'))->assertRedirect(route('login'));

@@ -82,6 +82,9 @@ class LaporanNilai extends Component
         if ($this->selectedKelasId && $this->kelasDiawalikan()) {
             $kelas = Kelas::find($this->selectedKelasId);
             $siswas = Siswa::where('id_kelas', $this->selectedKelasId)
+                ->with(['raport' => function ($q) {
+                    $q->where('id_tahun_ajaran', $this->selectedTahunId);
+                }])
                 ->orderBy('nama_siswa')
                 ->get();
 

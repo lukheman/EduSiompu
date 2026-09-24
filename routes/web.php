@@ -69,6 +69,7 @@ Route::prefix('guru')->middleware('auth:guru,web')->group(function () {
     Route::get('/input-nilai', InputNilai::class)->name('guru.input-nilai');
     Route::get('/tugas', TugasManagement::class)->name('guru.tugas');
     Route::get('/laporan-nilai', LaporanNilai::class)->name('guru.laporan-nilai');
+    Route::get('/laporan-nilai/cetak/{siswa}/{tahun}', [LaporanNilaiController::class, 'cetakSiswa'])->name('guru.laporan-nilai.cetak');
     Route::get('/laporan-nilai/cetak-mapel/{kelas}/{mapel}/{tahun}', [LaporanNilaiController::class, 'cetakMapel'])->name('guru.laporan-nilai.cetak-mapel');
     Route::get('/profil', GuruProfile::class)->name('guru.profile');
 });
@@ -95,6 +96,7 @@ Route::prefix('orang-tua')->middleware('auth:orang_tua,web')->group(function () 
 Route::prefix('kepala-sekolah')->middleware('auth:kepala_sekolah,web')->group(function () {
     Route::get('/dashboard', App\Livewire\KepalaSekolah\Dashboard::class)->name('kepala-sekolah.dashboard');
     Route::get('/laporan-nilai', App\Livewire\KepalaSekolah\LaporanNilai::class)->name('kepala-sekolah.laporan-nilai');
+    Route::get('/laporan-nilai/cetak/{siswa}/{tahun}', [App\Http\Controllers\KepalaSekolah\LaporanNilaiController::class, 'cetakSiswa'])->name('kepala-sekolah.laporan-nilai.cetak');
     Route::get('/laporan-nilai/cetak-mapel/{kelas}/{mapel}/{tahun}', [App\Http\Controllers\KepalaSekolah\LaporanNilaiController::class, 'cetakMapel'])->name('kepala-sekolah.laporan-nilai.cetak-mapel');
     Route::get('/raport-siswa', RaportSiswa::class)->name('kepala-sekolah.raport');
 });
