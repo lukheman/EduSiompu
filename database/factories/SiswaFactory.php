@@ -18,7 +18,7 @@ class SiswaFactory extends Factory
             'nisn' => $this->faker->unique()->numerify('##########'),
             'nama_siswa' => $this->faker->name(),
             'jenis_kelamin' => $this->faker->randomElement(['L', 'P']),
-            'password' => bcrypt('password'),
+            'password' => bcrypt('password123'),
         ];
 
     }

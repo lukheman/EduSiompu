@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\Guru;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 class GuruFactory extends Factory
 {
@@ -11,12 +11,12 @@ class GuruFactory extends Factory
 
     public function definition(): array
     {
-        
-            return [
-                'nip' => $this->faker->unique()->numerify('##################'),
-                'nama_guru' => $this->faker->name(),
-                'password' => bcrypt('password'),
-            ];
-        
+
+        return [
+            'nip' => $this->faker->unique()->numerify('##################'),
+            'nama_guru' => $this->faker->name(),
+            'password' => bcrypt('password123'),
+        ];
+
     }
 }

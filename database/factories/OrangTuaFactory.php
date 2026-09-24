@@ -20,7 +20,7 @@ class OrangTuaFactory extends Factory
         return [
             'nik' => $this->faker->unique()->numerify('################'),
             'nama_orang_tua' => $this->faker->name(),
-            'password' => bcrypt('password'),
+            'password' => bcrypt('password123'),
             'no_hp' => $this->faker->unique()->numerify('08##########'),
         ];
     }

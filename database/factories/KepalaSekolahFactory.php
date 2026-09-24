@@ -21,7 +21,7 @@ class KepalaSekolahFactory extends Factory
             'nip' => $this->faker->unique()->numerify('##################'),
             'nama_kepala_sekolah' => $this->faker->name(),
             'email' => $this->faker->unique()->safeEmail(),
-            'password' => bcrypt('password'),
+            'password' => bcrypt('password123'),
         ];
     }
 }
