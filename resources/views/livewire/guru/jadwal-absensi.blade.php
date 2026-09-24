@@ -1,12 +1,16 @@
-
-
 <div>
-    <x-layout.page-header title="Jadwal & Absensi" subtitle="Pilih jadwal pelajaran dan catat kehadiran siswa berdasarkan tanggal">
+    <x-layout.page-header title="Jadwal & Absensi" subtitle="Pilih jadwal pelajaran, klik sel pertemuan untuk mengisi kehadiran">
     </x-layout.page-header>
 
     @if (session('success'))
         <x-ui.toast variant="success">
             {{ session('success') }}
+        </x-ui.toast>
+    @endif
+
+    @if (session('error'))
+        <x-ui.toast variant="danger">
+            {{ session('error') }}
         </x-ui.toast>
     @endif
 
@@ -27,7 +31,7 @@
                 <div class="row g-3">
                     @foreach($jadwals as $jadwal)
                         <div class="col-md-6 col-lg-4">
-                            <div class="modern-card p-3 h-100 border transition-all cursor-pointer {{ $selectedJadwalId == $jadwal->id_jadwal_pelajaran ? 'border-primary shadow-sm bg-primary bg-opacity-10' : 'hover-shadow' }}" 
+                            <div class="modern-card p-3 h-100 border transition-all cursor-pointer {{ $selectedJadwalId == $jadwal->id_jadwal_pelajaran ? 'border-primary shadow-sm bg-primary bg-opacity-10' : 'hover-shadow' }}"
                                  wire:click="selectJadwal({{ $jadwal->id_jadwal_pelajaran }})">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <x-ui.badge variant="{{ $selectedJadwalId == $jadwal->id_jadwal_pelajaran ? 'primary' : 'light text-dark' }}">
@@ -46,76 +50,78 @@
             @endif
         </div>
 
-        {{-- Section: Isi Absensi --}}
+        {{-- Section: Matriks Absensi --}}
         @if($selectedJadwalId)
             <div class="col-12">
-                <x-layout.modern-card>
-                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 pb-3 border-bottom">
-                        <div>
-                            <h5 class="fw-bold mb-1"><i class="fas fa-clipboard-list text-primary me-2"></i> Form Absensi Kelas</h5>
-                            <p class="text-muted small mb-0">Pilih tanggal dan sesuaikan kehadiran siswa.</p>
+                <x-layout.table-card title="Absensi Kelas (klik sel untuk mengubah status)">
+                    <div class="d-flex flex-column flex-md-row gap-2 align-items-md-center mb-3">
+                        <div class="d-flex gap-2 align-items-center">
+                            <x-form.input type="date" wire:model="tanggalBaru" />
+                            <x-ui.button variant="outline" icon="fas fa-plus" wire:click="tambahPertemuan" wire:loading.attr="disabled">
+                                Tambah Pertemuan
+                            </x-ui.button>
                         </div>
-                        <div class="mt-3 mt-md-0" style="min-width: 200px;">
-                            <label class="form-label small fw-bold text-muted mb-1">Tanggal Absensi</label>
-                            <x-form.input type="date" wire:model.live="selectedTanggal" />
-                        </div>
+                        <span class="text-muted small ms-md-auto">{{ count($pertemuans) }}/20 pertemuan</span>
                     </div>
 
-                    @if($selectedTanggal)
-                        <div class="table-responsive">
-                            <table class="table table-modern">
-                                <thead>
-                                    <tr>
-                                        <th style="width: 50px;">No</th>
-                                        <th>Nama Siswa</th>
-                                        <th>NISN</th>
-                                        <th style="width: 300px;">Status Kehadiran</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse($siswaList as $index => $siswa)
-                                        <tr wire:key="siswa-{{ $siswa->id_siswa }}">
-                                            <td>{{ $index + 1 }}</td>
-                                            <td>
-                                                <div class="fw-bold text-dark">{{ $siswa->nama_siswa }}</div>
-                                            </td>
-                                            <td>{{ $siswa->nisn }}</td>
-                                            <td>
-                                                <div class="d-flex flex-wrap gap-3">
-                                                    @foreach(\App\Enums\StatusKehadiran::cases() as $status)
-                                                        <x-form.radio 
-                                                            name="kehadiran_{{ $siswa->id_siswa }}" 
-                                                            id="status_{{ $siswa->id_siswa }}_{{ $status->value }}"
-                                                            value="{{ $status->value }}" 
-                                                            label="{{ $status->getLabel() }}"
-                                                            wire:model="kehadiran.{{ $siswa->id_siswa }}"
-                                                        />
-                                                    @endforeach
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="4">
-                                                <x-ui.empty-state icon="fas fa-users-slash" title="Tidak Ada Siswa" description="Belum ada data siswa di kelas ini." />
-                                            </td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
-                        </div>
+                    @if(count($siswaList) > 0)
+                        <x-layout.table>
+                            <x-slot:head>
+                                <tr>
+                                    <th rowspan="2" class="align-middle" style="width: 40px;">No</th>
+                                    <th rowspan="2" class="align-middle">Nama Siswa</th>
+                                    <th rowspan="2" class="align-middle text-center">JK</th>
+                                    @if(count($pertemuans) > 0)
+                                        <th colspan="{{ count($pertemuans) }}" class="text-center">Pertemuan Ke-</th>
+                                    @endif
+                                    <th colspan="7" class="text-center">Nilai (Read-Only)</th>
+                                </tr>
+                                <tr>
+                                    @foreach($pertemuans as $index => $tanggal)
+                                        <th class="text-center" title="{{ \Carbon\Carbon::parse($tanggal)->format('d M Y') }}">{{ $index + 1 }}</th>
+                                    @endforeach
+                                    <th class="text-center">Afektif</th>
+                                    <th class="text-center">Psikomotor</th>
+                                    <th class="text-center">Tugas</th>
+                                    <th class="text-center">UH</th>
+                                    <th class="text-center">NTS</th>
+                                    <th class="text-center">NUS</th>
+                                    <th class="text-center">NR</th>
+                                </tr>
+                            </x-slot:head>
 
-                        @if($siswaList->isNotEmpty())
-                            <div class="d-flex justify-content-end mt-4">
-                                <x-ui.button variant="primary" icon="fas fa-save" wire:click="saveAbsensi">
-                                    Simpan Absensi
-                                </x-ui.button>
-                            </div>
-                        @endif
+                            @foreach($siswaList as $index => $siswa)
+                                <tr class="align-middle text-center" wire:key="siswa-{{ $siswa->id_siswa }}">
+                                    <td>{{ $index + 1 }}</td>
+                                    <td class="text-start" style="font-weight: 500; min-width: 150px;">{{ $siswa->nama_siswa }}</td>
+                                    <td>{{ $siswa->jenis_kelamin ?? '-' }}</td>
+                                    @foreach($pertemuans as $tanggal)
+                                        @php $st = $kehadiran[$siswa->id_siswa][$tanggal] ?? null; @endphp
+                                        <td wire:key="sel-{{ $siswa->id_siswa }}-{{ $tanggal }}"
+                                            wire:click="toggleKehadiran({{ $siswa->id_siswa }}, '{{ $tanggal }}')"
+                                            style="cursor: pointer; min-width: 44px;"
+                                            title="Klik untuk mengubah: {{ \Carbon\Carbon::parse($tanggal)->format('d M Y') }}">
+                                            <x-ui.badge variant="{{ $st === 'hadir' ? 'success' : ($st === 'sakit' ? 'warning' : ($st === 'izin' ? 'info' : ($st === 'alpa' ? 'danger' : 'secondary'))) }}">
+                                                {{ $this->simbol($st) }}
+                                            </x-ui.badge>
+                                        </td>
+                                    @endforeach
+                                    @php $nilai = $nilaiMap[$siswa->id_siswa] ?? null; @endphp
+                                    <td>{{ $nilai['afektif'] ?? '-' }}</td>
+                                    <td>{{ $nilai['psikomotor'] ?? '-' }}</td>
+                                    <td>{{ $nilai['tugas'] ?? '-' }}</td>
+                                    <td>{{ $nilai['uh'] ?? '-' }}</td>
+                                    <td>{{ $nilai['nts'] ?? '-' }}</td>
+                                    <td>{{ $nilai['nus'] ?? '-' }}</td>
+                                    <td class="fw-bold">{{ $nilai['nr'] ?? '-' }}</td>
+                                </tr>
+                            @endforeach
+                        </x-layout.table>
+                        <p class="text-muted small mt-2 mb-0">Klik sel pertemuan untuk memutar status: - &rarr; ✓ Hadir &rarr; S Sakit &rarr; I Izin &rarr; A Alpa &rarr; - (tersimpan otomatis).</p>
                     @else
-                        <x-ui.empty-state icon="far fa-calendar" title="Pilih Tanggal" description="Silakan pilih tanggal absensi terlebih dahulu." />
+                        <x-ui.empty-state icon="fas fa-users-slash" title="Tidak Ada Siswa" description="Belum ada data siswa di kelas ini." />
                     @endif
-                </x-layout.modern-card>
+                </x-layout.table-card>
             </div>
         @endif
     </div>

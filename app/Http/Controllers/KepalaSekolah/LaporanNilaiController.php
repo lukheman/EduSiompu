@@ -45,8 +45,10 @@ class LaporanNilaiController extends Controller
             ->limit(20)
             ->pluck('tanggal');
 
+        $tanggalStrings = $pertemuans->map(fn ($t) => $t->format('Y-m-d'))->all();
+
         $absensiList = Absensi::whereIn('id_jadwal_pelajaran', $jadwalIds)
-            ->whereIn('tanggal', $pertemuans)
+            ->whereIn('tanggal', $tanggalStrings)
             ->get();
 
         $kehadiran = [];
