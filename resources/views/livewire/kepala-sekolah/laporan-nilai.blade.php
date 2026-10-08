@@ -43,36 +43,34 @@
             </div>
 
             @if($selectedMapelId && $mapel)
-                <x-layout.table>
-                    <x-slot:head>
+                <div class="table-responsive">
+                <table class="table table-bordered table-sm align-middle text-center" style="min-width: 2200px; font-size: 10px;">
+                    <thead style="background: #d4af37;">
                         <tr>
-                            <th style="width: 50px;">No</th>
-                            <th>Nama Siswa</th>
-                            <th class="text-center">Afektif</th>
-                            <th class="text-center">Psikomotor</th>
-                            <th class="text-center">Tugas</th>
-                            <th class="text-center">UH</th>
-                            <th class="text-center">US</th>
-                            <th class="text-center">Akhir</th>
-                            <th class="text-center">Predikat</th>
+                            <th rowspan="3" style="width: 150px;">NO</th><th rowspan="3" style="width: 220px;">NAMA</th><th rowspan="3">JK (L/P)</th>
+                            <th colspan="20">PERTEMUAN KE</th><th colspan="18">PENILAIAN</th>
+                            <th rowspan="3">PTS</th><th rowspan="3">PAS</th><th rowspan="3">NR</th><th rowspan="3">KET</th>
                         </tr>
-                    </x-slot:head>
+                        <tr>@for($i = 1; $i <= 20; $i++) <th rowspan="2">{{ $i }}</th> @endfor <th colspan="4">AFEKTIF</th><th colspan="5">PSIKOMOTOR</th><th colspan="5">NILAI TUGAS</th><th colspan="4">UL. HARIAN</th></tr>
+                        <tr>@for($i = 1; $i <= 3; $i++) <th>{{ $i }}</th> @endfor <th>RT</th>@for($i = 1; $i <= 4; $i++) <th>{{ $i }}</th> @endfor <th>RT</th>@for($i = 1; $i <= 4; $i++) <th>{{ $i }}</th> @endfor <th>RT</th>@for($i = 1; $i <= 3; $i++) <th>{{ $i }}</th> @endfor <th>RT</th></tr>
+                    </thead>
 
                     @foreach($siswas as $index => $siswa)
                         @php $nilai = $mapelNilai[$siswa->id_siswa] ?? null; @endphp
                         <tr class="align-middle text-center" wire:key="mapel-{{ $siswa->id_siswa }}">
                             <td>{{ $index + 1 }}</td>
-                            <td class="text-start" style="font-weight: 500;">{{ $siswa->nama_siswa }}</td>
-                            <td>{{ $nilai?->rata_afektif ?? '-' }}</td>
-                            <td>{{ $nilai?->rata_psikomotor ?? '-' }}</td>
-                            <td>{{ $nilai?->rata_tugas ?? '-' }}</td>
-                            <td>{{ $nilai?->rata_ulangan_harian ?? '-' }}</td>
-                            <td>{{ $nilai?->nilai_ulangan_semester ?? '-' }}</td>
-                            <td class="fw-bold">{{ $nilai?->nilai_raport ?? '-' }}</td>
-                            <td><x-ui.predikat-badge :nilai="$nilai?->predikat_raport" /></td>
+                            <td class="text-start" style="font-weight: 500; white-space: normal; overflow-wrap: anywhere; word-break: break-word;">{{ $siswa->nama_siswa }}</td>
+                            <td>{{ $siswa->jenis_kelamin ?? '-' }}</td>
+                            @for($i = 1; $i <= 20; $i++) <td>-</td> @endfor
+                            @for($i = 1; $i <= 3; $i++) <td>{{ $nilai?->{'nilai_afektif_'.$i} ?? '-' }}</td> @endfor <td class="fw-bold">{{ $nilai?->rata_afektif ?? '-' }}</td>
+                            @for($i = 1; $i <= 4; $i++) <td>{{ $nilai?->{'nilai_psikomotor_'.$i} ?? '-' }}</td> @endfor <td class="fw-bold">{{ $nilai?->rata_psikomotor ?? '-' }}</td>
+                            @for($i = 1; $i <= 4; $i++) <td>{{ $nilai?->{'nilai_tugas_'.$i} ?? '-' }}</td> @endfor <td class="fw-bold">{{ $nilai?->rata_tugas ?? '-' }}</td>
+                            @for($i = 1; $i <= 3; $i++) <td>{{ $nilai?->{'nilai_ulangan_harian_'.$i} ?? '-' }}</td> @endfor <td class="fw-bold">{{ $nilai?->rata_ulangan_harian ?? '-' }}</td>
+                            <td>{{ $nilai?->rata_tugas ?? '-' }}</td><td>{{ $nilai?->nilai_ulangan_semester ?? '-' }}</td><td class="fw-bold">{{ $nilai?->nilai_raport ?? '-' }}</td><td>{{ $nilai?->predikat_raport ?? '-' }}</td>
                         </tr>
                     @endforeach
-                </x-layout.table>
+                </table>
+                </div>
             @else
                 <p class="text-muted small mb-0">Pilih mata pelajaran untuk melihat pratinjau nilai dan mencetak laporannya.</p>
             @endif
