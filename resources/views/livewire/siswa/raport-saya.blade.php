@@ -13,6 +13,11 @@
     </x-layout.page-header>
 
     @if($raport)
+        <div class="d-flex justify-content-end mb-3">
+            <a class="btn btn-danger" target="_blank" href="{{ route('siswa.raport.cetak', ['siswa' => $raport->id_siswa, 'tahun' => $raport->id_tahun_ajaran]) }}">
+                <i class="fas fa-file-pdf me-1"></i> Cetak Rapor
+            </a>
+        </div>
         <x-layout.modern-card class="mb-4">
             <div class="row">
                 <div class="col-md-6">

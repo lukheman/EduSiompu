@@ -30,6 +30,7 @@ use App\Livewire\Siswa\JadwalList;
 use App\Livewire\Siswa\MateriList;
 use App\Livewire\Siswa\Profile as SiswaProfile;
 use App\Livewire\Siswa\RaportSaya;
+use App\Http\Controllers\RaportDigitalController;
 use App\Livewire\Siswa\TugasList;
 use Illuminate\Support\Facades\Route;
 
@@ -85,6 +86,7 @@ Route::prefix('siswa')->middleware('auth:siswa,web')->group(function () {
     Route::get('/materi-belajar', MateriList::class)->name('siswa.materi');
     Route::get('/absensi-saya', AbsensiList::class)->name('siswa.absensi');
     Route::get('/raport-saya', RaportSaya::class)->name('siswa.raport');
+    Route::get('/raport-saya/cetak/{siswa}/{tahun}', [RaportDigitalController::class, 'cetak'])->name('siswa.raport.cetak');
     Route::get('/tugas', TugasList::class)->name('siswa.tugas');
     Route::get('/profil', SiswaProfile::class)->name('siswa.profile');
 });
@@ -94,6 +96,7 @@ Route::prefix('orang-tua')->middleware('auth:orang_tua,web')->group(function () 
     Route::get('/dashboard', App\Livewire\OrangTua\Dashboard::class)->name('orang-tua.dashboard');
     Route::get('/absensi-anak', AbsensiAnak::class)->name('orang-tua.absensi');
     Route::get('/raport-anak', RaportAnak::class)->name('orang-tua.raport');
+    Route::get('/raport-anak/cetak/{siswa}/{tahun}', [RaportDigitalController::class, 'cetak'])->name('orang-tua.raport.cetak');
 });
 
 // Kepala Sekolah-only Routes (monitoring)
