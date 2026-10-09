@@ -19,7 +19,7 @@ class NilaiRaport extends Model
         'nilai_psikomotor_1', 'nilai_psikomotor_2', 'nilai_psikomotor_3', 'nilai_psikomotor_4', 'predikat_psikomotor',
         'nilai_tugas_1', 'nilai_tugas_2', 'nilai_tugas_3', 'nilai_tugas_4',
         'nilai_ulangan_harian_1', 'nilai_ulangan_harian_2', 'nilai_ulangan_harian_3',
-        'nilai_ulangan_semester', 'nilai_raport', 'predikat_raport',
+        'nilai_ulangan_semester', 'nilai_raport', 'predikat_raport', 'capaian_kompetensi',
     ];
 
     public const ASPEK_SCORES = [

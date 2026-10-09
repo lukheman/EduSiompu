@@ -43,6 +43,7 @@
                             <th colspan="4" class="text-center" style="border-left: 1px solid var(--border-color);">UH</th>
                             <th rowspan="2" class="align-middle text-center" style="border-left: 1px solid var(--border-color);">US</th>
                             <th rowspan="2" class="align-middle text-center" style="border-left: 1px solid var(--border-color);">Raport <i class="fas fa-magic text-muted" title="Terisi otomatis dari rata-rata, dapat diubah manual"></i></th>
+                            <th rowspan="2" class="align-middle text-center" style="border-left: 1px solid var(--border-color); min-width: 320px;">Capaian Kompetensi</th>
                         </tr>
                         <tr>
                             @for($i = 1; $i <= 3; $i++)
@@ -97,6 +98,11 @@
                                 <input type="number" min="0" max="100" class="form-control form-control-sm text-center nilai-input"
                                     style="border: 1px solid var(--border-color);"
                                     wire:model.live="nilaiData.{{ $siswa->id_siswa }}.raport">
+                            </td>
+                            <td style="min-width: 320px; border: 1px solid var(--border-color); vertical-align: top;">
+                                <textarea class="form-control form-control-sm" rows="4"
+                                    placeholder="Tulis capaian kompetensi siswa..."
+                                    wire:model.blur="nilaiData.{{ $siswa->id_siswa }}.capaian_kompetensi"></textarea>
                             </td>
                         </tr>
                     @endforeach

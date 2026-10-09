@@ -2,109 +2,163 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Laporan Nilai {{ $siswa->nama_siswa }}</title>
+    <title>Rapor {{ $siswa->nama_siswa }}</title>
     <style>
-        body { font-family: "Times New Roman", Times, serif; font-size: 11px; color: #111; }
-        .kop { border-bottom: 3px double #111; padding-bottom: 10px; margin-bottom: 16px; }
-        .kop h2 { margin: 0; font-size: 18px; }
-        .kop p { margin: 2px 0; font-size: 11px; }
-        .kop-logo { width: 90px; text-align: center; vertical-align: middle; }
-        .kop-logo img { width: 75px; height: 75px; }
-        .kop-teks { text-align: center; vertical-align: middle; }
-        .judul { text-align: center; margin: 12px 0; }
-        .judul h3 { margin: 0; font-size: 14px; text-decoration: underline; }
+        @page { margin: 14mm 16mm 16mm; }
+        * { box-sizing: border-box; }
+        body { margin: 0; color: #111; font-family: Arial, Helvetica, sans-serif; font-size: 10px; }
+        .page { position: relative; min-height: 267mm; page-break-after: always; }
+        .page:last-child { page-break-after: auto; }
+        .identitas { width: 100%; border-collapse: collapse; margin: 2mm 0 4mm; font-size: 10px; }
+        .identitas td { padding: 1.2mm 0; vertical-align: top; }
+        .identitas .label { width: 22%; }
+        .identitas .value { width: 31%; }
+        .identitas .label-right { width: 18%; padding-left: 8mm; }
+        .identitas .value-right { width: 29%; }
+        .garis { border-bottom: 1px solid #222; margin-bottom: 8mm; }
+        h1 { margin: 0 0 7mm; text-align: center; font-size: 18px; font-weight: 700; }
         table { border-collapse: collapse; width: 100%; }
-        table.biodata td { padding: 3px 6px; vertical-align: top; }
-        table.nilai th, table.nilai td { border: 1px solid #333; padding: 5px 6px; text-align: center; }
-        table.nilai th { background: #fdba74; color: #000000; }
-        table.nilai td.nama, table.nilai td.mapel { text-align: left; }
-        .ttd { margin-top: 24px; width: 100%; }
-        .ttd td { width: 50%; text-align: center; vertical-align: top; }
+        .nilai th, .nilai td { border: 1px solid #333; padding: 2.4mm 2.2mm; vertical-align: middle; }
+        .nilai th { background: #f4f4fa; text-align: center; font-size: 10px; }
+        .nilai .no { width: 7%; text-align: center; }
+        .nilai .mapel { width: 24%; }
+        .nilai .angka { width: 12%; text-align: center; }
+        .nilai .capaian { width: 57%; text-align: justify; line-height: 1.25; }
+        .nilai td.no, .nilai td.angka { text-align: center; }
+        .kelompok td { padding: 2.4mm; font-weight: 700; background: #fff; }
+        .section-title { border: 1px solid #333; background: #f4f4fa; padding: 2.5mm; text-align: center; font-weight: 700; font-size: 11px; }
+        .section-body { border: 1px solid #333; border-top: 0; padding: 4mm; line-height: 1.35; text-align: justify; }
+        .spacer { height: 5mm; }
+        .ekstra th, .ekstra td { border: 1px solid #333; padding: 2.5mm; }
+        .ekstra th { background: #f4f4fa; text-align: center; }
+        .ekstra .no { width: 8%; text-align: center; }
+        .ekstra .nama { width: 25%; }
+        .footer { position: absolute; bottom: 0; left: 0; right: 0; border-top: 1px solid #333; padding-top: 3mm; font-family: "Courier New", monospace; font-size: 9px; font-weight: 700; font-style: italic; }
+        .footer .halaman { float: right; }
+        .box-row { display: table; width: 100%; table-layout: fixed; }
+        .box-col { display: table-cell; vertical-align: top; }
+        .box-col:first-child { width: 29%; padding-right: 5mm; }
+        .box-col:last-child { width: 71%; }
+        .absensi th, .absensi td, .catatan td { border: 1px solid #333; padding: 2.5mm; }
+        .absensi th, .catatan .title { background: #f4f4fa; text-align: center; font-weight: 700; }
+        .absensi td:last-child { text-align: center; }
+        .catatan { width: 100%; height: 39mm; }
+        .catatan .isi { height: 29mm; vertical-align: top; }
+        .kenaikan { border: 1px solid #333; margin-top: 5mm; padding: 3mm; text-align: center; font-weight: 700; }
+        .tanggapan { margin-top: 5mm; height: 43mm; }
+        .tanggapan .isi { height: 34mm; vertical-align: top; }
+        .signature { width: 100%; margin-top: 6mm; text-align: center; }
+        .signature td { width: 33.33%; vertical-align: top; height: 41mm; }
+        .signature .line { padding-top: 27mm; text-decoration: underline; }
+        .signature .wali { text-align: center; }
+        .signature .kepala { text-align: center; }
+        .small { font-size: 9px; }
     </style>
 </head>
 <body>
-    <table class="kop">
-        <tr>
-            <td class="kop-logo">@if($logoKiri)<img src="{{ $logoKiri }}" alt="Logo">@endif</td>
-            <td class="kop-teks">
-                <h2>PEMERINTAH PROVINSI SULAWESI TENGGARA</h2>
-                <h2>DINAS PENDIDIKAN DAN KEBUDAYAAN</h2>
-                <h2>SMA NEGERI 1 SIOMPU</h2>
-                <p> <b>Alamat: Jln. Poros Siompu Desa Batuwu Kecamatan Siompu</b> </p>
-            </td>
-            <td class="kop-logo">@if($logoKanan)<img src="{{ $logoKanan }}" alt="Logo">@endif</td>
-        </tr>
-    </table>
+@php
+    $baris = collect($baris)->values();
+    $wajib = $baris->take(8);
+    $pilihan = $baris->slice(8)->values();
+    $fase = str_starts_with(strtoupper($siswa->kelas?->nama_kelas ?? ''), 'X') ? 'F' : '-';
+    $tahun = $tahunAjaran->nama_tahun ?? '-';
+    $semester = ucfirst($tahunAjaran->semester ?? '-');
+    $nis = $siswa->nis ?? '-';
+    $nisn = $siswa->nisn ?? '-';
+    $namaWali = $wali?->nama_guru ?? '';
+    $nipWali = $wali?->nip ?? '';
+    $namaMapel = fn ($row) => $row['mapel']->nama_mapel ?? '-';
+    $capaian = function ($row) {
+        if (filled($row['nilai']?->capaian_kompetensi)) {
+            return $row['nilai']->capaian_kompetensi;
+        }
 
-    <div class="judul">
-        <h3>LAPORAN NILAI PESERTA DIDIK</h3>
-        <p>SEMESTER {{ strtoupper($tahunAjaran->semester) }} TAHUN PELAJARAN {{ $tahunAjaran->nama_tahun }}</p>
-    </div>
+        $nilai = $row['nilai']?->nilai_raport;
+        if ($nilai === null || $nilai === '') return 'Capaian kompetensi belum diisi.';
+        if ($nilai >= 75) return 'Mencapai kompetensi dengan sangat baik dalam memahami dan menerapkan materi pembelajaran.';
+        if ($nilai >= 60) return 'Mencapai kompetensi dengan baik dalam memahami materi pembelajaran dan perlu penguatan pada beberapa bagian.';
+        return 'Perlu peningkatan dalam memahami dan menerapkan kompetensi pada mata pelajaran ini.';
+    };
+    $mapelRow = function ($row, $index) use ($namaMapel, $capaian) {
+        $nilai = $row['nilai']?->nilai_raport;
+        echo '<tr><td class="no">'.e($index).'</td><td class="mapel">'.e($namaMapel($row)).'</td><td class="angka">'.e($nilai ?? '-').'</td><td class="capaian">'.e($capaian($row)).'</td></tr>';
+    };
+@endphp
 
-    <table class="biodata">
-        <tr>
-            <td width="150">Nama Peserta Didik</td><td width="10">:</td><td><strong>{{ $siswa->nama_siswa }}</strong></td>
-            <td width="120">Kelas</td><td width="10">:</td><td>{{ $siswa->kelas->nama_kelas }}</td>
-        </tr>
-        <tr>
-            <td>Jenis Kelamin</td><td>:</td><td>{{ $siswa->jenis_kelamin ?? '-' }}</td>
-            <td>Semester</td><td>:</td><td>{{ ucfirst($tahunAjaran->semester) }}</td>
-        </tr>
-    </table>
-
-    <br>
+<div class="page">
+    @include('pdf.partials.rapor-identitas', ['siswa' => $siswa, 'tahunAjaran' => $tahunAjaran, 'fase' => $fase, 'nis' => $nis, 'nisn' => $nisn])
+    <h1>LAPORAN HASIL BELAJAR</h1>
     <table class="nilai">
-        <thead>
-            <tr>
-                <th width="25">No</th>
-                <th>Mata Pelajaran</th>
-                <th>Afektif</th>
-                <th>Psikomotor</th>
-                <th>Tugas</th>
-                <th>UH</th>
-                <th>NTS</th>
-                <th>NUS</th>
-                <th>NR</th>
-                <th>H</th>
-                <th>S</th>
-                <th>I</th>
-                <th>A</th>
-            </tr>
-        </thead>
+        <thead><tr><th class="no">No</th><th class="mapel">Mata Pelajaran</th><th class="angka">Nilai Akhir</th><th class="capaian">Capaian Kompetensi</th></tr></thead>
         <tbody>
-            @forelse($baris as $index => $row)
-                @php $nilai = $row['nilai']; @endphp
-                <tr>
-                    <td>{{ $index + 1 }}</td>
-                    <td class="mapel">{{ $row['mapel']->nama_mapel }}</td>
-                    <td>{{ $nilai?->rata_afektif ?? '-' }}</td>
-                    <td>{{ $nilai?->rata_psikomotor ?? '-' }}</td>
-                    <td>{{ $nilai?->rata_tugas ?? '-' }}</td>
-                    <td>{{ $nilai?->rata_ulangan_harian ?? '-' }}</td>
-                    <td>{{ $nilai?->rata_tugas ?? '-' }}</td>
-                    <td>{{ $nilai?->nilai_ulangan_semester ?? '-' }}</td>
-                    <td><strong>{{ $nilai?->nilai_raport ?? '-' }}</strong></td>
-                    <td>{{ $row['rekap']['hadir'] }}</td>
-                    <td>{{ $row['rekap']['sakit'] }}</td>
-                    <td>{{ $row['rekap']['izin'] }}</td>
-                    <td>{{ $row['rekap']['alpa'] }}</td>
-                </tr>
+            <tr class="kelompok"><td colspan="4">Mata Pelajaran Wajib</td></tr>
+            @foreach($wajib as $index => $row)
+                @php $mapelRow($row, $index + 1); @endphp
+            @endforeach
+            @if($pilihan->isNotEmpty())
+                <tr class="kelompok"><td colspan="4">Mata Pelajaran Pilihan</td></tr>
+                @php $mapelRow($pilihan->first(), 1); @endphp
+            @endif
+        </tbody>
+    </table>
+    <div class="footer"><span>{{ $siswa->kelas?->nama_kelas ?? '-' }} &nbsp;|&nbsp; {{ strtoupper($siswa->nama_siswa) }} &nbsp;|&nbsp; {{ $nis }}</span><span class="halaman">Halaman &nbsp;: 1</span></div>
+</div>
+
+<div class="page">
+    @include('pdf.partials.rapor-identitas', ['siswa' => $siswa, 'tahunAjaran' => $tahunAjaran, 'fase' => $fase, 'nis' => $nis, 'nisn' => $nisn])
+    <table class="nilai">
+        <thead><tr><th class="no">No</th><th class="mapel">Mata Pelajaran</th><th class="angka">Nilai Akhir</th><th class="capaian">Capaian Kompetensi</th></tr></thead>
+        <tbody>
+            <tr class="kelompok"><td colspan="4">Mata Pelajaran Pilihan</td></tr>
+            @forelse($pilihan->slice(1) as $index => $row)
+                @php $mapelRow($row, $index + 2); @endphp
             @empty
-                <tr><td colspan="13">Belum ada mata pelajaran.</td></tr>
+                <tr><td colspan="4" class="small">Belum ada mata pelajaran pilihan lainnya.</td></tr>
             @endforelse
         </tbody>
     </table>
-    <p style="font-size: 9px;">Keterangan kehadiran: H = Hadir, S = Sakit, I = Izin, A = Alpa</p>
+    <div class="spacer"></div>
+    <div class="section-title">Kokurikuler</div>
+    <div class="section-body">
+        Pada semester ini, ananda menunjukkan perkembangan dalam penguatan profil lulusan melalui kegiatan kokurikuler.<br>
+        Pada dimensi penalaran kritis, ananda mampu mengambil keputusan berdasarkan informasi yang relevan.<br>
+        Pada dimensi kreativitas, ananda mampu mengembangkan gagasan dan menghasilkan karya.<br>
+        Pada dimensi kemandirian, ananda menunjukkan tanggung jawab dalam menyelesaikan tugas.<br>
+        Pada dimensi komunikasi, ananda mampu menyampaikan gagasan dengan baik.
+    </div>
+    <div class="spacer"></div>
+    <table class="ekstra">
+        <thead><tr><th class="no">No</th><th class="nama">Ekstrakurikuler</th><th>Keterangan</th></tr></thead>
+        <tbody><tr><td class="no">1</td><td>PRAMUKA</td><td>Belum ada data ekstrakurikuler.</td></tr></tbody>
+    </table>
+    <div class="footer"><span>{{ $siswa->kelas?->nama_kelas ?? '-' }} &nbsp;|&nbsp; {{ strtoupper($siswa->nama_siswa) }} &nbsp;|&nbsp; {{ $nis }}</span><span class="halaman">Halaman &nbsp;: 2</span></div>
+</div>
 
-    @if($raport?->catatan)
-        <p><strong>Catatan Wali Kelas:</strong> <em>&ldquo;{{ $raport->catatan }}&rdquo;</em></p>
-    @endif
-
-    <table class="ttd">
+<div class="page">
+    @include('pdf.partials.rapor-identitas', ['siswa' => $siswa, 'tahunAjaran' => $tahunAjaran, 'fase' => $fase, 'nis' => $nis, 'nisn' => $nisn])
+    <div class="box-row">
+        <div class="box-col">
+            <table class="absensi">
+                <tr><th colspan="2">Ketidakhadiran</th></tr>
+                <tr><td>Sakit</td><td>{{ $raport?->sakit ?? 0 }} hari</td></tr>
+                <tr><td>Izin</td><td>{{ $raport?->izin ?? 0 }} hari</td></tr>
+                <tr><td>Tanpa Keterangan</td><td>{{ $raport?->alpa ?? 0 }} hari</td></tr>
+            </table>
+        </div>
+        <div class="box-col">
+            <table class="catatan"><tr><td class="title">Catatan Wali Kelas</td></tr><tr><td class="isi">{{ $raport?->catatan ?? '' }}</td></tr></table>
+        </div>
+    </div>
+    <div class="kenaikan">Keterangan Kenaikan Kelas &nbsp;: &nbsp; Naik ke kelas XII</div>
+    <table class="catatan tanggapan"><tr><td class="title">Tanggapan Orang Tua/Wali Murid</td></tr><tr><td class="isi"></td></tr></table>
+    <table class="signature">
         <tr>
-            <td></td>
-            <td>Siompu, {{ \Carbon\Carbon::now()->format('d M Y') }}<br>Wali Kelas<br><br><br><br><br><strong>{{ $wali?->nama_guru ?? '-' }}</strong></td>
+            <td>Orang Tua Murid<div class="line">................................</div></td>
+            <td>Wali Kelas<div class="line">{{ $namaWali ?: '................................' }}</div>@if($nipWali)<div>NIP. {{ $nipWali }}</div>@endif</td>
+            <td>Kepala Sekolah<div class="line">................................</div></td>
         </tr>
     </table>
+    <div class="footer"><span>{{ $siswa->kelas?->nama_kelas ?? '-' }} &nbsp;|&nbsp; {{ strtoupper($siswa->nama_siswa) }} &nbsp;|&nbsp; {{ $nis }}</span><span class="halaman">Halaman &nbsp;: 3</span></div>
+</div>
 </body>
 </html>

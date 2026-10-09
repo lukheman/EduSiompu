@@ -55,7 +55,7 @@ class InputNilai extends Component
 
     private function nilaiKosong(): array
     {
-        $kosong = ['ulangan_semester' => '', 'raport' => ''];
+        $kosong = ['ulangan_semester' => '', 'raport' => '', 'capaian_kompetensi' => ''];
 
         foreach (NilaiRaport::ASPEK_SCORES as $koloms) {
             foreach ($koloms as $kolom) {
@@ -158,6 +158,7 @@ class InputNilai extends Component
                 }
                 $row['ulangan_semester'] = $nilai->nilai_ulangan_semester ?? '';
                 $row['raport'] = $nilai->nilai_raport ?? '';
+                $row['capaian_kompetensi'] = $nilai->capaian_kompetensi ?? '';
                 $this->nilaiData[$siswa->id_siswa] = $row;
             } else {
                 $this->nilaiData[$siswa->id_siswa] = $this->nilaiKosong();
@@ -229,6 +230,7 @@ class InputNilai extends Component
                 $payload['nilai_ulangan_semester'] = $data['ulangan_semester'];
                 $payload['nilai_raport'] = $data['raport'];
                 $payload['predikat_raport'] = $this->getPredikat($data['raport']);
+                $payload['capaian_kompetensi'] = $data['capaian_kompetensi'];
 
                 NilaiRaport::updateOrCreate(
                     ['id_raport' => $raport->id_raport, 'id_mata_pelajaran' => $ampu->id_mata_pelajaran],
