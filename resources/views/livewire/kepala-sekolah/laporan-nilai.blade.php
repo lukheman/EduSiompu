@@ -1,7 +1,7 @@
 <div>
     <x-layout.page-header title="Laporan Nilai" subtitle="Pantau dan cetak laporan hasil belajar seluruh kelas ke PDF">
         <x-slot:actions>
-            <div class="d-flex gap-2">
+            <div class="d-flex flex-wrap gap-2 justify-content-end">
                 <div style="width: 220px;">
                     <x-form.select
                         wire:model.live="selectedKelasId"
@@ -18,14 +18,7 @@
                         placeholder="-- Pilih Tahun Ajaran --"
                     />
                 </div>
-            </div>
-        </x-slot:actions>
-    </x-layout.page-header>
-
-    @if($selectedKelasId && count($siswas) > 0)
-        <x-layout.table-card title="Laporan per Mata Pelajaran {{ $kelas ? '- ' . $kelas->nama_kelas : '' }}">
-            <div class="d-flex flex-column flex-md-row gap-2 align-items-md-center mb-3">
-                <div style="min-width: 280px;">
+                <div style="width: 250px;">
                     <x-form.select
                         wire:model.live="selectedMapelId"
                         id="mapel"
@@ -33,14 +26,21 @@
                         placeholder="-- Pilih Mata Pelajaran --"
                     />
                 </div>
-                @if($selectedMapelId && $mapel)
+            </div>
+        </x-slot:actions>
+    </x-layout.page-header>
+
+    @if($selectedKelasId && count($siswas) > 0)
+        <x-layout.table-card title="Laporan per Mata Pelajaran {{ $kelas ? '- ' . $kelas->nama_kelas : '' }}">
+            @if($selectedMapelId && $mapel)
+                <div class="d-flex flex-column flex-md-row gap-2 align-items-md-center mb-3">
                     <x-ui.button variant="danger" icon="fas fa-file-pdf"
                         href="{{ route('kepala-sekolah.laporan-nilai.cetak-mapel', ['kelas' => $selectedKelasId, 'mapel' => $selectedMapelId, 'tahun' => $selectedTahunId]) }}"
                         target="_blank">
                         Cetak PDF {{ $mapel }}
                     </x-ui.button>
-                @endif
-            </div>
+                </div>
+            @endif
 
             @if($selectedMapelId && $mapel)
                 <div class="table-responsive">
@@ -72,7 +72,7 @@
                 </table>
                 </div>
             @else
-                <p class="text-muted small mb-0">Pilih mata pelajaran untuk melihat pratinjau nilai dan mencetak laporannya.</p>
+                <p class="text-muted small mb-0">Pilih mata pelajaran pada filter di atas untuk melihat pratinjau nilai dan mencetak laporannya.</p>
             @endif
         </x-layout.table-card>
 
