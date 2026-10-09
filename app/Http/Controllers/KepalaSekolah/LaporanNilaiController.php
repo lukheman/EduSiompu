@@ -64,7 +64,7 @@ class LaporanNilaiController extends Controller
             'wali' => $siswa->kelas?->waliKelas,
             'logoKiri' => $this->logoBase64('logo-kiri.png'),
             'logoKanan' => $this->logoBase64('logo-kanan.png'),
-        ])->setPaper('a4', 'landscape');
+        ])->setPaper('a4', 'portrait');
 
         return $pdf->download("laporan-nilai-{$siswa->nisn}.pdf");
     }
