@@ -628,6 +628,7 @@
                 <x-layout.sidebar-link href="{{ route('guru.tugas') }}" icon="fas fa-tasks" :active="request()->routeIs('guru.tugas')">Tugas Pembelajaran</x-layout.sidebar-link>
                 <x-layout.sidebar-link href="{{ route('guru.input-nilai') }}" icon="fas fa-edit" :active="request()->routeIs('guru.input-nilai')">Input Nilai Raport</x-layout.sidebar-link>
                 <x-layout.sidebar-link href="{{ route('guru.laporan-nilai') }}" icon="fas fa-file-pdf" :active="request()->routeIs('guru.laporan-nilai*')">Laporan Nilai</x-layout.sidebar-link>
+                <x-layout.sidebar-link href="{{ route('guru.laporan-absensi') }}" icon="fas fa-clipboard-user" :active="request()->routeIs('guru.laporan-absensi*')">Laporan Absensi</x-layout.sidebar-link>
             </x-layout.sidebar-section>
         @endif
 
@@ -651,6 +652,7 @@
         @if(Auth::guard('kepala_sekolah')->check())
             <x-layout.sidebar-section title="Monitoring">
                 <x-layout.sidebar-link href="{{ route('kepala-sekolah.laporan-nilai') }}" icon="fas fa-file-pdf" :active="request()->routeIs('kepala-sekolah.laporan-nilai*')">Laporan Nilai</x-layout.sidebar-link>
+                <x-layout.sidebar-link href="{{ route('kepala-sekolah.laporan-absensi') }}" icon="fas fa-clipboard-user" :active="request()->routeIs('kepala-sekolah.laporan-absensi*')">Laporan Absensi</x-layout.sidebar-link>
                 <x-layout.sidebar-link href="{{ route('kepala-sekolah.raport') }}" icon="fas fa-award" :active="request()->routeIs('kepala-sekolah.raport')">Raport Siswa</x-layout.sidebar-link>
             </x-layout.sidebar-section>
         @endif
