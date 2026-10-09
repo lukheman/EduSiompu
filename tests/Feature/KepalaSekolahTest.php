@@ -55,19 +55,7 @@ it('kepala sekolah can open dashboard and laporan pages', function () {
         ->test(LaporanNilai::class)
         ->set('selectedKelasId', $kelas->id_kelas)
         ->set('selectedTahunId', $tahunAjaran->id_tahun_ajaran)
-        ->set('selectedMapelId', $ampu->id_mata_pelajaran)
         ->assertSee($siswa->nama_siswa);
-
-    $response = $this->actingAs($kepsek, 'kepala_sekolah')
-        ->get(route('kepala-sekolah.laporan-nilai.cetak-mapel', [
-            'kelas' => $kelas->id_kelas,
-            'mapel' => $ampu->id_mata_pelajaran,
-            'tahun' => $tahunAjaran->id_tahun_ajaran,
-        ]));
-
-    $response->assertSuccessful();
-    expect($response->headers->get('Content-Type'))->toContain('application/pdf');
-    expect(substr($response->getContent(), 0, 5))->toBe('%PDF-');
 });
 
 it('kepala sekolah can view a student raport', function () {
