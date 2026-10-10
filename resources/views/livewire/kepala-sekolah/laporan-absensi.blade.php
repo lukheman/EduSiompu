@@ -76,6 +76,7 @@
                     @endforeach
                 </table>
                 </div>
+                <p class="text-muted small mt-2 mb-0">Laki-laki: {{ $siswas->where('jenis_kelamin', 'L')->count() }} | Perempuan: {{ $siswas->where('jenis_kelamin', 'P')->count() }} | Jumlah siswa: {{ $siswas->count() }}</p>
             @else
                 <p class="text-muted small mb-0">Pilih mata pelajaran pada filter di atas untuk melihat daftar hadir dan mencetak laporannya.</p>
             @endif

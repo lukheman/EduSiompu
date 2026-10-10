@@ -26,7 +26,10 @@
         table.nilai td.nama { width: 210px; text-align: left; white-space: normal; overflow-wrap: anywhere; word-break: break-word; }
         .tgl { font-size: 7px; font-weight: normal; }
         .ttd { margin-top: 24px; width: 100%; }
-        .ttd td { width: 50%; text-align: center; vertical-align: top; }
+        .ttd td { width: 50%; text-align: center; vertical-align: top; font-size: 11px; }
+        table.keterangan { width: 340px; margin-top: 10px; }
+        table.keterangan th, table.keterangan td { border: 1px solid #555; padding: 3px 8px; font-size: 10px; }
+        table.keterangan th { text-align: center; background: #e5e7eb; }
     </style>
 </head>
 <body>
@@ -162,10 +165,22 @@
         <p><em>Belum ada data absensi pada mata pelajaran ini.</em></p>
     @endif
 
+    @php
+        $jmlLaki = $siswas->where('jenis_kelamin', 'L')->count();
+        $jmlPerempuan = $siswas->where('jenis_kelamin', 'P')->count();
+        $kepala = $kepalaSekolah ?? null;
+    @endphp
+    <table class="keterangan">
+        <tr><th colspan="3">KETERANGAN</th></tr>
+        <tr><td>LAKI-LAKI</td><td width="10">:</td><td width="60">{{ $jmlLaki }}</td></tr>
+        <tr><td>PEREMPUAN</td><td>:</td><td>{{ $jmlPerempuan }}</td></tr>
+        <tr><td><strong>JUMLAH SISWA</strong></td><td><strong>:</strong></td><td><strong>{{ $siswas->count() }}</strong></td></tr>
+    </table>
+
     <table class="ttd">
         <tr>
-            <td></td>
-            <td>Siompu, {{ \Carbon\Carbon::now()->format('d M Y') }}<br>Wali Kelas<br><br><br><br><br><strong>{{ $wali?->nama_guru ?? '-' }}</strong></td>
+            <td>Mengetahui,<br>Kepala Sekolah<br><br><br><br><br><strong><u>{{ $kepala?->nama_kepala_sekolah ?? '-' }}</u></strong><br>NIP. {{ $kepala?->nip ?? '-' }}</td>
+            <td>Siompu, {{ \Carbon\Carbon::now()->format('d M Y') }}<br>Wali Kelas<br><br><br><br><br><strong><u>{{ $wali?->nama_guru ?? '-' }}</u></strong><br>NIP. {{ $wali?->nip ?? '-' }}</td>
         </tr>
     </table>
 </body>

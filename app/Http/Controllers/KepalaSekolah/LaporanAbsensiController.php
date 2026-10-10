@@ -8,6 +8,7 @@ use App\Models\Absensi;
 use App\Models\GuruAmpu;
 use App\Models\JadwalPelajaran;
 use App\Models\Kelas;
+use App\Models\KepalaSekolah;
 use App\Models\MataPelajaran;
 use App\Models\Siswa;
 use App\Models\TahunAjaran;
@@ -70,6 +71,7 @@ class LaporanAbsensiController extends Controller
             'kehadiran' => $kehadiran,
             'logoKiri' => $this->logoBase64('logo-kiri.png'),
             'logoKanan' => $this->logoBase64('logo-kanan.png'),
+            'kepalaSekolah' => KepalaSekolah::first(),
         ])->setPaper('a4', 'landscape');
 
         $mapelAman = str_replace(['/', '\\', ' '], '-', $mapel->nama_mapel);
