@@ -179,8 +179,8 @@
 
     <table class="ttd">
         <tr>
-            <td>Mengetahui,<br>Kepala Sekolah<br><br><br><br><br><strong><u>{{ $kepala?->nama_kepala_sekolah ?? '-' }}</u></strong><br>NIP. {{ $kepala?->nip ?? '-' }}</td>
-            <td>Siompu, {{ \Carbon\Carbon::now()->format('d M Y') }}<br>Wali Kelas<br><br><br><br><br><strong><u>{{ $wali?->nama_guru ?? '-' }}</u></strong><br>NIP. {{ $wali?->nip ?? '-' }}</td>
+            <td style="text-align: left;">Mengetahui,<br>Kepala Sekolah<br><br><br><br><br><strong><u>{{ $kepala?->nama_kepala_sekolah ?? '-' }}</u></strong><br>NIP. {{ $kepala?->nip ?? '-' }}</td>
+            <td>Siompu, {{ \Carbon\Carbon::now()->format('d M Y') }}<br>Guru Mata Pelajaran<br><br><br><br><br><strong><u>{{ $wali?->nama_guru ?? '-' }}</u></strong><br>NIP. {{ $wali?->nip ?? '-' }}</td>
         </tr>
     </table>
 </body>
