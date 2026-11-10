@@ -38,6 +38,7 @@ it('wali can open laporan page and download pdf', function () {
     ['wali' => $wali] = buatRaportWali();
 
     $this->actingAs($wali, 'guru')
+        ->withSession(['guru_mode' => 'wali_kelas'])
         ->get(route('guru.laporan-nilai'))
         ->assertSuccessful()
         ->assertSeeLivewire(LaporanNilai::class);
@@ -47,6 +48,7 @@ it('wali can download per-siswa pdf', function () {
     ['wali' => $wali, 'siswa' => $siswa, 'tahunAjaran' => $tahunAjaran] = buatRaportWali();
 
     $response = $this->actingAs($wali, 'guru')
+        ->withSession(['guru_mode' => 'wali_kelas'])
         ->get(route('guru.laporan-nilai.cetak', ['siswa' => $siswa->id_siswa, 'tahun' => $tahunAjaran->id_tahun_ajaran]));
 
     $response->assertSuccessful();
@@ -57,8 +59,10 @@ it('wali can download per-siswa pdf', function () {
 it('non-wali guru cannot download per-siswa pdf', function () {
     ['siswa' => $siswa, 'tahunAjaran' => $tahunAjaran] = buatRaportWali();
     $guruLain = Guru::factory()->create();
+    GuruAmpu::factory()->create(['id_guru' => $guruLain->id_guru]);
 
     $this->actingAs($guruLain, 'guru')
+        ->withSession(['guru_mode' => 'mata_pelajaran'])
         ->get(route('guru.laporan-nilai.cetak', ['siswa' => $siswa->id_siswa, 'tahun' => $tahunAjaran->id_tahun_ajaran]))
         ->assertForbidden();
 });

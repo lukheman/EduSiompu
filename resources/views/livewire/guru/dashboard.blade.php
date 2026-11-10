@@ -2,11 +2,12 @@
     {{-- Page Header --}}
     @php
         $userName = Auth::guard('guru')->user()->nama_guru ?? 'Guru';
+        $modeLabel = $mode === 'wali_kelas' ? 'Wali Kelas' : 'Guru Mata Pelajaran';
         $greeting = 'Selamat Datang, Bapak/Ibu ' . $userName;
         $subtitle = $activeTa ? 'Tahun Ajaran Aktif: ' . $activeTa->nama_tahun . ' (Semester ' . ucfirst($activeTa->semester) . ')' : 'Belum ada Tahun Ajaran Aktif';
     @endphp
 
-    <x-layout.page-header :title="$greeting" :subtitle="$subtitle" />
+    <x-layout.page-header :title="$greeting" :subtitle="$subtitle . ' • Mode: ' . $modeLabel" />
 
     <div class="row g-4 mb-4">
         <div class="col-md-3">
@@ -14,7 +15,7 @@
                 <div class="stat-icon bg-primary-subtle text-primary">
                     <i class="fas fa-chalkboard"></i>
                 </div>
-                <div class="text-muted fw-medium mb-1">Kelas Diampu</div>
+                <div class="text-muted fw-medium mb-1">{{ $mode === 'wali_kelas' ? 'Kelas Wali' : 'Kelas Diampu' }}</div>
                 <h3 class="fw-bold text-primary mb-0">{{ $stats['total_kelas'] ?? 0 }}</h3>
             </div>
         </div>
@@ -23,8 +24,8 @@
                 <div class="stat-icon bg-secondary-subtle text-secondary">
                     <i class="fas fa-book"></i>
                 </div>
-                <div class="text-muted fw-medium mb-1">Mata Pelajaran</div>
-                <h3 class="fw-bold text-secondary mb-0">{{ $stats['total_mapel'] ?? 0 }}</h3>
+                <div class="text-muted fw-medium mb-1">{{ $mode === 'wali_kelas' ? 'Jumlah Siswa' : 'Mata Pelajaran' }}</div>
+                <h3 class="fw-bold text-secondary mb-0">{{ $mode === 'wali_kelas' ? ($stats['total_siswa'] ?? 0) : ($stats['total_mapel'] ?? 0) }}</h3>
             </div>
         </div>
         <div class="col-md-3">
@@ -49,16 +50,21 @@
 
     <div class="modern-card">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h4 class="mb-0 fw-bold" style="color: var(--text-primary);"><i class="fas fa-chalkboard-teacher text-primary me-2"></i>Jadwal Mengajar Anda</h4>
+            <h4 class="mb-0 fw-bold" style="color: var(--text-primary);"><i class="fas {{ $mode === 'wali_kelas' ? 'fa-users' : 'fa-chalkboard-teacher' }} text-primary me-2"></i>{{ $mode === 'wali_kelas' ? 'Kelas Perwalian Anda' : 'Jadwal Mengajar Anda' }}</h4>
         </div>
         <div class="row g-3">
             @forelse($recentData as $ampu)
                 <div class="col-md-4">
                     <div class="border rounded p-3 d-flex flex-column h-100 bg-light">
-                        <h5 class="fw-bold text-primary mb-1">{{ $ampu->mataPelajaran->nama_mapel ?? '-' }}</h5>
-                        <div class="text-muted small mb-2">{{ $ampu->mataPelajaran->kode_mapel ?? '-' }}</div>
+                        @if($mode === 'wali_kelas')
+                            <h5 class="fw-bold text-primary mb-1">{{ $ampu->nama_kelas ?? '-' }}</h5>
+                            <div class="text-muted small mb-2">{{ $ampu->siswa_count }} siswa</div>
+                        @else
+                            <h5 class="fw-bold text-primary mb-1">{{ $ampu->mataPelajaran->nama_mapel ?? '-' }}</h5>
+                            <div class="text-muted small mb-2">{{ $ampu->mataPelajaran->kode_mapel ?? '-' }}</div>
+                        @endif
                         <div class="mt-auto pt-2 border-top">
-                            <x-ui.badge variant="info" icon="fas fa-door-open">{{ $ampu->kelas->nama_kelas ?? '-' }}</x-ui.badge>
+                            <x-ui.badge variant="info" icon="fas fa-door-open">{{ $mode === 'wali_kelas' ? 'Wali Kelas' : ($ampu->kelas->nama_kelas ?? '-') }}</x-ui.badge>
                         </div>
                     </div>
                 </div>

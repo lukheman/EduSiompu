@@ -623,12 +623,16 @@
 
         @if(Auth::guard('guru')->check())
             <x-layout.sidebar-section title="Akademik">
-                <x-layout.sidebar-link href="{{ route('guru.materi') }}" icon="fas fa-file-alt" :active="request()->routeIs('guru.materi')">Materi Pembelajaran</x-layout.sidebar-link>
-                <x-layout.sidebar-link href="{{ route('guru.jadwal-absensi') }}" icon="fas fa-calendar-check" :active="request()->routeIs('guru.jadwal-absensi')">Jadwal & Absensi</x-layout.sidebar-link>
-                <x-layout.sidebar-link href="{{ route('guru.tugas') }}" icon="fas fa-tasks" :active="request()->routeIs('guru.tugas')">Tugas Pembelajaran</x-layout.sidebar-link>
-                <x-layout.sidebar-link href="{{ route('guru.input-nilai') }}" icon="fas fa-edit" :active="request()->routeIs('guru.input-nilai')">Input Nilai Raport</x-layout.sidebar-link>
-                <x-layout.sidebar-link href="{{ route('guru.laporan-nilai') }}" icon="fas fa-file-pdf" :active="request()->routeIs('guru.laporan-nilai*')">Laporan Nilai</x-layout.sidebar-link>
-                <x-layout.sidebar-link href="{{ route('guru.laporan-absensi') }}" icon="fas fa-clipboard-user" :active="request()->routeIs('guru.laporan-absensi*')">Laporan Absensi</x-layout.sidebar-link>
+                @if(session('guru_mode') === 'wali_kelas')
+                    <x-layout.sidebar-link href="{{ route('guru.laporan-nilai') }}" icon="fas fa-file-pdf" :active="request()->routeIs('guru.laporan-nilai*')">Cetak Rapor Digital</x-layout.sidebar-link>
+                    <x-layout.sidebar-link href="{{ route('guru.laporan-absensi') }}" icon="fas fa-clipboard-user" :active="request()->routeIs('guru.laporan-absensi*')">Cetak Absensi Kelas</x-layout.sidebar-link>
+                @else
+                    <x-layout.sidebar-link href="{{ route('guru.materi') }}" icon="fas fa-file-alt" :active="request()->routeIs('guru.materi')">Materi Pembelajaran</x-layout.sidebar-link>
+                    <x-layout.sidebar-link href="{{ route('guru.jadwal-absensi') }}" icon="fas fa-calendar-check" :active="request()->routeIs('guru.jadwal-absensi')">Jadwal & Absensi Mengajar</x-layout.sidebar-link>
+                    <x-layout.sidebar-link href="{{ route('guru.tugas') }}" icon="fas fa-tasks" :active="request()->routeIs('guru.tugas')">Tugas Pembelajaran</x-layout.sidebar-link>
+                    <x-layout.sidebar-link href="{{ route('guru.input-nilai') }}" icon="fas fa-edit" :active="request()->routeIs('guru.input-nilai')">Input Nilai Raport</x-layout.sidebar-link>
+                @endif
+                <x-layout.sidebar-link href="{{ route('guru.mode') }}" icon="fas fa-exchange-alt" :active="request()->routeIs('guru.mode')">Ganti Mode Guru</x-layout.sidebar-link>
             </x-layout.sidebar-section>
         @endif
 
@@ -687,7 +691,7 @@
                 $profileRoute = route('admin.profile');
             }
             elseif (Auth::guard('guru')->check()) {
-                $roleName = 'Guru';
+                $roleName = session('guru_mode') === 'wali_kelas' ? 'Wali Kelas' : 'Guru Mata Pelajaran';
                 $user = Auth::guard('guru')->user();
                 $profileRoute = route('guru.profile');
             }

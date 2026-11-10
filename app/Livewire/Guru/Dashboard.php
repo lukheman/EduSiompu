@@ -3,7 +3,9 @@
 namespace App\Livewire\Guru;
 
 use App\Models\GuruAmpu;
+use App\Models\Kelas;
 use App\Models\Materi;
+use App\Models\Siswa;
 use App\Models\TahunAjaran;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Title;
@@ -19,6 +21,14 @@ class Dashboard extends Component
         
         $stats = [];
         $recentData = collect();
+        $mode = session('guru_mode', 'mata_pelajaran');
+        $guruAmpus = collect();
+        $guruAmpuIds = collect();
+
+        $kelasWali = Kelas::where('id_guru', $guru->id_guru)
+            ->withCount('siswa')
+            ->orderBy('nama_kelas')
+            ->get();
 
         if ($activeTa) {
             $guruAmpus = GuruAmpu::where('id_guru', $guru->id_guru)
@@ -26,7 +36,17 @@ class Dashboard extends Component
                 ->get();
                 
             $guruAmpuIds = $guruAmpus->pluck('id_guru_ampu');
+        }
 
+        if ($mode === 'wali_kelas') {
+            $stats = [
+                'total_kelas' => $kelasWali->count(),
+                'total_siswa' => $kelasWali->sum('siswa_count'),
+                'total_materi' => 0,
+                'total_jadwal' => \App\Models\JadwalPelajaran::whereIn('id_guru_ampu', $guruAmpuIds)->count(),
+            ];
+            $recentData = $kelasWali;
+        } else {
             $stats = [
                 'total_kelas' => $guruAmpus->unique('id_kelas')->count(),
                 'total_mapel' => $guruAmpus->unique('id_mata_pelajaran')->count(),
@@ -34,9 +54,9 @@ class Dashboard extends Component
                 'total_jadwal' => \App\Models\JadwalPelajaran::whereIn('id_guru_ampu', $guruAmpuIds)->count(),
             ];
 
-            $recentData = $guruAmpus->load(['kelas', 'mataPelajaran']); // Jadwal Mengajar
+            $recentData = $guruAmpus->load(['kelas', 'mataPelajaran']);
         }
 
-        return view('livewire.guru.dashboard', compact('stats', 'recentData', 'activeTa'));
+        return view('livewire.guru.dashboard', compact('stats', 'recentData', 'activeTa', 'mode'));
     }
 }

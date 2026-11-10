@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\LogoutController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Guru\LaporanAbsensiController as GuruLaporanAbsensiController;
 use App\Http\Controllers\Guru\LaporanNilaiController;
+use App\Http\Controllers\Guru\GuruModeController;
 use App\Livewire\Admin\Dashboard;
 use App\Livewire\Admin\GuruAmpuManagement;
 use App\Livewire\Admin\GuruManagement;
@@ -66,16 +67,24 @@ Route::prefix('admin')->middleware('auth:admin,web')->group(function () {
 
 // Guru-only Routes
 Route::prefix('guru')->middleware('auth:guru,web')->group(function () {
-    Route::get('/dashboard', App\Livewire\Guru\Dashboard::class)->name('guru.dashboard');
-    Route::get('/materi', MateriManagement::class)->name('guru.materi');
-    Route::get('/jadwal-absensi', JadwalAbsensi::class)->name('guru.jadwal-absensi');
-    Route::get('/input-nilai', InputNilai::class)->name('guru.input-nilai');
-    Route::get('/tugas', TugasManagement::class)->name('guru.tugas');
-    Route::get('/laporan-nilai', LaporanNilai::class)->name('guru.laporan-nilai');
-    Route::get('/laporan-nilai/cetak/{siswa}/{tahun}', [LaporanNilaiController::class, 'cetakSiswa'])->name('guru.laporan-nilai.cetak');
-    Route::get('/laporan-absensi', LaporanAbsensi::class)->name('guru.laporan-absensi');
-    Route::get('/laporan-absensi/cetak-mapel/{kelas}/{mapel}/{tahun}', [GuruLaporanAbsensiController::class, 'cetakMapel'])->name('guru.laporan-absensi.cetak-mapel');
-    Route::get('/profil', GuruProfile::class)->name('guru.profile');
+    Route::get('/mode', [GuruModeController::class, 'show'])->name('guru.mode');
+    Route::post('/mode', [GuruModeController::class, 'select'])->name('guru.mode.select');
+
+    Route::middleware('guru.mode')->group(function () {
+        Route::get('/dashboard', App\Livewire\Guru\Dashboard::class)->name('guru.dashboard');
+        Route::get('/materi', MateriManagement::class)->name('guru.materi');
+        Route::get('/jadwal-absensi', JadwalAbsensi::class)->name('guru.jadwal-absensi');
+        Route::get('/input-nilai', InputNilai::class)->name('guru.input-nilai');
+        Route::get('/tugas', TugasManagement::class)->name('guru.tugas');
+        Route::get('/profil', GuruProfile::class)->name('guru.profile');
+
+        Route::middleware('guru.wali')->group(function () {
+            Route::get('/laporan-nilai', LaporanNilai::class)->name('guru.laporan-nilai');
+            Route::get('/laporan-nilai/cetak/{siswa}/{tahun}', [LaporanNilaiController::class, 'cetakSiswa'])->name('guru.laporan-nilai.cetak');
+            Route::get('/laporan-absensi', LaporanAbsensi::class)->name('guru.laporan-absensi');
+            Route::get('/laporan-absensi/cetak-mapel/{kelas}/{mapel}/{tahun}', [GuruLaporanAbsensiController::class, 'cetakMapel'])->name('guru.laporan-absensi.cetak-mapel');
+        });
+    });
 });
 
 // Siswa-only Routes
