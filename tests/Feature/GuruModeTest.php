@@ -74,3 +74,30 @@ it('guru without selected mode is sent to mode selection', function () {
         ->get(route('guru.dashboard'))
         ->assertRedirect(route('guru.mode'));
 });
+
+it('mode selection page shows available modes and current mode', function () {
+    $guru = Guru::factory()->create();
+    GuruAmpu::factory()->create(['id_guru' => $guru->id_guru]);
+    Kelas::factory()->create(['id_guru' => $guru->id_guru]);
+
+    $this->actingAs($guru, 'guru')
+        ->withSession(['guru_mode' => 'wali_kelas'])
+        ->get(route('guru.mode'))
+        ->assertOk()
+        ->assertSee('Guru Mata Pelajaran')
+        ->assertSee('Wali Kelas')
+        ->assertSee('Aktif: Wali Kelas')
+        ->assertSee('Kembali ke Dashboard');
+});
+
+it('mode selection page disables unavailable mode', function () {
+    $guru = Guru::factory()->create();
+    GuruAmpu::factory()->create(['id_guru' => $guru->id_guru]);
+
+    $this->actingAs($guru, 'guru')
+        ->get(route('guru.mode'))
+        ->assertOk()
+        ->assertSee('Guru Mata Pelajaran')
+        ->assertSee('Belum ditetapkan sebagai wali kelas')
+        ->assertSee('Belum tersedia');
+});

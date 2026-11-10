@@ -14,10 +14,34 @@ class GuruModeController extends Controller
     {
         $guruId = Auth::guard('guru')->id();
 
+        $jumlahMapel = GuruAmpu::where('id_guru', $guruId)->count();
+        $jumlahWali = Kelas::where('id_guru', $guruId)->count();
+        $sessionMode = $request->session()->get('guru_mode');
+
+        $currentMode = match (true) {
+            $sessionMode === 'mata_pelajaran' && $jumlahMapel > 0 => $sessionMode,
+            $sessionMode === 'wali_kelas' && $jumlahWali > 0 => $sessionMode,
+            default => null,
+        };
+
+        if ($currentMode) {
+            $defaultMode = $currentMode;
+        } elseif ($jumlahMapel > 0 && $jumlahWali === 0) {
+            $defaultMode = 'mata_pelajaran';
+        } elseif ($jumlahWali > 0 && $jumlahMapel === 0) {
+            $defaultMode = 'wali_kelas';
+        } else {
+            $defaultMode = null;
+        }
+
         return view('guru.mode', [
             'guru' => Auth::guard('guru')->user(),
-            'hasMapel' => GuruAmpu::where('id_guru', $guruId)->exists(),
-            'hasWali' => Kelas::where('id_guru', $guruId)->exists(),
+            'hasMapel' => $jumlahMapel > 0,
+            'hasWali' => $jumlahWali > 0,
+            'jumlahMapel' => $jumlahMapel,
+            'jumlahWali' => $jumlahWali,
+            'currentMode' => $currentMode,
+            'defaultMode' => $defaultMode,
         ]);
     }
 
