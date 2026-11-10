@@ -630,6 +630,7 @@
                     <x-layout.sidebar-link href="{{ route('guru.materi') }}" icon="fas fa-file-alt" :active="request()->routeIs('guru.materi')">Materi Pembelajaran</x-layout.sidebar-link>
                     <x-layout.sidebar-link href="{{ route('guru.jadwal-absensi') }}" icon="fas fa-calendar-check" :active="request()->routeIs('guru.jadwal-absensi')">Jadwal & Absensi Mengajar</x-layout.sidebar-link>
                     <x-layout.sidebar-link href="{{ route('guru.tugas') }}" icon="fas fa-tasks" :active="request()->routeIs('guru.tugas')">Tugas Pembelajaran</x-layout.sidebar-link>
+                    <x-layout.sidebar-link href="{{ route('guru.kuis') }}" icon="fas fa-question-circle" :active="request()->routeIs('guru.kuis')">Kuis Pembelajaran</x-layout.sidebar-link>
                     <x-layout.sidebar-link href="{{ route('guru.input-nilai') }}" icon="fas fa-edit" :active="request()->routeIs('guru.input-nilai')">Input Nilai Raport</x-layout.sidebar-link>
                 @endif
                 <x-layout.sidebar-link href="{{ route('guru.mode') }}" icon="fas fa-exchange-alt" :active="request()->routeIs('guru.mode')">Ganti Mode Guru</x-layout.sidebar-link>
@@ -642,6 +643,7 @@
                 <x-layout.sidebar-link href="{{ route('siswa.materi') }}" icon="fas fa-book-open" :active="request()->routeIs('siswa.materi')">Materi Belajar</x-layout.sidebar-link>
                 <x-layout.sidebar-link href="{{ route('siswa.absensi') }}" icon="fas fa-clipboard-user" :active="request()->routeIs('siswa.absensi')">Absensi Saya</x-layout.sidebar-link>
                 <x-layout.sidebar-link href="{{ route('siswa.tugas') }}" icon="fas fa-tasks" :active="request()->routeIs('siswa.tugas')">Tugas Kelas</x-layout.sidebar-link>
+                <x-layout.sidebar-link href="{{ route('siswa.kuis') }}" icon="fas fa-question-circle" :active="request()->routeIs('siswa.kuis')">Kuis Kelas</x-layout.sidebar-link>
                 <x-layout.sidebar-link href="{{ route('siswa.raport') }}" icon="fas fa-award" :active="request()->routeIs('siswa.raport')">Raport Digital</x-layout.sidebar-link>
             </x-layout.sidebar-section>
         @endif

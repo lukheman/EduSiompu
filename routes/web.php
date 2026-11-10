@@ -19,6 +19,7 @@ use App\Livewire\Admin\TahunAjaranManagement;
 use App\Livewire\Auth\Register;
 use App\Livewire\Guru\InputNilai;
 use App\Livewire\Guru\JadwalAbsensi;
+use App\Livewire\Guru\KuisManagement;
 use App\Livewire\Guru\LaporanAbsensi;
 use App\Livewire\Guru\LaporanNilai;
 use App\Livewire\Guru\Profile as GuruProfile;
@@ -28,6 +29,7 @@ use App\Livewire\OrangTua\AbsensiAnak;
 use App\Livewire\OrangTua\RaportAnak;
 use App\Livewire\Siswa\AbsensiList;
 use App\Livewire\Siswa\JadwalList;
+use App\Livewire\Siswa\KuisList;
 use App\Livewire\Siswa\MateriList;
 use App\Livewire\Siswa\Profile as SiswaProfile;
 use App\Livewire\Siswa\RaportSaya;
@@ -76,6 +78,7 @@ Route::prefix('guru')->middleware('auth:guru,web')->group(function () {
         Route::get('/jadwal-absensi', JadwalAbsensi::class)->name('guru.jadwal-absensi');
         Route::get('/input-nilai', InputNilai::class)->name('guru.input-nilai');
         Route::get('/tugas', TugasManagement::class)->name('guru.tugas');
+        Route::get('/kuis', KuisManagement::class)->name('guru.kuis');
         Route::get('/profil', GuruProfile::class)->name('guru.profile');
 
         Route::middleware('guru.wali')->group(function () {
@@ -96,6 +99,7 @@ Route::prefix('siswa')->middleware('auth:siswa,web')->group(function () {
     Route::get('/raport-saya', RaportSaya::class)->name('siswa.raport');
     Route::get('/raport-saya/cetak/{siswa}/{tahun}', [RaportDigitalController::class, 'cetak'])->name('siswa.raport.cetak');
     Route::get('/tugas', TugasList::class)->name('siswa.tugas');
+    Route::get('/kuis', KuisList::class)->name('siswa.kuis');
     Route::get('/profil', SiswaProfile::class)->name('siswa.profile');
 });
 
