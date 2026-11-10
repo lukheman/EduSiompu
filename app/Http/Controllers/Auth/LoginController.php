@@ -38,7 +38,7 @@ class LoginController extends Controller
         } elseif ($role === 'guru') {
             if (Auth::guard('guru')->attempt(['nip' => $identifier, 'password' => $password])) {
                 $request->session()->regenerate();
-                $request->session()->forget('guru_mode');
+                $request->session()->forget(['guru_mode', 'url.intended']);
 
                 return redirect()->route('guru.mode');
             }

@@ -63,7 +63,8 @@ class GuruModeController extends Controller
         }
 
         $request->session()->put('guru_mode', $validated['mode']);
+        $request->session()->forget('url.intended');
 
-        return redirect()->intended(route('guru.dashboard'));
+        return redirect()->route('guru.dashboard');
     }
 }

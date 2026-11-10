@@ -75,6 +75,19 @@ it('guru without selected mode is sent to mode selection', function () {
         ->assertRedirect(route('guru.mode'));
 });
 
+it('guru mode selection ignores stale intended url from other roles', function () {
+    $guru = Guru::factory()->create();
+    GuruAmpu::factory()->create(['id_guru' => $guru->id_guru]);
+
+    $this->actingAs($guru, 'guru')
+        ->withSession(['url.intended' => route('admin.dashboard')])
+        ->post(route('guru.mode.select'), ['mode' => 'mata_pelajaran'])
+        ->assertRedirect(route('guru.dashboard'))
+        ->assertSessionMissing('url.intended');
+
+    expect(session('guru_mode'))->toBe('mata_pelajaran');
+});
+
 it('mode selection page shows available modes and current mode', function () {
     $guru = Guru::factory()->create();
     GuruAmpu::factory()->create(['id_guru' => $guru->id_guru]);
