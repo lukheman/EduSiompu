@@ -628,6 +628,7 @@
                     <x-layout.sidebar-link href="{{ route('guru.laporan-absensi') }}" icon="fas fa-clipboard-user" :active="request()->routeIs('guru.laporan-absensi*')">Cetak Absensi Kelas</x-layout.sidebar-link>
                 @else
                     <x-layout.sidebar-link href="{{ route('guru.materi') }}" icon="fas fa-file-alt" :active="request()->routeIs('guru.materi')">Materi Pembelajaran</x-layout.sidebar-link>
+                    <x-layout.sidebar-link href="{{ route('guru.silabus') }}" icon="fas fa-book-open-reader" :active="request()->routeIs('guru.silabus*')">Silabus Pembelajaran</x-layout.sidebar-link>
                     <x-layout.sidebar-link href="{{ route('guru.jadwal-absensi') }}" icon="fas fa-calendar-check" :active="request()->routeIs('guru.jadwal-absensi')">Jadwal & Absensi Mengajar</x-layout.sidebar-link>
                     <x-layout.sidebar-link href="{{ route('guru.tugas') }}" icon="fas fa-tasks" :active="request()->routeIs('guru.tugas')">Tugas Pembelajaran</x-layout.sidebar-link>
                     <x-layout.sidebar-link href="{{ route('guru.kuis') }}" icon="fas fa-question-circle" :active="request()->routeIs('guru.kuis')">Kuis Pembelajaran</x-layout.sidebar-link>
@@ -641,6 +642,7 @@
             <x-layout.sidebar-section title="Akademik">
                 <x-layout.sidebar-link href="{{ route('siswa.jadwal') }}" icon="fas fa-clock" :active="request()->routeIs('siswa.jadwal')">Jadwal Pelajaran</x-layout.sidebar-link>
                 <x-layout.sidebar-link href="{{ route('siswa.materi') }}" icon="fas fa-book-open" :active="request()->routeIs('siswa.materi')">Materi Belajar</x-layout.sidebar-link>
+                <x-layout.sidebar-link href="{{ route('siswa.silabus') }}" icon="fas fa-book-open-reader" :active="request()->routeIs('siswa.silabus')">Silabus Pembelajaran</x-layout.sidebar-link>
                 <x-layout.sidebar-link href="{{ route('siswa.absensi') }}" icon="fas fa-clipboard-user" :active="request()->routeIs('siswa.absensi')">Absensi Saya</x-layout.sidebar-link>
                 <x-layout.sidebar-link href="{{ route('siswa.tugas') }}" icon="fas fa-tasks" :active="request()->routeIs('siswa.tugas')">Tugas Kelas</x-layout.sidebar-link>
                 <x-layout.sidebar-link href="{{ route('siswa.kuis') }}" icon="fas fa-question-circle" :active="request()->routeIs('siswa.kuis')">Kuis Kelas</x-layout.sidebar-link>
@@ -656,6 +658,10 @@
         @endif
 
         @if(Auth::guard('kepala_sekolah')->check())
+            <x-layout.sidebar-section title="Kurikulum">
+                <x-layout.sidebar-link href="{{ route('kepala-sekolah.silabus') }}" icon="fas fa-book-open-reader" :active="request()->routeIs('kepala-sekolah.silabus')">Persetujuan Silabus</x-layout.sidebar-link>
+            </x-layout.sidebar-section>
+
             <x-layout.sidebar-section title="Monitoring">
                 <x-layout.sidebar-link href="{{ route('kepala-sekolah.laporan-nilai') }}" icon="fas fa-file-pdf" :active="request()->routeIs('kepala-sekolah.laporan-nilai*')">Laporan Nilai</x-layout.sidebar-link>
                 <x-layout.sidebar-link href="{{ route('kepala-sekolah.laporan-absensi') }}" icon="fas fa-clipboard-user" :active="request()->routeIs('kepala-sekolah.laporan-absensi*')">Laporan Absensi</x-layout.sidebar-link>

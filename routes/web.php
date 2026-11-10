@@ -2,9 +2,11 @@
 
 use App\Http\Controllers\Admin\LogoutController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Guru\GuruModeController;
 use App\Http\Controllers\Guru\LaporanAbsensiController as GuruLaporanAbsensiController;
 use App\Http\Controllers\Guru\LaporanNilaiController;
-use App\Http\Controllers\Guru\GuruModeController;
+use App\Http\Controllers\KepalaSekolah\LaporanAbsensiController;
+use App\Http\Controllers\RaportDigitalController;
 use App\Livewire\Admin\Dashboard;
 use App\Livewire\Admin\GuruAmpuManagement;
 use App\Livewire\Admin\GuruManagement;
@@ -23,8 +25,11 @@ use App\Livewire\Guru\KuisManagement;
 use App\Livewire\Guru\LaporanAbsensi;
 use App\Livewire\Guru\LaporanNilai;
 use App\Livewire\Guru\Profile as GuruProfile;
+use App\Livewire\Guru\SilabusEditor;
+use App\Livewire\Guru\SilabusManagement;
 use App\Livewire\Guru\TugasManagement;
 use App\Livewire\KepalaSekolah\RaportSiswa;
+use App\Livewire\KepalaSekolah\SilabusApproval;
 use App\Livewire\OrangTua\AbsensiAnak;
 use App\Livewire\OrangTua\RaportAnak;
 use App\Livewire\Siswa\AbsensiList;
@@ -33,7 +38,7 @@ use App\Livewire\Siswa\KuisList;
 use App\Livewire\Siswa\MateriList;
 use App\Livewire\Siswa\Profile as SiswaProfile;
 use App\Livewire\Siswa\RaportSaya;
-use App\Http\Controllers\RaportDigitalController;
+use App\Livewire\Siswa\SilabusList;
 use App\Livewire\Siswa\TugasList;
 use Illuminate\Support\Facades\Route;
 
@@ -74,6 +79,8 @@ Route::prefix('guru')->middleware('auth:guru,web')->group(function () {
 
     Route::middleware('guru.mode')->group(function () {
         Route::get('/dashboard', App\Livewire\Guru\Dashboard::class)->name('guru.dashboard');
+        Route::get('/silabus', SilabusManagement::class)->name('guru.silabus');
+        Route::get('/silabus/{guruAmpu}', SilabusEditor::class)->name('guru.silabus.editor');
         Route::get('/materi', MateriManagement::class)->name('guru.materi');
         Route::get('/jadwal-absensi', JadwalAbsensi::class)->name('guru.jadwal-absensi');
         Route::get('/input-nilai', InputNilai::class)->name('guru.input-nilai');
@@ -95,6 +102,7 @@ Route::prefix('siswa')->middleware('auth:siswa,web')->group(function () {
     Route::get('/dashboard', App\Livewire\Siswa\Dashboard::class)->name('siswa.dashboard');
     Route::get('/jadwal-pelajaran', JadwalList::class)->name('siswa.jadwal');
     Route::get('/materi-belajar', MateriList::class)->name('siswa.materi');
+    Route::get('/silabus', SilabusList::class)->name('siswa.silabus');
     Route::get('/absensi-saya', AbsensiList::class)->name('siswa.absensi');
     Route::get('/raport-saya', RaportSaya::class)->name('siswa.raport');
     Route::get('/raport-saya/cetak/{siswa}/{tahun}', [RaportDigitalController::class, 'cetak'])->name('siswa.raport.cetak');
@@ -114,9 +122,10 @@ Route::prefix('orang-tua')->middleware('auth:orang_tua,web')->group(function () 
 // Kepala Sekolah-only Routes (monitoring)
 Route::prefix('kepala-sekolah')->middleware('auth:kepala_sekolah,web')->group(function () {
     Route::get('/dashboard', App\Livewire\KepalaSekolah\Dashboard::class)->name('kepala-sekolah.dashboard');
+    Route::get('/silabus', SilabusApproval::class)->name('kepala-sekolah.silabus');
     Route::get('/laporan-nilai', App\Livewire\KepalaSekolah\LaporanNilai::class)->name('kepala-sekolah.laporan-nilai');
     Route::get('/laporan-nilai/cetak/{siswa}/{tahun}', [App\Http\Controllers\KepalaSekolah\LaporanNilaiController::class, 'cetakSiswa'])->name('kepala-sekolah.laporan-nilai.cetak');
     Route::get('/laporan-absensi', App\Livewire\KepalaSekolah\LaporanAbsensi::class)->name('kepala-sekolah.laporan-absensi');
-    Route::get('/laporan-absensi/cetak-mapel/{kelas}/{mapel}/{tahun}', [App\Http\Controllers\KepalaSekolah\LaporanAbsensiController::class, 'cetakMapel'])->name('kepala-sekolah.laporan-absensi.cetak-mapel');
+    Route::get('/laporan-absensi/cetak-mapel/{kelas}/{mapel}/{tahun}', [LaporanAbsensiController::class, 'cetakMapel'])->name('kepala-sekolah.laporan-absensi.cetak-mapel');
     Route::get('/raport-siswa', RaportSiswa::class)->name('kepala-sekolah.raport');
 });

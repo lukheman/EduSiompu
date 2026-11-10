@@ -23,4 +23,9 @@ class TahunAjaran extends Model
             'status_aktif' => 'boolean',
         ];
     }
+
+    public function guruAmpu()
+    {
+        return $this->hasMany(GuruAmpu::class, 'id_tahun_ajaran', 'id_tahun_ajaran');
+    }
 }

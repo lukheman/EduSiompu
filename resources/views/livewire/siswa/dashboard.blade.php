@@ -47,6 +47,43 @@
         </div>
     </div>
 
+    <div class="modern-card mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+            <h4 class="mb-0 fw-bold" style="color: var(--text-primary);">
+                <i class="fas fa-book-open-reader text-primary me-2"></i>Silabus Kelas Anda
+            </h4>
+            <a href="{{ route('siswa.silabus') }}" class="btn btn-sm btn-outline-primary rounded-pill px-3">Lihat Semua</a>
+        </div>
+
+        <div class="list-group list-group-flush border-0">
+            @forelse($silabusList->take(5) as $silabus)
+                <div class="list-group-item px-0 py-3 d-flex justify-content-between align-items-center bg-transparent gap-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="bg-primary-subtle text-primary rounded d-flex align-items-center justify-content-center"
+                            style="width: 46px; height: 46px;">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-1" style="color: var(--text-primary);">
+                                {{ $silabus->guruAmpu?->mataPelajaran?->nama_mapel ?? '-' }}
+                            </h6>
+                            <div class="text-muted small">
+                                <i class="fas fa-user-tie me-1"></i>{{ $silabus->guruAmpu?->guru?->nama_guru ?? '-' }}
+                                <span class="mx-2">•</span>
+                                {{ $silabus->items->count() }} materi
+                            </div>
+                        </div>
+                    </div>
+                    <x-ui.badge variant="success" icon="fas fa-check-circle">Disetujui</x-ui.badge>
+                </div>
+            @empty
+                <div class="text-center py-4">
+                    <p class="text-muted mb-0">Belum ada silabus yang disetujui untuk kelas Anda pada semester ini.</p>
+                </div>
+            @endforelse
+        </div>
+    </div>
+
     <div class="modern-card">
         <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
             <h4 class="mb-0 fw-bold" style="color: var(--text-primary);"><i class="fas fa-book-reader text-primary me-2"></i>Materi Terbaru untuk Kelas Anda</h4>

@@ -10,7 +10,9 @@ class GuruAmpu extends Model
     use HasFactory;
 
     protected $table = 'guru_ampu';
+
     protected $primaryKey = 'id_guru_ampu';
+
     protected $fillable = ['id_guru', 'id_mata_pelajaran', 'id_kelas', 'id_tahun_ajaran'];
 
     public function guru()
@@ -36,5 +38,10 @@ class GuruAmpu extends Model
     public function jadwalPelajaran()
     {
         return $this->hasMany(JadwalPelajaran::class, 'id_guru_ampu', 'id_guru_ampu');
+    }
+
+    public function silabus()
+    {
+        return $this->hasOne(Silabus::class, 'id_guru_ampu', 'id_guru_ampu');
     }
 }

@@ -3,9 +3,10 @@
 namespace App\Livewire\Guru;
 
 use App\Models\GuruAmpu;
+use App\Models\JadwalPelajaran;
 use App\Models\Kelas;
 use App\Models\Materi;
-use App\Models\Siswa;
+use App\Models\Silabus;
 use App\Models\TahunAjaran;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Title;
@@ -18,7 +19,7 @@ class Dashboard extends Component
     {
         $guru = Auth::guard('guru')->user();
         $activeTa = TahunAjaran::where('status_aktif', true)->first();
-        
+
         $stats = [];
         $recentData = collect();
         $mode = session('guru_mode', 'mata_pelajaran');
@@ -34,7 +35,7 @@ class Dashboard extends Component
             $guruAmpus = GuruAmpu::where('id_guru', $guru->id_guru)
                 ->where('id_tahun_ajaran', $activeTa->id_tahun_ajaran)
                 ->get();
-                
+
             $guruAmpuIds = $guruAmpus->pluck('id_guru_ampu');
         }
 
@@ -43,7 +44,7 @@ class Dashboard extends Component
                 'total_kelas' => $kelasWali->count(),
                 'total_siswa' => $kelasWali->sum('siswa_count'),
                 'total_materi' => 0,
-                'total_jadwal' => \App\Models\JadwalPelajaran::whereIn('id_guru_ampu', $guruAmpuIds)->count(),
+                'total_jadwal' => JadwalPelajaran::whereIn('id_guru_ampu', $guruAmpuIds)->count(),
             ];
             $recentData = $kelasWali;
         } else {
@@ -51,12 +52,31 @@ class Dashboard extends Component
                 'total_kelas' => $guruAmpus->unique('id_kelas')->count(),
                 'total_mapel' => $guruAmpus->unique('id_mata_pelajaran')->count(),
                 'total_materi' => Materi::whereIn('id_guru_ampu', $guruAmpuIds)->count(),
-                'total_jadwal' => \App\Models\JadwalPelajaran::whereIn('id_guru_ampu', $guruAmpuIds)->count(),
+                'total_jadwal' => JadwalPelajaran::whereIn('id_guru_ampu', $guruAmpuIds)->count(),
             ];
 
             $recentData = $guruAmpus->load(['kelas', 'mataPelajaran']);
         }
 
-        return view('livewire.guru.dashboard', compact('stats', 'recentData', 'activeTa', 'mode'));
+        $silabusStats = [
+            'draft' => 0,
+            'diajukan' => 0,
+            'revisi' => 0,
+            'disetujui' => 0,
+            'belum' => 0,
+        ];
+
+        if ($guruAmpus->isNotEmpty()) {
+            $silabusByAmpu = Silabus::whereIn('id_guru_ampu', $guruAmpuIds)
+                ->get()
+                ->keyBy('id_guru_ampu');
+
+            foreach ($guruAmpus as $ampu) {
+                $status = $silabusByAmpu->get($ampu->id_guru_ampu)?->status->value ?? 'belum';
+                $silabusStats[$status] = ($silabusStats[$status] ?? 0) + 1;
+            }
+        }
+
+        return view('livewire.guru.dashboard', compact('stats', 'recentData', 'activeTa', 'mode', 'silabusStats'));
     }
 }

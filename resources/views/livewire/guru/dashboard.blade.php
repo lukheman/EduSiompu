@@ -48,6 +48,43 @@
         </div>
     </div>
 
+    @if($mode !== 'wali_kelas')
+        <div class="modern-card mb-4">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                <div>
+                    <h4 class="mb-0 fw-bold" style="color: var(--text-primary);">
+                        <i class="fas fa-book-open-reader text-primary me-2"></i>Status Silabus
+                    </h4>
+                    <div class="text-muted small mt-1">Pantau kelengkapan silabus tiap mata pelajaran yang Anda ampu.</div>
+                </div>
+                <a href="{{ route('guru.silabus') }}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                    Kelola Silabus
+                </a>
+            </div>
+            <div class="row g-3">
+                @foreach([
+                    'belum' => ['label' => 'Belum Dibuat', 'color' => '#94a3b8', 'icon' => 'fas fa-circle-plus'],
+                    'draft' => ['label' => 'Draft', 'color' => '#64748b', 'icon' => 'fas fa-pen'],
+                    'diajukan' => ['label' => 'Diajukan', 'color' => '#f59e0b', 'icon' => 'fas fa-paper-plane'],
+                    'revisi' => ['label' => 'Revisi', 'color' => '#ef4444', 'icon' => 'fas fa-rotate-left'],
+                    'disetujui' => ['label' => 'Disetujui', 'color' => '#10b981', 'icon' => 'fas fa-lock'],
+                ] as $key => $kartu)
+                    <div class="col-6 col-md-4 col-xl">
+                        <div class="border rounded p-3 h-100 bg-light" style="border-left: 3px solid {{ $kartu['color'] }} !important;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="text-muted small fw-semibold">{{ $kartu['label'] }}</div>
+                                    <div class="fs-4 fw-bold" style="color: {{ $kartu['color'] }};">{{ $silabusStats[$key] ?? 0 }}</div>
+                                </div>
+                                <i class="{{ $kartu['icon'] }}" style="color: {{ $kartu['color'] }}; opacity: 0.7;"></i>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @endif
+
     <div class="modern-card">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h4 class="mb-0 fw-bold" style="color: var(--text-primary);"><i class="fas {{ $mode === 'wali_kelas' ? 'fa-users' : 'fa-chalkboard-teacher' }} text-primary me-2"></i>{{ $mode === 'wali_kelas' ? 'Kelas Perwalian Anda' : 'Jadwal Mengajar Anda' }}</h4>

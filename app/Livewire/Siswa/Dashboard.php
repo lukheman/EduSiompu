@@ -4,6 +4,7 @@ namespace App\Livewire\Siswa;
 
 use App\Models\Absensi;
 use App\Models\Materi;
+use App\Models\Silabus;
 use App\Models\TahunAjaran;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Title;
@@ -16,36 +17,47 @@ class Dashboard extends Component
     {
         $siswa = Auth::guard('siswa')->user()->load('kelas');
         $activeTa = TahunAjaran::where('status_aktif', true)->first();
-        
+
         $stats = [];
         $recentData = collect();
+        $silabusList = collect();
 
         if ($activeTa) {
             // Absensi Summary
             $absensi = Absensi::where('id_siswa', $siswa->id_siswa)
-                ->whereHas('jadwalPelajaran.guruAmpu', function($q) use ($activeTa) {
+                ->whereHas('jadwalPelajaran.guruAmpu', function ($q) use ($activeTa) {
                     $q->where('id_tahun_ajaran', $activeTa->id_tahun_ajaran);
                 })
                 ->get();
-                
+
             $stats = [
-                'hadir' => $absensi->filter(fn($a) => $a->status_kehadiran?->value === 'hadir')->count(),
-                'sakit' => $absensi->filter(fn($a) => $a->status_kehadiran?->value === 'sakit')->count(),
-                'izin' => $absensi->filter(fn($a) => $a->status_kehadiran?->value === 'izin')->count(),
-                'alpa' => $absensi->filter(fn($a) => $a->status_kehadiran?->value === 'alpa')->count(),
+                'hadir' => $absensi->filter(fn ($a) => $a->status_kehadiran?->value === 'hadir')->count(),
+                'sakit' => $absensi->filter(fn ($a) => $a->status_kehadiran?->value === 'sakit')->count(),
+                'izin' => $absensi->filter(fn ($a) => $a->status_kehadiran?->value === 'izin')->count(),
+                'alpa' => $absensi->filter(fn ($a) => $a->status_kehadiran?->value === 'alpa')->count(),
             ];
 
             // Recent Materi
             $recentData = Materi::with(['guruAmpu.mataPelajaran', 'guruAmpu.guru'])
-                ->whereHas('guruAmpu', function($q) use ($siswa, $activeTa) {
+                ->whereHas('guruAmpu', function ($q) use ($siswa, $activeTa) {
                     $q->where('id_kelas', $siswa->id_kelas)
-                      ->where('id_tahun_ajaran', $activeTa->id_tahun_ajaran);
+                        ->where('id_tahun_ajaran', $activeTa->id_tahun_ajaran);
                 })
                 ->orderBy('created_at', 'desc')
                 ->take(5)
                 ->get();
+
+            $silabusList = Silabus::disetujui()
+                ->with(['guruAmpu.mataPelajaran', 'guruAmpu.guru', 'items'])
+                ->whereHas('guruAmpu', function ($q) use ($siswa, $activeTa) {
+                    $q->where('id_kelas', $siswa->id_kelas)
+                        ->where('id_tahun_ajaran', $activeTa->id_tahun_ajaran);
+                })
+                ->get()
+                ->sortBy(fn ($silabus) => $silabus->guruAmpu?->mataPelajaran?->nama_mapel)
+                ->values();
         }
 
-        return view('livewire.siswa.dashboard', compact('stats', 'recentData', 'activeTa'));
+        return view('livewire.siswa.dashboard', compact('stats', 'recentData', 'silabusList', 'activeTa'));
     }
 }
