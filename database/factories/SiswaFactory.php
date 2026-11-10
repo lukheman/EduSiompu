@@ -15,6 +15,7 @@ class SiswaFactory extends Factory
 
         return [
             'id_kelas' => Kelas::factory(),
+            'nis' => $this->faker->unique()->numerify('#####'),
             'nisn' => $this->faker->unique()->numerify('##########'),
             'nama_siswa' => $this->faker->name(),
             'jenis_kelamin' => $this->faker->randomElement(['L', 'P']),

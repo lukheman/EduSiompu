@@ -64,7 +64,8 @@
                                 </div>
                             </td>
                             <td>
-                                <span class="badge bg-light text-dark border"><i class="fas fa-id-badge text-muted me-1"></i> {{ $siswa->nisn }}</span>
+                                <span class="badge bg-light text-dark border"><i class="fas fa-id-badge text-muted me-1"></i> NIS: {{ $siswa->nis ?? '-' }}</span>
+                                <div class="small text-muted mt-1">NISN: {{ $siswa->nisn }}</div>
                             </td>
                             <td>
                                 <x-ui.badge variant="info" icon="fas fa-door-open">{{ $siswa->kelas->nama_kelas ?? 'Belum ada kelas' }}</x-ui.badge>
@@ -87,7 +88,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="text-center py-5">
+                            <td colspan="5" class="text-center py-5">
                                 <div class="text-muted">
                                     <i class="fas fa-users-slash mb-3 text-info opacity-50" style="font-size: 3rem;"></i>
                                     <h5>Siswa Tidak Ditemukan</h5>
@@ -158,12 +159,52 @@
 
                         {{-- NISN --}}
                         <div class="col-md-6">
+                            <label for="nis" class="form-label text-muted fw-bold small">Nomor Induk Siswa (NIS) <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control @error('nis') is-invalid @enderror" id="nis"
+                                wire:model="nis" placeholder="Nomor urut internal sekolah">
+                            @error('nis')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        {{-- NISN --}}
+                        <div class="col-md-6">
                             <label for="nisn" class="form-label text-muted fw-bold small">Nomor Induk Siswa Nasional (NISN) <span class="text-danger">*</span></label>
                             <input type="text" class="form-control @error('nisn') is-invalid @enderror" id="nisn"
                                 wire:model="nisn" placeholder="10 Digit Angka NISN">
                             @error('nisn')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
+                        </div>
+
+                        {{-- Identitas Kependudukan --}}
+                        <div class="col-md-6">
+                            <label for="nik" class="form-label text-muted fw-bold small">NIK</label>
+                            <input type="text" class="form-control @error('nik') is-invalid @enderror" id="nik" wire:model="nik" maxlength="16" placeholder="16 digit NIK siswa">
+                            @error('nik') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="agama" class="form-label text-muted fw-bold small">Agama/Kepercayaan</label>
+                            <select class="form-select @error('agama') is-invalid @enderror" id="agama" wire:model="agama">
+                                <option value="">-- Pilih --</option>
+                                @foreach(['Islam', 'Kristen', 'Katolik', 'Hindu', 'Buddha', 'Konghucu', 'Kepercayaan'] as $agamaOption)
+                                    <option value="{{ $agamaOption }}">{{ $agamaOption }}</option>
+                                @endforeach
+                            </select>
+                            @error('agama') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="tempat_lahir" class="form-label text-muted fw-bold small">Tempat Lahir</label>
+                            <input type="text" class="form-control @error('tempat_lahir') is-invalid @enderror" id="tempat_lahir" wire:model="tempat_lahir" placeholder="Kota/Kabupaten kelahiran">
+                            @error('tempat_lahir') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="tanggal_lahir" class="form-label text-muted fw-bold small">Tanggal Lahir</label>
+                            <input type="date" class="form-control @error('tanggal_lahir') is-invalid @enderror" id="tanggal_lahir" wire:model="tanggal_lahir">
+                            @error('tanggal_lahir') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
 
                         {{-- Kelas --}}
@@ -178,6 +219,55 @@
                             @error('id_kelas')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="kewarganegaraan" class="form-label text-muted fw-bold small">Kewarganegaraan</label>
+                            <select class="form-select @error('kewarganegaraan') is-invalid @enderror" id="kewarganegaraan" wire:model="kewarganegaraan">
+                                <option value="">-- Pilih --</option>
+                                <option value="WNI">Warga Negara Indonesia (WNI)</option>
+                                <option value="WNA">Warga Negara Asing (WNA)</option>
+                            </select>
+                            @error('kewarganegaraan') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+
+                        {{-- Alamat --}}
+                        <div class="col-12 mt-3">
+                            <h6 class="fw-bold text-primary border-bottom pb-2"><i class="fas fa-map-marker-alt me-2"></i>Alamat Lengkap</h6>
+                        </div>
+                        <div class="col-12">
+                            <label for="alamat" class="form-label text-muted fw-bold small">Jalan/Alamat</label>
+                            <textarea class="form-control @error('alamat') is-invalid @enderror" id="alamat" wire:model="alamat" rows="2" placeholder="Nama jalan dan nomor rumah"></textarea>
+                            @error('alamat') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+                        @foreach ([['rt', 'RT'], ['rw', 'RW'], ['dusun', 'Dusun/Jalan'], ['kelurahan', 'Kelurahan/Desa'], ['kecamatan', 'Kecamatan'], ['kode_pos', 'Kode Pos']] as [$field, $label])
+                            <div class="col-md-{{ in_array($field, ['rt', 'rw', 'kode_pos']) ? '4' : '6' }}">
+                                <label for="{{ $field }}" class="form-label text-muted fw-bold small">{{ $label }}</label>
+                                <input type="text" class="form-control @error($field) is-invalid @enderror" id="{{ $field }}" wire:model="{{ $field }}">
+                                @error($field) <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
+                        @endforeach
+
+                        <div class="col-md-6">
+                            <label for="jenis_tempat_tinggal" class="form-label text-muted fw-bold small">Jenis Tempat Tinggal</label>
+                            <select class="form-select @error('jenis_tempat_tinggal') is-invalid @enderror" id="jenis_tempat_tinggal" wire:model="jenis_tempat_tinggal">
+                                <option value="">-- Pilih --</option>
+                                @foreach(['Bersama orang tua', 'Wali', 'Asrama', 'Kos', 'Panti asuhan'] as $tempatTinggal)
+                                    <option value="{{ $tempatTinggal }}">{{ $tempatTinggal }}</option>
+                                @endforeach
+                            </select>
+                            @error('jenis_tempat_tinggal') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="transportasi_ke_sekolah" class="form-label text-muted fw-bold small">Transportasi ke Sekolah</label>
+                            <select class="form-select @error('transportasi_ke_sekolah') is-invalid @enderror" id="transportasi_ke_sekolah" wire:model="transportasi_ke_sekolah">
+                                <option value="">-- Pilih --</option>
+                                @foreach(['Jalan kaki', 'Kendaraan pribadi', 'Angkutan umum', 'Antar-jemput'] as $transportasi)
+                                    <option value="{{ $transportasi }}">{{ $transportasi }}</option>
+                                @endforeach
+                            </select>
+                            @error('transportasi_ke_sekolah') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
 
                         {{-- Jenis Kelamin --}}
@@ -271,6 +361,38 @@
                 <div class="modern-card bg-light border-0 p-3 mb-3">
                     <table class="table table-borderless table-sm mb-0">
                         <tbody>
+                            <tr>
+                                <th class="text-muted fw-medium"><i class="fas fa-id-card me-2 text-primary"></i> NIS / NISN</th>
+                                <td class="text-end"><span class="fw-bold">{{ $viewingSiswa->nis ?? '-' }} / {{ $viewingSiswa->nisn ?? '-' }}</span></td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted fw-medium"><i class="fas fa-fingerprint me-2 text-primary"></i> NIK</th>
+                                <td class="text-end"><span class="fw-bold">{{ $viewingSiswa->nik ?? '-' }}</span></td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted fw-medium"><i class="fas fa-venus-mars me-2 text-info"></i> Jenis Kelamin</th>
+                                <td class="text-end"><span class="fw-bold">{{ ['L' => 'Laki-laki', 'P' => 'Perempuan'][$viewingSiswa->jenis_kelamin] ?? '-' }}</span></td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted fw-medium"><i class="fas fa-birthday-cake me-2 text-info"></i> Tempat/Tanggal Lahir</th>
+                                <td class="text-end"><span class="fw-bold">{{ $viewingSiswa->tempat_lahir ?? '-' }}, {{ $viewingSiswa->tanggal_lahir?->format('d-m-Y') ?? '-' }}</span></td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted fw-medium"><i class="fas fa-pray me-2 text-info"></i> Agama / Kewarganegaraan</th>
+                                <td class="text-end"><span class="fw-bold">{{ $viewingSiswa->agama ?? '-' }} / {{ $viewingSiswa->kewarganegaraan ?? '-' }}</span></td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted fw-medium"><i class="fas fa-map-marker-alt me-2 text-info"></i> Alamat</th>
+                                <td class="text-end"><span class="fw-bold">{{ $viewingSiswa->alamat ?? '-' }}<br>{{ $viewingSiswa->rt || $viewingSiswa->rw ? 'RT/RW ' . ($viewingSiswa->rt ?? '-') . '/' . ($viewingSiswa->rw ?? '-') : '' }} {{ $viewingSiswa->dusun ?? '' }} {{ $viewingSiswa->kelurahan ?? '' }} {{ $viewingSiswa->kecamatan ?? '' }} {{ $viewingSiswa->kode_pos ?? '' }}</span></td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted fw-medium"><i class="fas fa-home me-2 text-info"></i> Tempat Tinggal</th>
+                                <td class="text-end"><span class="fw-bold">{{ $viewingSiswa->jenis_tempat_tinggal ?? '-' }}</span></td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted fw-medium"><i class="fas fa-bus me-2 text-info"></i> Transportasi</th>
+                                <td class="text-end"><span class="fw-bold">{{ $viewingSiswa->transportasi_ke_sekolah ?? '-' }}</span></td>
+                            </tr>
                             <tr>
                                 <th class="text-muted fw-medium w-50"><i class="fas fa-door-open me-2 text-info"></i> Rombongan Belajar</th>
                                 <td class="text-end">
