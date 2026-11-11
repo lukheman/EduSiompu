@@ -10,9 +10,11 @@ class Raport extends Model
     use HasFactory;
 
     protected $table = 'raport';
+
     protected $primaryKey = 'id_raport';
+
     protected $fillable = [
-        'id_siswa', 'id_tahun_ajaran', 'id_kelas', 'sakit', 'izin', 'alpa', 'catatan'
+        'id_siswa', 'id_tahun_ajaran', 'id_kelas', 'sakit', 'izin', 'alpa', 'catatan',
     ];
 
     public function siswa()
@@ -33,5 +35,23 @@ class Raport extends Model
     public function nilaiRaport()
     {
         return $this->hasMany(NilaiRaport::class, 'id_raport', 'id_raport');
+    }
+
+    /**
+     * Data grafik nilai per mata pelajaran.
+     *
+     * @return array<int, array{label: string, nilai: int, kkm: int}>
+     */
+    public function grafikNilai(): array
+    {
+        return $this->nilaiRaport
+            ->filter(fn (NilaiRaport $nilai) => $nilai->nilai_raport !== null && $nilai->nilai_raport !== '')
+            ->map(fn (NilaiRaport $nilai) => [
+                'label' => $nilai->mataPelajaran?->nama_mapel ?? '-',
+                'nilai' => (int) $nilai->nilai_raport,
+                'kkm' => (int) ($nilai->mataPelajaran?->kkm ?? 75),
+            ])
+            ->values()
+            ->all();
     }
 }

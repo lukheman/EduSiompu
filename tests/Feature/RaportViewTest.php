@@ -3,6 +3,7 @@
 use App\Models\Guru;
 use App\Models\GuruAmpu;
 use App\Models\Kelas;
+use App\Models\MataPelajaran;
 use App\Models\NilaiRaport;
 use App\Models\OrangTua;
 use App\Models\Raport;
@@ -61,4 +62,64 @@ it('orang tua raport page shows extended nilai columns', function () {
         ->assertSee('Psikomotor')
         ->assertSee('Nilai Raport')
         ->assertSee((string) $nilai->nilai_raport);
+});
+
+it('siswa raport page shows nilai chart with summary and kkm marker', function () {
+    ['siswa' => $siswa] = buatRaportLengkap();
+
+    $this->actingAs($siswa, 'siswa')
+        ->get(route('siswa.raport'))
+        ->assertSuccessful()
+        ->assertSee('Grafik Nilai Mata Pelajaran')
+        ->assertSee('Rata-rata')
+        ->assertSee('Tertinggi')
+        ->assertSee('Terendah')
+        ->assertSee('Tuntas')
+        ->assertSee('KKM 75')
+        ->assertSee('1/1')
+        ->assertSee('Belum tuntas');
+});
+
+it('orang tua raport page shows nilai chart with summary and kkm marker', function () {
+    ['ortu' => $ortu] = buatRaportLengkap();
+
+    $this->actingAs($ortu, 'orang_tua')
+        ->get(route('orang-tua.raport'))
+        ->assertSuccessful()
+        ->assertSee('Grafik Nilai Mata Pelajaran')
+        ->assertSee('Rata-rata')
+        ->assertSee('Tertinggi')
+        ->assertSee('Terendah')
+        ->assertSee('Tuntas')
+        ->assertSee('KKM 75')
+        ->assertSee('1/1')
+        ->assertSee('Belum tuntas');
+});
+
+it('grafik nilai hanya memuat mapel dengan nilai raport dan memakai kkm bawaan', function () {
+    ['nilai' => $nilai] = buatRaportLengkap();
+    $raport = $nilai->raport;
+
+    NilaiRaport::create([
+        'id_raport' => $raport->id_raport,
+        'id_mata_pelajaran' => MataPelajaran::factory()->create(['nama_mapel' => 'Fisika'])->id_mata_pelajaran,
+        'nilai_raport' => null,
+    ]);
+
+    $grafik = $raport->fresh()->grafikNilai();
+
+    expect($grafik)->toHaveCount(1)
+        ->and($grafik[0]['nilai'])->toBe(80)
+        ->and($grafik[0]['kkm'])->toBe(75);
+});
+
+it('raport tanpa nilai menampilkan grafik kosong', function () {
+    ['siswa' => $siswa, 'nilai' => $nilai] = buatRaportLengkap();
+
+    $nilai->delete();
+
+    $this->actingAs($siswa, 'siswa')
+        ->get(route('siswa.raport'))
+        ->assertSuccessful()
+        ->assertSee('Belum ada nilai untuk digrafikkan');
 });

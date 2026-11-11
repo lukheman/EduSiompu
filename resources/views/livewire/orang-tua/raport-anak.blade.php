@@ -46,6 +46,8 @@
             </div>
         </x-layout.modern-card>
 
+        <x-ui.nilai-chart :items="$raport->grafikNilai()" />
+
         <x-layout.table-card title="Rincian Nilai Mata Pelajaran">
             <x-layout.table>
                 <x-slot:head>
