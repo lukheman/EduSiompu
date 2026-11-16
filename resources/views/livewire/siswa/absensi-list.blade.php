@@ -72,7 +72,14 @@
                         <tr>
                             <td>{{ \Carbon\Carbon::parse($absensi->tanggal)->translatedFormat('d M Y') }}</td>
                             <td>
-                                <div class="fw-semibold text-primary">{{ $absensi->jadwalPelajaran->guruAmpu->mataPelajaran->nama_mapel ?? '-' }}</div>
+                                @php
+                                    $mapel = $absensi->jadwalPelajaran->guruAmpu->mataPelajaran;
+                                    $namaMapel = $mapel->nama_mapel ?? '-';
+                                @endphp
+                                <div class="d-flex align-items-center gap-2">
+                                    <x-ui.mapel-icon :nama="$namaMapel" />
+                                    <div class="fw-semibold text-primary">{{ $namaMapel }}</div>
+                                </div>
                             </td>
                             <td>
                                 <div class="text-muted">{{ $absensi->jadwalPelajaran->guruAmpu->guru->nama_guru ?? '-' }}</div>
